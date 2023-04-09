@@ -1,0 +1,8 @@
+{% for subject in subjects %}
+    <!-- Subjext title -->
+    <h2>    
+        - <a href="{% url 'single_subject' subject.slug %}"> 
+            {{subject.title}}
+        </a>
+    </h2>
+{% endfor %}

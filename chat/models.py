@@ -34,7 +34,6 @@ class Subject(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     created_at = models.DateTimeField(auto_now_add=True)
-    content = models.TextField()
     question = GenericRelation(Question)
 
     def __str__(self):

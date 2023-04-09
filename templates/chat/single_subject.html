@@ -1,0 +1,8 @@
+<!-- Questions & Answers -->
+{% for question in questions %} 
+    <!-- Question -->
+    <u> {{ question.content }} </u>
+
+    <!-- Answer -->
+    <p> {{ question.answer_set.get.content }} </p>
+{% endfor %}
