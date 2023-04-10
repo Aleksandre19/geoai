@@ -1,0 +1,19 @@
+geoai_env/
+# Python compiled files
+__pycache__/
+__pycache__
+*__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite database files
+*.sqlite3
+
+# Media and static files
+media/
+static/
+
+# Sensitive files
+.env
+env.py

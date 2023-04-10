@@ -28,7 +28,7 @@ class Answer(models.Model):
         return self.content[:50] + '...' if len(self.content) > 50 else self.content
 
 
-class Subject(models.Model):
+class Topic(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
