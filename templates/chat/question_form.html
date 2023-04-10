@@ -1,5 +1,7 @@
-<form method="post">
-    {% csrf_token %}
-    {{ question_form.as_p }}
-    <button type="submit"> Submit </button> 
-</form>
+{% if request.user.is_active %}
+    <form method="post">
+        {% csrf_token %}
+        {{ question_form.as_p }}
+        <button type="submit"> Submit </button> 
+    </form>
+{% endif %}
