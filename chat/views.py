@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from chat.models import Topic, Answer
 from chat.forms import QuestionForm
 
 # Create your views here.
+# @login_required
 def chat(request):
     if request.user.is_active:
         topics = Topic.objects.filter(user=request.user)
@@ -22,6 +24,7 @@ def chat(request):
     return render(request, 'chat/index.html')
 
 
+@login_required
 def post_question(request, topic=None):
     question_form = QuestionForm(request.POST)
     if question_form.is_valid():    
@@ -59,7 +62,7 @@ def post_question(request, topic=None):
         # ATTANTION - Needs to be edited
         return False
 
-
+@login_required
 def topic(request, slug=""):
 
     if request.user.is_active:

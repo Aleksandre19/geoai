@@ -30,9 +30,14 @@ class Dev(Configuration):
 
     ALLOWED_HOSTS = values.ListValue(['localhost', '127.0.0.1'])
 
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.Argon2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    ]
 
     # Application definition
-
     INSTALLED_APPS = [
         'django.contrib.admin',
         'django.contrib.auth',
@@ -109,8 +114,7 @@ class Dev(Configuration):
     # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
     LANGUAGE_CODE = 'en-us'
-
-    # TIME_ZONE = 'UTC'
+    
     TIME_ZONE = values.Value('UTC')
 
     USE_I18N = True
