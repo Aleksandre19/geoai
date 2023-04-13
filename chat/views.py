@@ -8,19 +8,23 @@ from django.core.cache import cache
 #1 Complite caching the questions and answers.
     # subject caching is implemented.
 #2 Write a consitions for the else:
+#3 Use DjDT debug to optimaze performance of the webpage
 
 # Create your views here.
 # @login_required
 def chat(request):
     if request.user.is_active:
 
+        # Used for caching
         def get_all_topics_by_user():
             user_topics = Topic.objects.filter(user=request.user)
             topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
             return topics_by_user
 
         # Cache topics
+        # Used for cache
         topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 60)
+        # topics = Topic.objects.filter(user=request.user)
         question_form = QuestionForm()
 
         if request.method == 'POST':
@@ -28,7 +32,9 @@ def chat(request):
             return redirect('topic', slug=question.get('slug'))  
 
         context = {
-            "topics": list(topics.values()),
+            # Used for caching
+            'topics': list(topics.values()),
+            # 'topics': topics,
             'question_form': question_form,
         }
         return render(request, 'chat/index.html', context)
@@ -48,6 +54,7 @@ def post_question(request, topic=None):
             topic_title = question_form.cleaned_data['content'][:20]
             add_topic = Topic(user=request.user, title=topic_title, slug=topic_title)
             add_topic.save()
+
             # Add new topic in the cache.
             add_to_cache(add_topic)
        
