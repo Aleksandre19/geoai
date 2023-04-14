@@ -30,6 +30,8 @@ class Dev(Configuration):
 
     ALLOWED_HOSTS = values.ListValue(['localhost', '127.0.0.1'])
 
+    AUTH_USER_MODEL = 'geoai_auth.User'
+
     PASSWORD_HASHERS = [
         'django.contrib.auth.hashers.Argon2PasswordHasher',
         'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -52,6 +54,7 @@ class Dev(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'geoai_auth',
         'chat',
         'debug_toolbar',
     ]
