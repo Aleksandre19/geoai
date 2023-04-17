@@ -52,11 +52,16 @@ class Dev(Configuration):
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
+        'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'geoai_auth',
         'chat',
         'debug_toolbar',
+        'allauth',
+        'allauth.account',
+        'allauth.socialaccount',
+        'allauth.socialaccount.providers.google',
     ]
 
     INTERNAL_IPS = '127.0.0.1'
@@ -145,6 +150,13 @@ class Dev(Configuration):
     # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+    SITE_ID = 1
+
+    ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_USERNAME_REQUIRED = False
+    ACCOUNT_AUTHENTICATION_METHOD = "email"
 
 class Prod(Dev):
     DEBUG = False
