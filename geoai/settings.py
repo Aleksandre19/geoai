@@ -62,6 +62,7 @@ class Dev(Configuration):
         'allauth.account',
         'allauth.socialaccount',
         'allauth.socialaccount.providers.google',
+        'home',
     ]
 
     INTERNAL_IPS = '127.0.0.1'
@@ -151,8 +152,9 @@ class Dev(Configuration):
 
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+    # django-allauth
     SITE_ID = 1
-
+    LOGIN_REDIRECT_URL = '/chat/'
     ACCOUNT_USER_MODEL_USERNAME_FIELD = None
     ACCOUNT_EMAIL_REQUIRED = True
     ACCOUNT_USERNAME_REQUIRED = False

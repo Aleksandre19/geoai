@@ -22,11 +22,12 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('chat/', include('chat.urls')), 
+    path('', include('home.urls')),
+    path('chat/', include('chat.urls')),
+    path("accounts/", include("allauth.urls")),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls')),
-        path("accounts/", include("allauth.urls")),
     ]

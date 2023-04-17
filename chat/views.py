@@ -11,10 +11,10 @@ from django.core.cache import cache
 #3 Use DjDT debug to optimaze performance of the webpage
 
 # Create your views here.
-# @login_required
+
+@login_required
 def chat(request):
     if request.user.is_active:
-
         # Used for caching
         def get_all_topics_by_user():
             user_topics = Topic.objects.filter(user=request.user)
@@ -97,11 +97,9 @@ def add_to_cache(topic):
 
 @login_required
 def topic(request, slug=""):
-
     if request.user.is_active:
         topic = get_object_or_404(Topic, slug=slug)
         questions = topic.question.all()
-
         # Ask question
         if request.method == 'POST':
             question = post_question(request, topic)
