@@ -55,13 +55,13 @@ class Dev(Configuration):
         'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'geoai_auth',
-        'chat',
-        'debug_toolbar',
         'allauth',
         'allauth.account',
         'allauth.socialaccount',
         'allauth.socialaccount.providers.google',
+        'geoai_auth',
+        'chat',
+        'debug_toolbar',
         'home',
     ]
 
@@ -83,7 +83,10 @@ class Dev(Configuration):
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [BASE_DIR / 'templates'],
+            'DIRS': [
+                BASE_DIR / 'templates',
+                BASE_DIR / 'geoai_auth'  / 'templates' / 'allauth',
+            ],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -154,6 +157,7 @@ class Dev(Configuration):
 
     # django-allauth
     SITE_ID = 1
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     LOGIN_REDIRECT_URL = '/chat/'
     ACCOUNT_USER_MODEL_USERNAME_FIELD = None
     ACCOUNT_EMAIL_REQUIRED = True
