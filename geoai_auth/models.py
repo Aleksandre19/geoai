@@ -36,6 +36,7 @@ class User(AbstractUser):
         _("email address"),
         unique=True,
     )
+    # is_active = models.BooleanField(default=False)
 
     objects = GeoaiUserManager()
 

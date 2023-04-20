@@ -63,6 +63,7 @@ class Dev(Configuration):
         'chat',
         'debug_toolbar',
         'home',
+        'rest_framework',
     ]
 
     INTERNAL_IPS = '127.0.0.1'
