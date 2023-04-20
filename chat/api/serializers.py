@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from chat.models import Question
+from chat.models import Topic
 
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Question
+        model = Topic
         fields = '__all__'
         readonly = ['created_at']
