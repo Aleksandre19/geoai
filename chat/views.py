@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from chat.models import Topic, Answer
 from chat.forms import QuestionForm
 from django.core.cache import cache
+from django.utils.text import slugify
 
 # Notes
 #1 Complite caching the questions and answers.
@@ -23,7 +24,7 @@ def chat(request):
 
         # Cache topics
         # Used for cache
-        topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 60)
+        topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 1)
         # topics = Topic.objects.filter(user=request.user)
         question_form = QuestionForm()
 
@@ -52,7 +53,8 @@ def post_question(request, topic=None):
         # creating the topic for it. 
         if not topic:
             topic_title = question_form.cleaned_data['content'][:20]
-            add_topic = Topic(user=request.user, title=topic_title, slug=topic_title)
+            slug = slugify(topic_title)
+            add_topic = Topic(user=request.user, title=topic_title, slug=slug)
             add_topic.save()
 
             # Add new topic in the cache.
@@ -62,7 +64,7 @@ def post_question(request, topic=None):
         add_question = question_form.save(commit=False)
         add_question.content_object = add_topic
         add_question.user = request.user
-        add_question.save()
+       
 
         # Fake answer on the question
         answer_text = """
@@ -72,8 +74,11 @@ def post_question(request, topic=None):
             nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
             reprehenderit in voluptate velit esse cillum dolore eu.
         """
-        answer = Answer(user=request.user, content=answer_text, question=add_question)
+        answer = Answer(user=request.user, content=answer_text)
         answer.save()
+
+        add_question.answer = answer
+        add_question.save()
     
         return {
             "slug": add_topic.slug,
@@ -87,12 +92,12 @@ def post_question(request, topic=None):
 def add_to_cache(topic):
     topic_cache_key = f"topic_{topic.pk}"
     sentinel = object()
-    get_cached_topics = cache.get("topics_by_user", sentinel)
+    get_cached_topics = cache.get("topics_by_user", sentinel, 1)
     # Initiate a new diictionary if the cache is empty.
     if get_cached_topics is sentinel:
         get_cached_topics = {}
     get_cached_topics[topic_cache_key] = topic
-    cache.set("topics_by_user", get_cached_topics)
+    cache.set("topics_by_user", get_cached_topics, 1)
 
 
 @login_required

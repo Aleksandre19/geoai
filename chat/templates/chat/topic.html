@@ -4,6 +4,9 @@
     <u> {{ question.content }} </u>
 
     <!-- Answer -->
-    <p> {{ question.answer_set.get.content }} </p>
+    <p> 
+        {% comment %} {{ question.answer_set.get.content }} {% endcomment %}
+        {{question.answer.content}}
+    </p>
 {% endfor %}
 {% include "chat/question_form.html" %}
