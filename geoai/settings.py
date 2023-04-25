@@ -51,6 +51,7 @@ class Dev(Configuration):
         'home',
         'rest_framework',
         'rest_framework.authtoken',
+        'drf_yasg',
     ]
 
     PASSWORD_HASHERS = [
@@ -77,6 +78,15 @@ class Dev(Configuration):
             "rest_framework.permissions.IsAuthenticated"
         ]
     }
+
+    SWAGGER_SETTINGS = {
+        "SECURITY_DEFINITIONS": {
+            "Token": {"type": "apiKey", "name": "Authorization",
+        "in": "header"},
+            "Basic": {"type": "basic"},
+        } 
+    }
+
 
     INTERNAL_IPS = '127.0.0.1'
 

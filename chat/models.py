@@ -17,7 +17,7 @@ class Answer(models.Model):
 
 class Question(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, default=None, related_name='answer')
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, default=None, related_name='question')
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

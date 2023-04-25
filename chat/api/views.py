@@ -1,6 +1,14 @@
-from rest_framework import generics
-from chat.api.serializers import TopicQuestionSerializer, UserSerializer, SingleTopicSerializer
-from chat.models import Topic
+from rest_framework import generics, viewsets 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from chat.api.serializers import( 
+    TopicQuestionSerializer, 
+    UserSerializer,
+    SingleTopicSerializer,
+    AnswerSerializer,
+    QuestionSerializer
+)
+from chat.models import Topic, Answer
 from chat.api.permissions import IsOwner
 from geoai_auth.models import User
 
@@ -26,3 +34,14 @@ class SingleTopic(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwner]
 
 
+class AnswerViewSet(viewsets.ModelViewSet):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+
+    @action(methods=['get'], detail=True, name="Answers with the topics")
+    def topics(self, request, pk=None):
+        answer = self.get_object()
+        topics_serializer = QuestionSerializer(
+            answer.question, many=True, context={"request": request}
+        )
+        return Response(topics_serializer.data)
