@@ -39,9 +39,9 @@ class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
 
     @action(methods=['get'], detail=True, name="Answers with the topics")
-    def topics(self, request, pk=None):
+    def questions(self, request, pk=None):
         answer = self.get_object()
-        topics_serializer = QuestionSerializer(
+        questions_serializer = QuestionSerializer(
             answer.question, many=True, context={"request": request}
         )
-        return Response(topics_serializer.data)
+        return Response(questions_serializer.data)

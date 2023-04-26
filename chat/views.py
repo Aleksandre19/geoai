@@ -5,6 +5,7 @@ from chat.forms import QuestionForm
 from django.core.cache import cache
 from django.utils.text import slugify
 
+
 # Notes
 #1 Complite caching the questions and answers.
     # subject caching is implemented.
