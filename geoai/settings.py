@@ -76,7 +76,19 @@ class Dev(Configuration):
         ],
         "DEFAULT_PERMISSION_CLASSES": [
             "rest_framework.permissions.IsAuthenticated"
-        ]
+        ],
+        "DEFAULT_THROTTLE_CLASSES": [
+            "chat.api.throttling.AnonSustainedThrottle",
+            "chat.api.throttling.AnonBurstThrottle",
+            "chat.api.throttling.UserSustainedThrottle",
+            "chat.api.throttling.UserBurstThrottle",          
+        ],
+        "DEFAULT_THROTTLE_RATES": {
+            "anon_sustained": "10/day",
+            "anon_burst": "10/hour",
+            "user_sustained": "5000/day",
+            "user_burst": "60/minute",
+        },
     }
 
     SWAGGER_SETTINGS = {
