@@ -2,8 +2,6 @@ from rest_framework import serializers
 from chat.models import Topic, Question, Answer
 from django.utils.text import slugify
 from geoai_auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
 # from django.core.exceptions import ObjectDoesNotExist
 
 class UserSerializer(serializers.ModelSerializer):
