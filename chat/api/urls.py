@@ -53,5 +53,10 @@ urlpatterns += [
             schema_view.with_ui("swagger", cache_timeout=0),
             name="schema-swagger-ui",
     ),
-    path("", include(router.urls)), 
+    path("", include(router.urls)),
+    path(
+        "topics/by-time/<str:period_name>",
+        TopicList.as_view(),
+        name="topics-by-time"
+    )
 ]
