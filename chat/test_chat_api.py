@@ -25,7 +25,7 @@ class PostApiTestCase(TestCase):
         content="Post 1 Content",
       ),
       Answer.objects.create(
-        user=self.u2,
+        user=self.u1,
         content="Post 2 Content",
       ),
     ]
@@ -40,7 +40,7 @@ class PostApiTestCase(TestCase):
 
   def test_answer_list(self):
     resp = self.client.get("/api/answers/")
-    data = resp.json()
+    data = resp.json()['results']
     self.assertEqual(len(data), 2)
 
     for answer_dict in data:

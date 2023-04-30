@@ -23,7 +23,7 @@ class AnswerApiTestCase(LiveServerTestCase):
         self.client.auth = HTTPBasicAuth("testuser@example.com", "password")
         resp = self.client.get(self.live_server_url + "/api/answers/")
         self.assertEqual(resp.status_code, 200)
-        data = resp.json()
+        data = resp.json()['results']
         self.assertEqual(len(data), 4)
         self.assertEqual(self.answer_values, {a["content"] for a in data})
 

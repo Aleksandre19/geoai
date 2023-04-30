@@ -94,6 +94,15 @@ class AnswerViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True, name="Answers with the topics")
     def questions(self, request, pk=None):
         answer = self.get_object()
+
+        #Paginate
+        page = self.paginate_queryset(answer.question.all())
+        if page is not None:
+            questions_serializer = QuestionSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(questions_serializer.data)
+        
         questions_serializer = QuestionSerializer(
             answer.question, many=True, context={"request": request}
         )
