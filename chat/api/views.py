@@ -14,9 +14,10 @@ from chat.api.serializers import(
     UserSerializer,
     SingleTopicSerializer,
     AnswerSerializer,
-    QuestionSerializer
+    QuestionSerializer,
+    TagSerializer
 )
-from chat.models import Topic, Answer
+from chat.models import Topic, Answer, Tag
 from chat.api.permissions import IsOwner
 from geoai_auth.models import User
 
@@ -34,6 +35,32 @@ class UserDetail(generics.RetrieveAPIView):
         return self.queryset.filter(
             email=self.request.user.email
         )
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
+
+    @action(methods=['get'], detail=True, name='Questions with tags')
+    def questions(self, request, pk=None):
+        tag = self.get_object()
+        page = self.paginate_queryset(tag.question.all())
+        if page is not None:
+            question_serializer = QuestionSerializer(
+                page,
+                many=True,
+                context={"request" : request} 
+            )
+            return self.get_paginated_response(question_serializer.data)
+
+        question_serializer = QuestionSerializer(
+                page,
+                many=True,
+                context={"request" : request} 
+            )
+        return Response(question_serializer.data)
+
 
 
 class TopicList(generics.ListAPIView):
@@ -75,7 +102,7 @@ class SingleTopic(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwner]
 
     # Caching
-    @method_decorator(cache_page(60))
+    @method_decorator(cache_page(1))
     @method_decorator(vary_on_headers('Authorization'))
     @method_decorator(vary_on_cookie)
     def get(self, *args, **kwargs):

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from chat.models import Topic, Question, Answer
+from chat.models import Topic, Question, Answer , Tag
 from django.utils.text import slugify
 from geoai_auth.models import User
 # from django.core.exceptions import ObjectDoesNotExist
@@ -8,6 +8,21 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+
+class TagField(serializers.SlugRelatedField):
+    def to_internal_value(self, data):
+        try:
+            return self.get_queryset().get_or_create(value=data.lower())[0]
+        except:
+            self.fail(f"Tag value {data} is invalid.")
+
+
+class TagSerializer(serializers.ModelSerializer):
+    #value = serializers.CharField(required=False)
+    class Meta:
+        model = Tag
+        fields = '__all__'
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -26,7 +41,16 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     #answer = serializers.SerializerMethodField(source='answer')
+
     id = serializers.IntegerField(required=False)
+
+
+    tags = TagField(
+        slug_field='value',
+        many=True,
+        queryset=Tag.objects.all(),
+    )
+    
     user = serializers.HyperlinkedRelatedField(
         queryset=User.objects.all(),
         view_name='api_user_detail',
@@ -96,6 +120,7 @@ class TopicQuestionSerializer(TopicSerializer):
 
 class SingleTopicSerializer(TopicSerializer):
     # Fetch the curent topic's questions on it's question field.
+
     question = QuestionAnswerSerializer(many=True)
 
     # Reride the update method.
@@ -105,7 +130,6 @@ class SingleTopicSerializer(TopicSerializer):
 
         # Update the parrent (topic) instance.
         instance = super(SingleTopicSerializer, self).update(instance, validated_data)
-
         for question_item in question_data:
             # Fetch the question ID
             question_id = question_item.pop('id', None)
@@ -113,6 +137,7 @@ class SingleTopicSerializer(TopicSerializer):
             if question_id:
                 # Grab question instance.
                 question_instance = Question.objects.get(id=question_id)
+                tags_data = question_item.pop('tags',[])
                 # Update the related Answer instance
                 answer_data = question_item.pop('answer', {})
                 answer_instance = question_instance.answer
@@ -123,6 +148,11 @@ class SingleTopicSerializer(TopicSerializer):
                 # Update the rest of the question_instance fields
                 for attr, value in question_item.items():
                     setattr(question_instance, attr, value)
+
+                # Update the tags for the question_instance
+                tag_instances = [Tag.objects.get_or_create(value=tag)[0] for tag in tags_data]
+                question_instance.tags.set(tag_instances)
+
                 question_instance.save()
             # Create the new question & recive answer for it.
             else:
@@ -145,7 +175,7 @@ class SingleTopicSerializer(TopicSerializer):
                     content_object=instance
                 )
                 new_question.save()
-
+                
         return instance
 
 

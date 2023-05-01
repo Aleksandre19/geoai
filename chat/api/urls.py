@@ -10,11 +10,13 @@ from chat.api.views import (
     TopicList,
     UserDetail,
     SingleTopic,
-    AnswerViewSet
+    AnswerViewSet,
+    TagViewSet
 )
 
 router = DefaultRouter()
 router.register("answers", AnswerViewSet)
+router.register("tags", TagViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
