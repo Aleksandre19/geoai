@@ -17,8 +17,9 @@ from chat.api.serializers import(
     QuestionSerializer,
     TagSerializer
 )
-from chat.models import Topic, Answer, Tag
-from chat.api.permissions import IsOwner
+from chat.models import Topic, Answer, Tag, Question
+from chat.api.permissions import IsOwner, IsSuperUserOrReadOnly
+from chat.api.filters import QuestionFiltering
 from geoai_auth.models import User
 
 #To do list:
@@ -41,11 +42,11 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
-
     @action(methods=['get'], detail=True, name='Questions with tags')
     def questions(self, request, pk=None):
         tag = self.get_object()
         page = self.paginate_queryset(tag.question.all())
+        print(page)
         if page is not None:
             question_serializer = QuestionSerializer(
                 page,
@@ -141,3 +142,14 @@ class AnswerViewSet(viewsets.ModelViewSet):
             user=self.request.user
         )
     
+
+class QuestionViewSet(viewsets.ModelViewSet):
+    queryset = Question.objects.all()
+    permission_classes = [IsSuperUserOrReadOnly]
+    serializer_class = QuestionSerializer
+    filterset_class = QuestionFiltering
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            user=self.request.user
+        )
