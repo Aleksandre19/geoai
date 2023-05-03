@@ -1,5 +1,9 @@
 <!-- Questions & Answers -->
 {% for question in questions %} 
+    <!-- Avatar -->
+    {% if question.avatar %}
+        <img src="{{ question.avatar.url }}">
+    {% endif %}
     <!-- Question -->
     <u> {{ question.content }} </u>
 

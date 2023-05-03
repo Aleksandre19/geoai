@@ -3,6 +3,9 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
+# Not working gussing because of the version (Django 4.2)
+# from versatileimagefield.fields import VersatileImageField, PPOIField
+
 # Create your models here.
 class Tag(models.Model):
     value = models.TextField(max_length=100, unique=True, default="Django")
@@ -32,7 +35,11 @@ class Question(models.Model):
     object_id = models.PositiveIntegerField(db_index=True)
     content_object = GenericForeignKey("content_type", "object_id")
     tags = models.ManyToManyField(Tag, related_name="question")
-
+    avatar = models.ImageField(
+        upload_to="images/avatars",
+        null=True, 
+        blank=True
+    )
     def __str__(self):
         return self.content[:50] + '...' if len(self.content) > 50 else self.content 
 

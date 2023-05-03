@@ -33,6 +33,9 @@ class Dev(Configuration):
 
     AUTH_USER_MODEL = 'geoai_auth.User'
 
+    MEDIA_ROOT = BASE_DIR / 'geoai/media'
+    MEDIA_URL = '/media/'
+
     # Application definition
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -54,6 +57,7 @@ class Dev(Configuration):
         'rest_framework.authtoken',
         'drf_yasg',
         'django_filters',
+        'versatileimagefield',
     ]
 
     PASSWORD_HASHERS = [
