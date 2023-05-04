@@ -1,8 +1,10 @@
+<ul>
 {% for topic in topics %}
     <!-- Subjext title -->
-    <h2>    
-        - <a href="{% url 'topic' topic.slug %}"> 
-            {{topic.title}}
+    <li>    
+        <a href="{% url 'topic' topic.slug %}"> 
+            {{topic.title}}...
         </a>
-    </h2>
+    </li>
 {% endfor %}
+</ul>

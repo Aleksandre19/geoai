@@ -1,0 +1,194 @@
+:root{
+    --primary-color: #9B999B;
+    --secondary-color: #e6e6e6;
+    --text-color: #4F4D4F;
+}
+
+* {
+    padding:0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'FiraBook', sans-serif;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: #fcfcfc;
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    width: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Menu', sans-serif;
+    line-height: 1.5;
+}
+
+
+div#auth-main {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+div.wrapper {
+    width: 400px;
+    border: 1px solid var(--secondary-ccolor);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+div.wrapper > h1 {
+    text-align: center;
+}
+
+div.wrapper > p {
+    text-align: center;
+    margin: 16px 0px;
+}
+
+div.wrapper form.login > p:first-of-type{
+    margin: 16px 0px;
+}
+
+div.wrapper form.login > p label {
+    display: block;
+}
+
+div.wrapper form.login  > p input[type="email"],
+div.wrapper form.login > p input[type="password"] {
+        width: 100%;
+        margin: auto;
+        height: 40px;
+        border: 1px solid var(--secondary-ccolor);
+        border-radius: 4px;
+        padding-left: 10px;
+}
+
+div.wrapper form.login > button[type="submit"] {
+    border: 1px solid var(--primary-ccolor);
+    border-radius: 4px;
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin: auto;
+    margin-top: 24px;
+}
+
+div.wrapper form.login > p:last-of-type label {
+    display: inline-block;
+    margin: 8px 0px;
+}
+
+div.wrapper div.social-wrapper {
+    text-align: center;
+    margin: 24px 0px;
+}
+
+/* ================ CHAT ================ */
+section#chat-main {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+}
+
+section#chat-main > div {
+    border-right: 1px solid var(--secondary-color)
+}
+
+section#chat-main div#sidebar {
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+}
+
+section#chat-main div#sidebar div.sidebar-sections{
+    width: 100%;
+    border-bottom: 1px solid var(--secondary-color)
+}
+
+#chat-main #sidebar .chat-history-title {
+    font-family: 'Menu', sans-serif;
+    border-left: 2px solid var(--primary-color);
+    width: 90%;
+    margin: 16px auto;
+    padding: 8px 16px;
+}
+
+/* #chat-main #sidebar .chat-history-links ul li {
+    width: 90%;
+    margin: auto;
+} */
+
+#chat-main #sidebar ul li a {
+    text-decoration: none;
+    color: var(--text-primary);
+    display: inline-block;
+    width: 100%;
+    border-bottom: 1px dotted var(--secondary-color);
+    padding: 8px 16px;
+    transition: background-color 1s ease-out;
+}
+
+#chat-main #sidebar ul li a:hover {
+    background-color: var(--secondary-color)
+}
+
+#chat-main #sidebar .chat-history-links ul li a:first-child {
+    margin-top: 16px;
+}
+
+#chat-main #sidebar .sidebar-sections .profile-links li a {
+    font-family: 'Menu', sans-serif;
+}
+
+#chat-main #chat-content {
+    display: grid;
+    grid-template-rows: 6fr 1fr;
+}
+
+#chat-main #chat-content .chat-qa-form {
+    border-top: 1px solid var(--secondary-color)
+}
+
+#chat-main #chat-content .chat-qa-form > form {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+}
+
+#chat-main #chat-content .chat-qa-form > form p {
+    display: inline-block;
+    text-align: center;
+}
+
+#chat-main #chat-content .chat-qa-form > form label {
+    display: none;
+}
+
+#chat-main #chat-content .chat-qa-form > form textarea {
+    display: inline-block;
+    width: 100%;
+    height: 50px;
+    margin: 16px 0px 16px 10%;
+    padding-right: 90px;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+}
+
+#chat-main #chat-content .chat-qa-form  form button {
+    margin: 16px 50% 16px 0;
+    height: 50px;
+}
+
+
+
+

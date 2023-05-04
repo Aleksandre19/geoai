@@ -1,14 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ka">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'geoai/css/fonts.css' %}" />
+    <link rel="stylesheet" href="{% static 'geoai/css/style.css' %}" />
+    <link rel="shortcut icon" type="image/png" href="{% static 'geoai/favicon.ico' %}"/>
     <title>GeoAI | ხელოვნური ინტელექი </title>
 </head>
-<body> 
-    <h1>მოგესალმებით!</h1>
-    <a href="{% url "account_logout" %}">Logout</a>
+<body>    
+    {% if request.user.is_active %}
+        {% comment %} <h1>მოგესალმებით!</h1>
+        <a href="{% url "account_logout" %}">Logout</a> {% endcomment %}
+    {% endif %}
     {% block content %}
     
     {% endblock %}   

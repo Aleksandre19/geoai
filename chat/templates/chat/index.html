@@ -1,5 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "chat/topics.html" %}
-    {% include "chat/question_form.html" %}
+<section id="chat-main">
+    <div id="sidebar">
+        <div class='sidebar-sections'>
+            <div class="chat-history-title">
+                ჩატის ისტორია
+            </div>
+            <div class="chat-history-links">
+                {% include "chat/topics.html" %}
+            </div>
+        </div>
+        <div class='sidebar-sections'>
+            <ul class='profile-links'>
+                <li>
+                    <a href="{% url "account_logout" %}">გასვლას</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="chat-content">
+        <div class='chat-qa-content'>
+        </div>
+        <div class='chat-qa-form'>
+            {% include 'chat/question_form.html' %}
+        </div>
+    </div>
+
+</section>
 {% endblock %}

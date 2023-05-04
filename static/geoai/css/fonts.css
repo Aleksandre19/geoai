@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'FiraBook';
+    src: url('../fonts/FiraGO-Book.woff2') format('woff2'),
+         url('../fonts/FiraGO-Book.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Menu';
+    src: url('../fonts/bpg_nino_medium_caps.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
