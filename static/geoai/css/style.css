@@ -42,7 +42,7 @@ div#auth-main {
 
 div.wrapper {
     width: 400px;
-    border: 1px solid var(--secondary-ccolor);
+    border: 1px solid var(--secondary-color);
     border-radius: 8px;
     padding: 16px;
 }
@@ -69,7 +69,7 @@ div.wrapper form.login > p input[type="password"] {
         width: 100%;
         margin: auto;
         height: 40px;
-        border: 1px solid var(--secondary-ccolor);
+        border: 1px solid var(--secondary-color);
         border-radius: 4px;
         padding-left: 10px;
 }
@@ -143,7 +143,17 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color)
 }
 
-#chat-main #sidebar .chat-history-links ul li a:first-child {
+#chat-main #sidebar .sidebar-sections .chat-history-title {
+    text-align: center;
+    display: block;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    margin: 16px auto;
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+#chat-main #sidebar .chat-history-links ul li:first-child a {
     margin-top: 16px;
 }
 
@@ -187,6 +197,23 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content .chat-qa-form  form button {
     margin: 16px 50% 16px 0;
     height: 50px;
+}
+
+#chat-main #chat-content .chat-qa-content .qa-block {
+    margin: 24px 0;
+}
+
+#chat-main #chat-content .chat-qa-content .qa-block .q-block,
+#chat-main #chat-content .chat-qa-content .qa-block .a-block {
+    width: 80%;
+    margin: auto;
+    padding: 16px 24px;
+    border-radius: 4px 4px  0px 0px;
+    background-color: var(--secondary-color);
+}
+
+#chat-main #chat-content .chat-qa-content .qa-block .a-block {
+    background-color: #f3f2f2;
 }
 
 

@@ -1,7 +1,7 @@
 from django.urls import path
-from chat.views import chat, topic
+from chat.views import chat
 
 urlpatterns = [
-    path("", chat),
-    path('topic/<slug>/', topic, name="topic" ),
+    path("", chat, name='chat_home'),
+    path('<slug:slug>/', chat, name="topic" ),
 ]

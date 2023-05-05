@@ -9,14 +9,19 @@ from django.utils.text import slugify
 # Notes
 #1 Complite caching the questions and answers.
     # subject caching is implemented.
-#2 Write a consitions for the else:
+#2 Write a conditions for the else:
 #3 Use DjDT debug to optimaze performance of the webpage
 
 # Create your views here.
 
 @login_required
-def chat(request):
+def chat(request, slug=None):
     if request.user.is_active:
+        questions = None
+        topic = None
+        if slug:
+            topic = get_object_or_404(Topic, slug=slug)
+            questions = topic.question.all()
         # Used for caching
         def get_all_topics_by_user():
             user_topics = Topic.objects.filter(user=request.user)
@@ -30,12 +35,13 @@ def chat(request):
         question_form = QuestionForm()
 
         if request.method == 'POST':
-            question = post_question(request)
+            question = post_question(request, topic)
             return redirect('topic', slug=question.get('slug'))  
 
         context = {
             # Used for caching
             'topics': list(topics.values()),
+            'questions': questions,
             # 'topics': topics,
             'question_form': question_form,
         }
@@ -99,34 +105,4 @@ def add_to_cache(topic):
         get_cached_topics = {}
     get_cached_topics[topic_cache_key] = topic
     cache.set("topics_by_user", get_cached_topics, 1)
-
-
-@login_required
-def topic(request, slug=""):
-    if request.user.is_active:
-        topic = get_object_or_404(Topic, slug=slug)
-        questions = topic.question.all()
-        # Ask question
-        if request.method == 'POST':
-            question = post_question(request, topic)
-            # return redirect(request.path_info)
-            return redirect('topic', slug=question.get('slug'))
-        else:
-            question_form = QuestionForm()
-
-        context = {
-            "questions": questions,
-            "question_form": question_form,
-        }
-
-        return render(request, 'chat/topic.html', context)
-   
-    # else:
-    #     question_form = None
-
-    #     context = {
-    #         "question_form": question_form,
-    #     }
-
-    #     return render(request, 'chat/topic.html', context)
 

@@ -3,9 +3,9 @@
 <section id="chat-main">
     <div id="sidebar">
         <div class='sidebar-sections'>
-            <div class="chat-history-title">
-                ჩატის ისტორია
-            </div>
+            <a href="{% url 'chat_home' %}" class="chat-history-title">
+                ახალი დიალოგი
+            </a>
             <div class="chat-history-links">
                 {% include "chat/topics.html" %}
             </div>
@@ -20,6 +20,7 @@
     </div>
     <div id="chat-content">
         <div class='chat-qa-content'>
+            {% include "chat/topic.html" %}
         </div>
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}

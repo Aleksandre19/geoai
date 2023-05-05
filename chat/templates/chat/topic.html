@@ -1,16 +1,23 @@
 <!-- Questions & Answers -->
-{% for question in questions %} 
-    <!-- Avatar -->
-    {% if question.avatar %}
-        <img src="{{ question.avatar.url }}">
-    {% endif %}
-    <!-- Question -->
-    <u> {{ question.content }} </u>
 
-    <!-- Answer -->
-    <p> 
-        {% comment %} {{ question.answer_set.get.content }} {% endcomment %}
-        {{question.answer.content}}
-    </p>
+{% for question in questions %}
+    <div class='qa-block'>
+        <div class='q-block'>
+            <p class='b-block-content'>
+                <!-- Avatar -->
+                {% if question.avatar %}
+                    <img src="{{ question.avatar.url }}">
+                {% endif %}
+                <!-- Question -->
+                {{ question.content }}
+            </p>
+        </div>
+        <div class='a-block'>
+            <!-- Answer -->
+            <p class='a-block-content'> 
+                {% comment %} {{ question.answer_set.get.content }} {% endcomment %}
+                {{question.answer.content}}
+            </p>
+        </div>   
+    </div>
 {% endfor %}
-{% include "chat/question_form.html" %}
