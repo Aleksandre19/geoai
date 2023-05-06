@@ -34,6 +34,8 @@ class Dev(Configuration):
 
     AUTH_USER_MODEL = 'geoai_auth.User'
 
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
     # Application definition
     INSTALLED_APPS = [
         'django.contrib.admin',

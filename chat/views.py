@@ -4,6 +4,7 @@ from chat.models import Topic, Answer
 from chat.forms import QuestionForm
 from django.core.cache import cache
 from django.utils.text import slugify
+from geoai_openai.views import get_openai_response
 
 
 # Notes
@@ -30,7 +31,10 @@ def chat(request, slug=None):
 
         # Cache topics
         # Used for cache
-        topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 1)
+        # It seems here is the problem when posting the new question and redirecting
+        # to the index page. it display only the current question's topic. 
+        # topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 1)
+        topics = get_all_topics_by_user()
         # topics = Topic.objects.filter(user=request.user)
         question_form = QuestionForm()
 
@@ -53,44 +57,41 @@ def chat(request, slug=None):
 
 @login_required
 def post_question(request, topic=None):
-    question_form = QuestionForm(request.POST)
+    question_form = QuestionForm(request.POST)  
     if question_form.is_valid():    
-        add_topic = topic 
-        # If the question is new then 
-        # creating the topic for it. 
-        if not topic:
-            topic_title = question_form.cleaned_data['content'][:20]
-            slug = slugify(topic_title)
-            add_topic = Topic(user=request.user, title=topic_title, slug=slug)
-            add_topic.save()
+        add_topic = topic
+        question_content =  question_form.cleaned_data['content']
+        response = get_openai_response(question_content)
+        if response:
+            # If the question is new then 
+            # creating the topic for it. 
+            if not topic:
+                topic_title = question_content[:20]
+                slug = slugify(topic_title)
+                add_topic = Topic(user=request.user, title=topic_title, slug=slug)
+                add_topic.save()
 
-            # Add new topic in the cache.
-            add_to_cache(add_topic)
-       
-        # Add the question to the database.        
-        add_question = question_form.save(commit=False)
-        add_question.content_object = add_topic
-        add_question.user = request.user
-       
+                # Add new topic in the cache.
+                add_to_cache(add_topic)
+        
+            # Add the question to the database.        
+            add_question = question_form.save(commit=False)
+            add_question.content_object = add_topic
+            add_question.user = request.user
+        
 
-        # Fake answer on the question
-        answer_text = """
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu.
-        """
-        answer = Answer(user=request.user, content=answer_text)
-        answer.save()
+            # Fake answer on the question
+            answer_text = response
+            answer = Answer(user=request.user, content=answer_text)
+            answer.save()
 
-        add_question.answer = answer
-        add_question.save()
-    
-        return {
-            "slug": add_topic.slug,
-            "question": add_question,
-        }
+            add_question.answer = answer
+            add_question.save()
+        
+            return {
+                "slug": add_topic.slug,
+                "question": add_question,
+            }
     else:
         # ATTANTION - Needs to be edited
         return False
