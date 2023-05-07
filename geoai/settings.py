@@ -58,6 +58,8 @@ class Dev(Configuration):
         'drf_yasg',
         'django_filters',
         'versatileimagefield',
+        'geoai_openai',
+        'geoai_translator',
     ]
 
     PASSWORD_HASHERS = [

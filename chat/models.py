@@ -20,6 +20,7 @@ class Answer(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     content = models.TextField()
+    translated = models.TextField(null=True, blank=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -30,6 +31,7 @@ class Question(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, default=None, related_name='question')
     content = models.TextField()
+    translated = models.TextField(null=True, blank=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
@@ -48,6 +50,7 @@ class Topic(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    translated = models.CharField(max_length=255, null=True, blank=True, default=None)
     slug = models.SlugField()
     created_at = models.DateTimeField(auto_now_add=True)
     question = GenericRelation(Question)

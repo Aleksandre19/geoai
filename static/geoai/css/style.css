@@ -164,6 +164,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content {
     display: grid;
     grid-template-rows: 6fr 1fr;
+    max-height: 100vh;
 }
 
 #chat-main #chat-content .chat-qa-form {
@@ -197,6 +198,11 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content .chat-qa-form  form button {
     margin: 16px 50% 16px 0;
     height: 50px;
+}
+
+#chat-main #chat-content .chat-qa-content {
+    height: 100%;
+    overflow: auto;
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block {

@@ -5,6 +5,7 @@ from chat.forms import QuestionForm
 from django.core.cache import cache
 from django.utils.text import slugify
 from geoai_openai.views import get_openai_response
+from geoai_translator.views import translate_text
 
 
 # Notes
@@ -40,7 +41,8 @@ def chat(request, slug=None):
 
         if request.method == 'POST':
             question = post_question(request, topic)
-            return redirect('topic', slug=question.get('slug'))  
+            if question:
+                return redirect('topic', slug=question.get('slug'))  
 
         context = {
             # Used for caching
@@ -60,38 +62,47 @@ def post_question(request, topic=None):
     question_form = QuestionForm(request.POST)  
     if question_form.is_valid():    
         add_topic = topic
+        # Grab content from the form element.
         question_content =  question_form.cleaned_data['content']
-        response = get_openai_response(question_content)
-        if response:
-            # If the question is new then 
-            # creating the topic for it. 
-            if not topic:
-                topic_title = question_content[:20]
-                slug = slugify(topic_title)
-                add_topic = Topic(user=request.user, title=topic_title, slug=slug)
-                add_topic.save()
+        # Translate the content into english.
+        question_geo_to_eng = translate_text(question_content, 'ka', 'en-US')
+        if question_geo_to_eng:
+            # Get response from openai API.
+            response = get_openai_response(question_geo_to_eng)
+            if response:
+                # Translate the response into Georgian.
+                response_eng_to_geo = translate_text(response, 'en-US', 'ka')
+                if response_eng_to_geo:
+                    # If the question is new then creating the topic for it. 
+                    if not topic:
+                        topic_title = question_content[:20]
+                        slug = slugify(question_geo_to_eng[:20])
+                        add_topic = Topic(user=request.user, title=topic_title, slug=slug)
+                        add_topic.save()
 
-                # Add new topic in the cache.
-                add_to_cache(add_topic)
-        
-            # Add the question to the database.        
-            add_question = question_form.save(commit=False)
-            add_question.content_object = add_topic
-            add_question.user = request.user
-        
+                        # Add new topic in the cache.
+                        add_to_cache(add_topic)
+                
+                    # Add the question to the database.        
+                    add_question = question_form.save(commit=False)
+                    add_question.content_object = add_topic
+                    add_question.translated = question_geo_to_eng
+                    add_question.user = request.user
+                
 
-            # Fake answer on the question
-            answer_text = response
-            answer = Answer(user=request.user, content=answer_text)
-            answer.save()
+                    # Answer
+                    answer_text = response_eng_to_geo
+                    translated_answer = response
+                    answer = Answer(user=request.user, content=answer_text, translated=translated_answer)
+                    answer.save()
 
-            add_question.answer = answer
-            add_question.save()
-        
-            return {
-                "slug": add_topic.slug,
-                "question": add_question,
-            }
+                    add_question.answer = answer
+                    add_question.save()
+                
+                    return {
+                        "slug": add_topic.slug,
+                        "question": add_question,
+                    }
     else:
         # ATTANTION - Needs to be edited
         return False
