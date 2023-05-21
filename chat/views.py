@@ -1,3 +1,5 @@
+import logging
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from chat.models import Topic, Answer
@@ -7,6 +9,9 @@ from django.utils.text import slugify
 from geoai_openai.views import get_openai_response
 from geoai_translator.views import translate_text
 
+from openaiapi.client import openai_response  
+
+logger = logging.getLogger(__name__)
 
 # Notes
 #1 Complite caching the questions and answers.
@@ -66,43 +71,54 @@ def post_question(request, topic=None):
         question_content =  question_form.cleaned_data['content']
         # Translate the content into english.
         question_geo_to_eng = translate_text(question_content, 'ka', 'en-US')
-        if question_geo_to_eng:
-            # Get response from openai API.
-            response = get_openai_response(question_geo_to_eng)
-            if response:
-                # Translate the response into Georgian.
-                response_eng_to_geo = translate_text(response, 'en-US', 'ka')
-                if response_eng_to_geo:
-                    # If the question is new then creating the topic for it. 
-                    if not topic:
-                        topic_title = question_content[:20]
-                        slug = slugify(question_geo_to_eng[:20])
-                        add_topic = Topic(user=request.user, title=topic_title, slug=slug)
-                        add_topic.save()
 
-                        # Add new topic in the cache.
-                        add_to_cache(add_topic)
-                
-                    # Add the question to the database.        
-                    add_question = question_form.save(commit=False)
-                    add_question.content_object = add_topic
-                    add_question.translated = question_geo_to_eng
-                    add_question.user = request.user
-                
+        if not question_geo_to_eng:
+            logger.error("Couldn't translate from Geo to Eng.")
+            return
+        
+        # Get response from openai API.
+        #response = get_openai_response(question_geo_to_eng, add_topic.slug)
+        response = openai_response(question_geo_to_eng, add_topic.slug)
+        if not response:
+            logger.error("Couldn't get the response from the OpenAI.")
+            return 
+        
+        # Translate the response into Georgian.
+        response_eng_to_geo = translate_text(response, 'en-US', 'ka')
+        if not response_eng_to_geo:
+            logger.error("Couldn't translate from Eng to Geo.")
+            return
+        
+        # If the question is new then creating the topic for it. 
+        if not topic:
+            topic_title = question_content[:20]
+            slug = slugify(question_geo_to_eng[:20])
+            add_topic = Topic(user=request.user, title=topic_title, slug=slug)
+            add_topic.save()
 
-                    # Answer
-                    answer_text = response_eng_to_geo
-                    translated_answer = response
-                    answer = Answer(user=request.user, content=answer_text, translated=translated_answer)
-                    answer.save()
+            # Add new topic in the cache.
+            add_to_cache(add_topic)
+    
+        # Add the question to the database.        
+        add_question = question_form.save(commit=False)
+        add_question.content_object = add_topic
+        add_question.translated = question_geo_to_eng
+        add_question.user = request.user
+    
 
-                    add_question.answer = answer
-                    add_question.save()
-                
-                    return {
-                        "slug": add_topic.slug,
-                        "question": add_question,
-                    }
+        # Answer
+        answer_text = response_eng_to_geo
+        translated_answer = response
+        answer = Answer(user=request.user, content=answer_text, translated=translated_answer)
+        answer.save()
+
+        add_question.answer = answer
+        add_question.save()
+    
+        return {
+            "slug": add_topic.slug,
+            "question": add_question,
+        }
     else:
         # ATTANTION - Needs to be edited
         return False
