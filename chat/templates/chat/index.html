@@ -22,10 +22,47 @@
         <div class='chat-qa-content'>
             {% include "chat/topic.html" %}
         </div>
+        {{slug}}
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}
         </div>
     </div>
 
 </section>
+{% endblock %}
+
+{% block bottom_js %}
+    {{ slug|json_script:'chat-name'}}
+    <script>
+        const chatName = JSON.parse(document.getElementById('chat-name').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + chatName
+            + '/'
+        );
+
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').innerHTML += (data.message + '\n');
+        };
+
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
 {% endblock %}

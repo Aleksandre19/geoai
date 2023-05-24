@@ -2,6 +2,6 @@
     <form method="post">
         {% csrf_token %}
         {{ question_form.as_p }}
-        <button type="submit"> Submit </button> 
+        <button type="submit" id='chat-message-submit'> Submit </button> 
     </form>
 {% endif %}

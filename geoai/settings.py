@@ -38,6 +38,7 @@ class Dev(Configuration):
 
     # Application definition
     INSTALLED_APPS = [
+        'daphne',
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
@@ -60,6 +61,7 @@ class Dev(Configuration):
         'versatileimagefield',
         'geoai_openai',
         'geoai_translator',
+        'channels',
     ]
 
     PASSWORD_HASHERS = [
@@ -155,7 +157,16 @@ class Dev(Configuration):
     ]
 
     WSGI_APPLICATION = 'geoai.wsgi.application'
+    ASGI_APPLICATION = 'geoai.asgi.application'
 
+    # CHANNEL_LAYERS = {
+    #     "default": {
+    #         "BACKEND": "channels_redis.core.RedisChannelLayer",
+    #         "CONFIG": {
+    #             "hosts": [("127.0.0.1", 6379)],
+    #         },
+    #     },
+    # }
 
     # Database
     # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

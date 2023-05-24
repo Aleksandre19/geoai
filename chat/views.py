@@ -53,6 +53,7 @@ def chat(request, slug=None):
             # Used for caching
             'topics': list(topics.values()),
             'questions': questions,
+            'slug': slug,
             # 'topics': topics,
             'question_form': question_form,
         }
