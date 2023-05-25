@@ -22,7 +22,6 @@
         <div class='chat-qa-content'>
             {% include "chat/topic.html" %}
         </div>
-        {{slug}}
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}
         </div>
@@ -44,10 +43,39 @@
             + '/'
         );
 
+        let paragraphID = ''
+
+        const scrollBottom = () => {
+            const element = document.querySelector('.chat-qa-content');
+            element.scrollTo({top:element.scrollHeight, behaviour: 'smooth'});
+        }
+
+        const createElement = (type) => {
+            const chatQaContent = document.querySelector('.chat-qa-content')
+            const qaElement = document.createElement('div')
+            const questionElement = document.createElement('div')
+            const questionParagraph = document.createElement('p')
+            
+            // Generate ta unique value for adding to ID
+            const uv = Date.now().toString()
+            paragraphID = type == 'q' ? 'cur-question-log-' + uv: 'cur-answer-log-' + uv
+
+            qaElement.classList.add(type + 'a-block')
+            questionElement.classList.add(type + '-block')
+            questionParagraph.classList.add(type + '-paragraph', 'b-block-content')
+            questionParagraph.id = paragraphID
+
+            questionElement.appendChild(questionParagraph)
+            qaElement.appendChild(questionElement)
+            chatQaContent.appendChild(qaElement)
+        }
+
 
         chatSocket.onmessage = function(e) {
+            createElement('q')
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').innerHTML += (data.message + '\n');
+            document.querySelector('#' + paragraphID).innerHTML = (data.message + '\n');
+            scrollBottom()
         };
 
 
