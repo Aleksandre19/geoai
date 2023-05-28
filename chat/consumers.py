@@ -1,17 +1,29 @@
 import json
 
-from channels.generic.websocket import WebsocketConsumer
+from django.shortcuts import get_object_or_404
 
+from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import sync_to_async
+from channels.db import database_sync_to_async
 
-class ChatConsumer(WebsocketConsumer):
-    def connect(self):
-        self.accept()
+from chat.models import Topic
+from chat.views import websocket_chat
 
-    def disconnect(self, close_code):
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self, slug=None):
+        if self.scope['user'].is_authenticated:
+            self.slug = self.scope['url_route']['kwargs'].get('slug', None)
+            await self.accept()
+
+    async def disconnect(self, close_code):
         pass
 
-    def receive(self, text_data):
+    async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
 
-        self.send(text_data=json.dumps({"message": message}))
+        #topic = await database_sync_to_async(get_object_or_404)(Topic, slug=self.slug)
+
+        result = await sync_to_async(websocket_chat)(self.scope['user'], message, self.slug)
+        response = result['response']['geo']
+        await self.send(text_data=json.dumps({"message": response}))

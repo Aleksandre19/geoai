@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
+
 @login_required
 def chat(request, slug=None):
     if request.user.is_active:
@@ -29,18 +30,11 @@ def chat(request, slug=None):
         if slug:
             topic = get_object_or_404(Topic, slug=slug)
             questions = topic.question.all()
-        # Used for caching
-        def get_all_topics_by_user():
-            user_topics = Topic.objects.filter(user=request.user)
-            topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
-            return topics_by_user
-
-        # Cache topics
-        # Used for cache
+  
         # It seems here is the problem when posting the new question and redirecting
         # to the index page. it display only the current question's topic. 
         # topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 1)
-        topics = get_all_topics_by_user()
+        topics = get_all_topics_by_user(request)
         # topics = Topic.objects.filter(user=request.user)
         question_form = QuestionForm()
 
@@ -63,6 +57,13 @@ def chat(request, slug=None):
     return render(request, 'chat/index.html')
 
 
+
+def websocket_chat(user, message, slug):
+    if user.is_authenticated:
+        result = call_apis(message, slug)
+        return result
+
+
 @login_required
 def post_question(request, topic=None):
     question_form = QuestionForm(request.POST)  
@@ -70,30 +71,14 @@ def post_question(request, topic=None):
         add_topic = topic
         # Grab content from the form element.
         question_content =  question_form.cleaned_data['content']
-        # Translate the content into english.
-        question_geo_to_eng = translate_text(question_content, 'ka', 'en-US')
 
-        if not question_geo_to_eng:
-            logger.error("Couldn't translate from Geo to Eng.")
-            return
-        
-        # Get response from openai API.
-        #response = get_openai_response(question_geo_to_eng, add_topic.slug)
-        response = openai_response(question_geo_to_eng, add_topic.slug)
-        if not response:
-            logger.error("Couldn't get the response from the OpenAI.")
-            return 
-        
-        # Translate the response into Georgian.
-        response_eng_to_geo = translate_text(response, 'en-US', 'ka')
-        if not response_eng_to_geo:
-            logger.error("Couldn't translate from Eng to Geo.")
-            return
-        
+        # Call OpenAi API & Google Translate API.
+        result = call_apis(question_content, add_topic.slug)
+
         # If the question is new then creating the topic for it. 
         if not topic:
             topic_title = question_content[:20]
-            slug = slugify(question_geo_to_eng[:20])
+            slug = slugify(result['question']['eng'][:20])
             add_topic = Topic(user=request.user, title=topic_title, slug=slug)
             add_topic.save()
 
@@ -103,13 +88,13 @@ def post_question(request, topic=None):
         # Add the question to the database.        
         add_question = question_form.save(commit=False)
         add_question.content_object = add_topic
-        add_question.translated = question_geo_to_eng
+        add_question.translated = result['question']['eng']
         add_question.user = request.user
     
 
         # Answer
-        answer_text = response_eng_to_geo
-        translated_answer = response
+        answer_text = result['response']['geo']
+        translated_answer = result['response']['eng']
         answer = Answer(user=request.user, content=answer_text, translated=translated_answer)
         answer.save()
 
@@ -135,3 +120,39 @@ def add_to_cache(topic):
     get_cached_topics[topic_cache_key] = topic
     cache.set("topics_by_user", get_cached_topics, 1)
 
+
+def get_all_topics_by_user(request):
+    user_topics = Topic.objects.filter(user=request.user)
+    topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
+    return topics_by_user
+
+
+def call_apis(message, slug):
+    # Translate from GEO to ENG.
+    question_geo_to_eng = translate_text(message, 'ka', 'en-US')
+    if not question_geo_to_eng:
+            logger.error("Couldn't translate from Geo to Eng.")
+            return
+
+    # Call a Openai API.
+    response = openai_response(question_geo_to_eng, slug)
+    if not response:
+        logger.error("Couldn't get the response from the OpenAI.")
+        return 
+
+    # Translate from ENG to GEO.
+    response_eng_to_geo = translate_text(response, 'en-US', 'ka')
+    if not response_eng_to_geo:
+        logger.error("Couldn't translate from Eng to Geo.")
+        return
+
+    return {
+        'question': {
+            'geo': message,
+            'eng': question_geo_to_eng,
+        },
+        'response': {
+            'geo': response_eng_to_geo,
+            'eng': response,
+        }
+    }

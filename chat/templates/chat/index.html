@@ -33,16 +33,19 @@
 {% block bottom_js %}
     {{ slug|json_script:'chat-name'}}
     <script>
-        const chatName = JSON.parse(document.getElementById('chat-name').textContent);
-
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + chatName
-            + '/'
-        );
-
+        let slug = JSON.parse(document.getElementById('chat-name').textContent);
+        
+        const generateUrl = (slug) => {
+            if (slug == null) {
+                slug = '';
+            } else {
+                slug = slug + '/'
+            }
+            url = 'ws://' + window.location.host + '/ws/chat/'+ slug
+            return url
+        }
+        
+        const chatSocket = new WebSocket(generateUrl(slug));
         let paragraphID = ''
 
         const scrollBottom = () => {

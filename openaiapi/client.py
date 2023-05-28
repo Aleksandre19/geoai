@@ -21,10 +21,11 @@ def current_question(question):
     return {'role': 'user', 'content': question}
 
 
-def topic_previous_messages(topic_messages, slug):
+def topic_previous_messages(topic_messages, slug=None):
     if not slug:
         return topic_messages
-    
+
+    print('შემოდის', slug)
     topic = Topic.objects.get(slug=slug)
     questions = topic.question.all()
     for question in questions:
