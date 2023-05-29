@@ -146,6 +146,9 @@ def call_apis(message, slug):
         logger.error("Couldn't translate from Eng to Geo.")
         return
 
+    if not slug:
+        slug = slugify(question_geo_to_eng[:20])
+
     return {
         'question': {
             'geo': message,
@@ -154,5 +157,6 @@ def call_apis(message, slug):
         'response': {
             'geo': response_eng_to_geo,
             'eng': response,
+            'slug': slug,
         }
     }

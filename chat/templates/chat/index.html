@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <section id="chat-main">
     <div id="sidebar">
@@ -32,9 +33,10 @@
 
 {% block bottom_js %}
     {{ slug|json_script:'chat-name'}}
+    <script type="text/javascript" src="{% static 'geoai/js/websocket_helpers.js'%}"></script>
     <script>
         let slug = JSON.parse(document.getElementById('chat-name').textContent);
-        
+        // Generate a WebSocket URL.
         const generateUrl = (slug) => {
             if (slug == null) {
                 slug = '';
@@ -45,40 +47,12 @@
             return url
         }
         
+        // Instantiate the WebSocket.
         const chatSocket = new WebSocket(generateUrl(slug));
-        let paragraphID = ''
-
-        const scrollBottom = () => {
-            const element = document.querySelector('.chat-qa-content');
-            element.scrollTo({top:element.scrollHeight, behaviour: 'smooth'});
-        }
-
-        const createElement = (type) => {
-            const chatQaContent = document.querySelector('.chat-qa-content')
-            const qaElement = document.createElement('div')
-            const questionElement = document.createElement('div')
-            const questionParagraph = document.createElement('p')
-            
-            // Generate ta unique value for adding to ID
-            const uv = Date.now().toString()
-            paragraphID = type == 'q' ? 'cur-question-log-' + uv: 'cur-answer-log-' + uv
-
-            qaElement.classList.add(type + 'a-block')
-            questionElement.classList.add(type + '-block')
-            questionParagraph.classList.add(type + '-paragraph', 'b-block-content')
-            questionParagraph.id = paragraphID
-
-            questionElement.appendChild(questionParagraph)
-            qaElement.appendChild(questionElement)
-            chatQaContent.appendChild(qaElement)
-        }
-
 
         chatSocket.onmessage = function(e) {
-            createElement('q')
             const data = JSON.parse(e.data);
-            document.querySelector('#' + paragraphID).innerHTML = (data.message + '\n');
-            scrollBottom()
+            document.querySelector('#' + answerID).innerHTML = (data.message + '\n');
         };
 
 
@@ -90,6 +64,11 @@
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+
+            question(message);
+            addTopicTitle(message.slice(0, 20) + ' ...');
+            scrollBottom();
+
             chatSocket.send(JSON.stringify({
                 'message': message
             }));
