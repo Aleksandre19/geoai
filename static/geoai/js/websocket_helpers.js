@@ -37,7 +37,14 @@ const createElements = (qaBlockID) => {
     answerID = 'a' + qaBlockID;
     answerParagraph.id = answerID;
 
+    // Loading gif.
+    const loading = document.createElement('img');
+    loading.classList.add('answer_waiting_gif'); 
+    const loadingUrl = 'http://' + window.location.host + '/static/geoai/images/answer_waiting_gray.gif';
+    loading.setAttribute('src', loadingUrl);
+
     questionWrapper.appendChild(questionParagraph)
+    answerParagraph.appendChild(loading);
     answerWrapper.appendChild(answerParagraph)
 
     qaBlock.appendChild(questionWrapper)

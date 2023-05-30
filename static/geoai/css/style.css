@@ -25,6 +25,7 @@ img {
     width: 100%;
 }
 
+
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Menu', sans-serif;
     line-height: 1.5;
@@ -220,6 +221,12 @@ section#chat-main div#sidebar div.sidebar-sections{
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block {
     background-color: #f3f2f2;
+}
+
+#chat-main #chat-content .chat-qa-content .qa-block .a-block .answer_waiting_gif {
+    width: 50px;
+    display: block;
+    margin: auto;
 }
 
 
