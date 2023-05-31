@@ -1,3 +1,4 @@
+{% load chat_filters %}
 <!-- Questions & Answers -->
 {% for question in questions %}
     <div class='qa-block'>
@@ -13,10 +14,10 @@
         </div>
         <div class='a-block'>
             <!-- Answer -->
-            <p class='a-block-content'> 
-                {% comment %} {{ question.answer_set.get.content }} {% endcomment %}
-                {{question.answer.content}}
-            </p>
+            {{question.answer.content|text_format}}
+            <!-- <p class='a-block-content'> --> 
+                {% comment %} {{ question.answer_set.get.content }} {% endcomment %}              
+            <!-- </p> -->
         </div>   
     </div>
 {% endfor %}
