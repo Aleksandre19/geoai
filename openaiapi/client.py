@@ -1,6 +1,8 @@
 import requests
 import json
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.http import Http404
 from chat.models import Topic
 
 
@@ -22,10 +24,11 @@ def current_question(question):
 
 
 def topic_previous_messages(topic_messages, slug=None):
-    if not slug:
+    try:
+        topic = get_object_or_404(Topic, slug=slug)
+    except Http404:
         return topic_messages
-
-    topic = Topic.objects.get(slug=slug)
+   
     questions = topic.question.all()
     for question in questions:
         user_question = {'role': 'user', 'content': question.translated}

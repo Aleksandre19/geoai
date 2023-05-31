@@ -121,5 +121,9 @@ const addTopicTitle = (title) => {
     aElement.setAttribute('href','/chat/' +slug+ '/');
 
     liElement.appendChild(aElement)
-    ulElement.insertBefore(liElement, ulElement.firstChild)
+    ulElement.insertBefore(liElement, ulElement.firstChild);
+
+    return {
+        'slug': slug,
+    }
 }

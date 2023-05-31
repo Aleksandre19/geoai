@@ -1,8 +1,9 @@
 import logging
 
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import Http404
 from django.contrib.auth.decorators import login_required
-from chat.models import Topic, Answer
+from chat.models import Topic, Answer, Question
 from chat.forms import QuestionForm
 from django.core.cache import cache
 from django.utils.text import slugify
@@ -33,14 +34,13 @@ def chat(request, slug=None):
   
         # It seems here is the problem when posting the new question and redirecting
         # to the index page. it display only the current question's topic. 
-        # topics = cache.get_or_set('topics_by_user', get_all_topics_by_user, 1)
+
         topics = get_all_topics_by_user(request)
-        # topics = Topic.objects.filter(user=request.user)
         question_form = QuestionForm()
 
         if request.method == 'POST':
             question = post_question(request, topic)
-            if question:
+            if question: 
                 return redirect('topic', slug=question.get('slug'))  
 
         context = {
@@ -60,7 +60,7 @@ def chat(request, slug=None):
 
 def websocket_chat(user, message, slug):
     if user.is_authenticated:
-        result = call_apis(message, slug)
+        result = call_apis(user, message, slug)
         return result
 
 
@@ -68,46 +68,61 @@ def websocket_chat(user, message, slug):
 def post_question(request, topic=None):
     question_form = QuestionForm(request.POST)  
     if question_form.is_valid():    
-        add_topic = topic
+        # add_topic = topic
         # Grab content from the form element.
         question_content =  question_form.cleaned_data['content']
+        if topic:
+            slug = topic.slug
 
-        # Call OpenAi API & Google Translate API.
-        result = call_apis(question_content, add_topic.slug)
-
-        # If the question is new then creating the topic for it. 
         if not topic:
-            topic_title = question_content[:20]
-            slug = slugify(result['question']['eng'][:20])
-            add_topic = Topic(user=request.user, title=topic_title, slug=slug)
-            add_topic.save()
-
-            # Add new topic in the cache.
-            add_to_cache(add_topic)
-    
-        # Add the question to the database.        
-        add_question = question_form.save(commit=False)
-        add_question.content_object = add_topic
-        add_question.translated = result['question']['eng']
-        add_question.user = request.user
-    
-
-        # Answer
-        answer_text = result['response']['geo']
-        translated_answer = result['response']['eng']
-        answer = Answer(user=request.user, content=answer_text, translated=translated_answer)
-        answer.save()
-
-        add_question.answer = answer
-        add_question.save()
+            convert_alphabet = convertToEng(question_content[:20])
+            slug = slugify(convert_alphabet)
+            
+        # Call OpenAi API & Google Translate API.
+        call_apis(request.user, question_content, slug)
     
         return {
-            "slug": add_topic.slug,
-            "question": add_question,
+            "slug": slug
         }
     else:
         # ATTANTION - Needs to be edited
         return False
+
+
+def insert_content(
+        topic,
+        user,
+        slug, 
+        questionText,
+        translatedQ,
+        answerText,
+        translatedA
+    ):
+    add_topic = topic
+    # If the question is new then creating the topic for it. 
+    if not topic:
+        topic_title = questionText[:20]
+        slug = slug
+        add_topic = Topic(user=user, title=topic_title, slug=slug)
+        add_topic.save()
+        # Add new topic in the cache.
+        add_to_cache(add_topic)
+
+    add_answer = Answer(
+        user=user,
+        content=answerText,
+        translated=translatedA
+    )
+    add_answer.save()
+
+    add_question = Question(
+        user=user,
+        answer=add_answer,
+        content_object=add_topic,
+        content=questionText,
+        translated=translatedQ
+    )
+    add_question.save()
 
 
 def add_to_cache(topic):
@@ -127,7 +142,15 @@ def get_all_topics_by_user(request):
     return topics_by_user
 
 
-def call_apis(message, slug):
+def get_topic(slug):
+    try:
+        topic = get_object_or_404(Topic, slug=slug)
+    except Http404:
+        topic = None
+    return topic
+
+
+def call_apis(user, message, slug):
     # Translate from GEO to ENG.
     question_geo_to_eng = translate_text(message, 'ka', 'en-US')
     if not question_geo_to_eng:
@@ -146,17 +169,43 @@ def call_apis(message, slug):
         logger.error("Couldn't translate from Eng to Geo.")
         return
 
-    if not slug:
-        slug = slugify(question_geo_to_eng[:20])
+    # if not slug:
+    #     slug = slugify(question_geo_to_eng[:20])
+    topic = get_topic(slug)
+    insert_content(
+        topic, user, slug, message,
+        question_geo_to_eng,
+        response_eng_to_geo,
+        response
+    )
 
     return {
-        'question': {
-            'geo': message,
-            'eng': question_geo_to_eng,
-        },
+        # 'question': {
+        #     'geo': message,
+        #     'eng': question_geo_to_eng,
+        # },
         'response': {
             'geo': response_eng_to_geo,
             'eng': response,
             'slug': slug,
         }
     }
+
+
+# Map the Georgian Alphabet to English.
+georgianToEng = {
+    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v',
+    'ზ': 'z', 'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm',
+    'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh', 'რ': 'r', 'ს': 's',
+    'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'k', 'შ': 'sh',
+    'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh',
+    'ჯ': 'j', 'ჰ': 'h', ' ': ' '
+}
+
+# Convert Georgian letter to English.
+def convertToEng(text):
+    result = ''
+    for char in text.lower():
+        if char in georgianToEng:
+            result += georgianToEng[char]
+    return result

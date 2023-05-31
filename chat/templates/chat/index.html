@@ -67,11 +67,14 @@
             const message = messageInputDom.value;
 
             question(message);
-            addTopicTitle(message.slice(0, 20) + ' ...');
+            if(slug == null){
+                slug = addTopicTitle(message.slice(0, 20) + ' ...').slug;
+            }    
             scrollBottom();
 
             chatSocket.send(JSON.stringify({
-                'message': message
+                'message': message,
+                'slug': slug,
             }));
             messageInputDom.value = '';
         };
