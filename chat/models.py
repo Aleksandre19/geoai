@@ -19,8 +19,9 @@ class Tag(models.Model):
 class Answer(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    content = models.TextField()
-    translated = models.TextField(null=True, blank=True, default=None)
+    geo_formated_content = models.TextField(default="")
+    geo_unformated_content = models.TextField()
+    eng_content = models.TextField(null=True, blank=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

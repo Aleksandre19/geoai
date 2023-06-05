@@ -33,7 +33,7 @@ def topic_previous_messages(topic_messages, slug=None):
     for question in questions:
         user_question = {'role': 'user', 'content': question.translated}
         topic_messages.append(user_question)
-        ai_answer = {'role': 'assistant', 'content': question.answer.translated}
+        ai_answer = {'role': 'assistant', 'content': question.answer.eng_content}
         topic_messages.append(ai_answer)
     return topic_messages
 

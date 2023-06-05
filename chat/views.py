@@ -10,6 +10,10 @@ from django.utils.text import slugify
 from geoai_openai.views import get_openai_response
 from geoai_translator.views import translate_text
 
+from django.utils.safestring import mark_safe
+from django.utils.html import format_html, escape
+import re
+
 from openaiapi.client import openai_response  
 
 logger = logging.getLogger(__name__)
@@ -89,14 +93,36 @@ def post_question(request, topic=None):
         return False
 
 
+# Replace the ' ``` ' with a <code> and the \n with the <p>
+def text_format(value):
+   # Wrapping with the <code>.
+   value = escape(value)
+   codePrefix = format_html('<code class="answer-code-block">')
+   codeSuffix = format_html('</code>')
+   formatted_value = format_html('{}', value)
+   finall_resul = wrap_with_p(formatted_value)
+   content = re.sub(r'<p>```(.*?)```</p>', f'{codePrefix}\\1{codeSuffix}', finall_resul, flags=re.DOTALL)
+   return content
+
+
+# Wrapping with the <p>.
+def wrap_with_p(text):
+   splited_value = text.split('\n')
+   wrapped_by_p = [f"<p>{item}</p>" for item in splited_value]
+   reconstructed_value = ''
+   for item in wrapped_by_p:
+      reconstructed_value += item
+   return reconstructed_value
+
+
 def insert_content(
         topic,
         user,
         slug, 
         questionText,
         translatedQ,
-        answerText,
-        translatedA
+        geo_unformated_answer,
+        eng_answer
     ):
     add_topic = topic
     # If the question is new then creating the topic for it. 
@@ -108,10 +134,13 @@ def insert_content(
         # Add new topic in the cache.
         add_to_cache(add_topic)
 
+    geo_formated_answer = text_format(geo_unformated_answer)
+
     add_answer = Answer(
         user=user,
-        content=answerText,
-        translated=translatedA
+        geo_formated_content=geo_formated_answer,
+        geo_unformated_content=geo_unformated_answer,
+        eng_content=eng_answer
     )
     add_answer.save()
 
