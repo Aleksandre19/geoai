@@ -13,6 +13,7 @@
         </div>
         <div class='a-block'>
             <!-- Answer -->
+            {% comment %} {{question.answer.eng_content|safe}} {% endcomment %}
             {{question.answer.geo_formated_content|safe}}
             <!-- <p class='a-block-content'> --> 
                 {% comment %} {{ question.answer_set.get.content }} {% endcomment %}              

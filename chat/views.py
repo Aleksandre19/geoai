@@ -1,20 +1,22 @@
 import logging
 
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from chat.models import Topic, Answer, Question
 from chat.forms import QuestionForm
-from django.core.cache import cache
+
 from django.utils.text import slugify
-from geoai_openai.views import get_openai_response
 from geoai_translator.views import translate_text
 
-from django.utils.safestring import mark_safe
-from django.utils.html import format_html, escape
-import re
+# from geoai_openai.views import get_openai_response
+
+# from django.utils.safestring import mark_safe
 
 from openaiapi.client import openai_response  
+
+from .helpers import *
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
-
 @login_required
 def chat(request, slug=None):
     if request.user.is_active:
@@ -35,7 +36,14 @@ def chat(request, slug=None):
         if slug:
             topic = get_object_or_404(Topic, slug=slug)
             questions = topic.question.all()
-  
+
+        # Testing formatting
+        # test_question = Question.objects.first()
+        # ex = exclude_code(test_question.answer.eng_content)
+        # print(ex)
+        # inc = include_back_code(ex)
+        # print(inc, 'included')
+
         # It seems here is the problem when posting the new question and redirecting
         # to the index page. it display only the current question's topic. 
 
@@ -60,6 +68,19 @@ def chat(request, slug=None):
     # ATTANTION - needs to be complited
     return render(request, 'chat/index.html')
 
+
+def get_all_topics_by_user(request):
+    user_topics = Topic.objects.filter(user=request.user)
+    topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
+    return topics_by_user
+
+
+def get_topic(slug):
+    try:
+        topic = get_object_or_404(Topic, slug=slug)
+    except Http404:
+        topic = None
+    return topic
 
 
 def websocket_chat(user, message, slug):
@@ -93,54 +114,37 @@ def post_question(request, topic=None):
         return False
 
 
-# Replace the ' ``` ' with a <code> and the \n with the <p>
-def text_format(value):
-   # Wrapping with the <code>.
-   value = escape(value)
-   codePrefix = format_html('<code class="answer-code-block">')
-   codeSuffix = format_html('</code>')
-   formatted_value = format_html('{}', value)
-   finall_resul = wrap_with_p(formatted_value)
-   content = re.sub(r'<p>```(.*?)```</p>', f'{codePrefix}\\1{codeSuffix}', finall_resul, flags=re.DOTALL)
-   return content
-
-
-# Wrapping with the <p>.
-def wrap_with_p(text):
-   splited_value = text.split('\n')
-   wrapped_by_p = [f"<p>{item}</p>" for item in splited_value]
-   reconstructed_value = ''
-   for item in wrapped_by_p:
-      reconstructed_value += item
-   return reconstructed_value
-
-
 def insert_content(
         topic,
         user,
-        slug, 
-        questionText,
-        translatedQ,
-        geo_unformated_answer,
-        eng_answer
+        slug,
+        geo_question,
+        eng_question,
+        formated_geo_response,
+        unformated_geo_response,
+        unformated_eng_response 
+        # questionText,
+        # translatedQ,
+        # geo_unformated_answer,
+        # eng_answer
     ):
     add_topic = topic
     # If the question is new then creating the topic for it. 
     if not topic:
-        topic_title = questionText[:20]
+        topic_title = geo_question[:20]
         slug = slug
         add_topic = Topic(user=user, title=topic_title, slug=slug)
         add_topic.save()
         # Add new topic in the cache.
         add_to_cache(add_topic)
 
-    geo_formated_answer = text_format(geo_unformated_answer)
+    # geo_formated_answer = text_format(geo_unformated_answer)
 
     add_answer = Answer(
         user=user,
-        geo_formated_content=geo_formated_answer,
-        geo_unformated_content=geo_unformated_answer,
-        eng_content=eng_answer
+        geo_formated_content=formated_geo_response,
+        geo_unformated_content=unformated_geo_response,
+        eng_content=unformated_eng_response
     )
     add_answer.save()
 
@@ -148,64 +152,50 @@ def insert_content(
         user=user,
         answer=add_answer,
         content_object=add_topic,
-        content=questionText,
-        translated=translatedQ
+        content=geo_question,
+        translated=eng_question
     )
     add_question.save()
 
 
-def add_to_cache(topic):
-    topic_cache_key = f"topic_{topic.pk}"
-    sentinel = object()
-    get_cached_topics = cache.get("topics_by_user", sentinel, 1)
-    # Initiate a new diictionary if the cache is empty.
-    if get_cached_topics is sentinel:
-        get_cached_topics = {}
-    get_cached_topics[topic_cache_key] = topic
-    cache.set("topics_by_user", get_cached_topics, 1)
 
-
-def get_all_topics_by_user(request):
-    user_topics = Topic.objects.filter(user=request.user)
-    topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
-    return topics_by_user
-
-
-def get_topic(slug):
-    try:
-        topic = get_object_or_404(Topic, slug=slug)
-    except Http404:
-        topic = None
-    return topic
-
-
-def call_apis(user, message, slug):
+def call_apis(user, geo_question, slug):
     # Translate from GEO to ENG.
-    question_geo_to_eng = translate_text(message, 'ka', 'en-US')
-    if not question_geo_to_eng:
+    eng_question = translate_text(geo_question, 'ka', 'en-US')
+    if not eng_question:
             logger.error("Couldn't translate from Geo to Eng.")
             return
 
     # Call a Openai API.
-    response = openai_response(question_geo_to_eng, slug)
-    if not response:
+    unformated_eng_response = openai_response(eng_question, slug)
+    if not unformated_eng_response:
         logger.error("Couldn't get the response from the OpenAI.")
-        return 
+        return
+    
+    response_exclude_snippet = exclude_code(unformated_eng_response)
 
     # Translate from ENG to GEO.
-    response_eng_to_geo = translate_text(response, 'en-US', 'ka')
-    if not response_eng_to_geo:
+    geo_response_without_snippet = translate_text(response_exclude_snippet, 'en-US', 'ka')
+    if not geo_response_without_snippet:
         logger.error("Couldn't translate from Eng to Geo.")
         return
+    
+    response_return_snippet = include_back_code(geo_response_without_snippet)
+    unformated_geo_response = response_return_snippet
+
+    formated_geo_response = text_format(response_return_snippet)
+    # Reassembly the translated text and the extracted content.
 
     # if not slug:
     #     slug = slugify(question_geo_to_eng[:20])
     topic = get_topic(slug)
     insert_content(
-        topic, user, slug, message,
-        question_geo_to_eng,
-        response_eng_to_geo,
-        response
+        topic, user, slug, 
+        geo_question,
+        eng_question,
+        formated_geo_response,
+        unformated_geo_response,
+        unformated_eng_response
     )
 
     return {
@@ -214,27 +204,9 @@ def call_apis(user, message, slug):
         #     'eng': question_geo_to_eng,
         # },
         'response': {
-            'geo': response_eng_to_geo,
-            'eng': response,
+            'geo': formated_geo_response,
+            'eng': unformated_eng_response,
             'slug': slug,
         }
     }
 
-
-# Map the Georgian Alphabet to English.
-georgianToEng = {
-    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v',
-    'ზ': 'z', 'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm',
-    'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh', 'რ': 'r', 'ს': 's',
-    'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'k', 'შ': 'sh',
-    'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh',
-    'ჯ': 'j', 'ჰ': 'h', ' ': ' '
-}
-
-# Convert Georgian letter to English.
-def convertToEng(text):
-    result = ''
-    for char in text.lower():
-        if char in georgianToEng:
-            result += georgianToEng[char]
-    return result
