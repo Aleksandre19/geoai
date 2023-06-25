@@ -10,28 +10,15 @@ import re
 This function takes text, finds piece of text surounded by the ```
 and replace it with <code> element.
 """
-def text_format(value):
-   # Wrapping with the <code>.
-   value = escape(value)
-   codePrefix = format_html('<code class="answer-code-block">')
-   codeSuffix = format_html('</code>')
-   formatted_value = format_html('{}', value)
-   finall_resul = wrap_with_p(formatted_value)
-   content = re.sub(r'<p>```(.*?)```</p>', f'{codePrefix}\\1{codeSuffix}', finall_resul, flags=re.DOTALL)
-   return content
-
-
-"""
-This function takes a text, breakes it into lines
-and wrappes each line with the <p> element.
-"""
-def wrap_with_p(text):
-   splited_value = text.split('\n')
-   wrapped_by_p = [f"<p>{item}</p>" for item in splited_value]
-   reconstructed_value = ''
-   for item in wrapped_by_p:
-      reconstructed_value += item
-   return reconstructed_value
+# def text_format(value):
+#    # Wrapping with the <code>.
+#    value = escape(value)
+#    codePrefix = format_html('<code class="answer-code-block">')
+#    codeSuffix = format_html('</code>')
+#    formatted_value = format_html('{}', value)
+#    finall_resul = wrap_with_p(formatted_value)
+#    content = re.sub(r'<p>```(.*?)```</p>', f'{codePrefix}\\1{codeSuffix}', finall_resul, flags=re.DOTALL)
+#    return content
 
 
 """
@@ -45,13 +32,42 @@ def exclude_code(text):
 
 """
 This function saves matches, sets a place holder
-and returns the place holder. 
+and returns it. 
 """
 save_code_snippet = {}
-def set_placeholder(match):
+def set_placeholder(snippet):
+    wrapped = wrappe_with_tag(snippet.group(1))
     place_holder = generate_place_holder()
-    save_code_snippet[place_holder] = match.group(1)
+    save_code_snippet[place_holder] = wrapped
     return place_holder
+
+
+"""
+This functions takes a code snippet, escapes it,
+wrappes hole snippet with the <code> element,
+each line of the snippet with the <p> element
+and adds class attribute.
+"""
+def wrappe_with_tag(snippet):   
+   formate_snippet = format_html('{}', escape(snippet))
+   wrapped_with_p = wrap_with_p(formate_snippet)
+   prefix = '<code class="answer-code-block">'
+   suffix = '</code>'  
+   result = f'{prefix}{wrapped_with_p}{suffix}'
+   return result
+
+
+"""
+This function takes a text, breakes it into lines
+and wrappes each line with the <p> element.
+"""
+def wrap_with_p(text):
+   splited_value = text.split('\n')
+   wrapped_by_p = [f"<p>{item}</p>" for item in splited_value]
+   reconstructed_value = ''
+   for item in wrapped_by_p:
+      reconstructed_value += item
+   return reconstructed_value
 
 
 """
