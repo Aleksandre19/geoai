@@ -6,6 +6,13 @@ from django.utils.html import format_html, escape
 from uuid import uuid4
 import re
 
+from pygments import highlight
+from pygments.lexers import guess_lexer
+from pygments.formatters import HtmlFormatter
+# from pygments.styles import get_style_by_name
+
+# import pprint
+
 """
 This function takes text, finds piece of text surounded by the ```
 and replace it with <code> element.
@@ -23,11 +30,12 @@ and replace it with <code> element.
 
 """
 This function finds a ``` in the text and
-at each match calls to set_placeholder funtion
+at the each match calls the function set_placeholder.
 """
 def exclude_code(text):
     result = re.sub(r'```(.*?)```', set_placeholder , text, flags=re.DOTALL)
-    return result
+    wrapped = wrap_with_p(result)
+    return wrapped
 
 
 """
@@ -35,26 +43,11 @@ This function saves matches, sets a place holder
 and returns it. 
 """
 save_code_snippet = {}
-def set_placeholder(snippet):
-    wrapped = wrappe_with_tag(snippet.group(1))
+def set_placeholder(snippet):  
+    pygmentized = pygmentize_snippet(snippet.group(1))
     place_holder = generate_place_holder()
-    save_code_snippet[place_holder] = wrapped
+    save_code_snippet[place_holder] = pygmentized
     return place_holder
-
-
-"""
-This functions takes a code snippet, escapes it,
-wrappes hole snippet with the <code> element,
-each line of the snippet with the <p> element
-and adds class attribute.
-"""
-def wrappe_with_tag(snippet):   
-   formate_snippet = format_html('{}', escape(snippet))
-   wrapped_with_p = wrap_with_p(formate_snippet)
-   prefix = '<code class="answer-code-block">'
-   suffix = '</code>'  
-   result = f'{prefix}{wrapped_with_p}{suffix}'
-   return result
 
 
 """
@@ -62,12 +55,28 @@ This function takes a text, breakes it into lines
 and wrappes each line with the <p> element.
 """
 def wrap_with_p(text):
-   splited_value = text.split('\n')
-   wrapped_by_p = [f"<p>{item}</p>" for item in splited_value]
-   reconstructed_value = ''
-   for item in wrapped_by_p:
-      reconstructed_value += item
-   return reconstructed_value
+    splited_value = text.splitlines()
+    wrapped_by_p = []
+    for item in splited_value:
+        if item and item not in save_code_snippet:
+            wrapped_by_p.append(f'<p>{item}</p>')
+        else:
+            wrapped_by_p.append(f' {item} ')
+            
+    reconstructed_value = ''
+    for item in wrapped_by_p:
+        reconstructed_value += item
+    return reconstructed_value
+
+
+"""
+This function formates a code snippet from the text
+by using the Pygments python package.
+"""
+def pygmentize_snippet(snippet):
+    formatter = HtmlFormatter(linenos=True)  
+    lexer = guess_lexer(snippet)
+    return highlight(snippet, lexer, formatter)
 
 
 """
@@ -82,8 +91,8 @@ This function replace the place holder with the saved code snippet.
 """
 def include_back_code(text):
     for key,value in save_code_snippet.items():
-        replace_place_holder = text.replace(key, value)
-    return replace_place_holder
+        text = text.replace(key, value)
+    return text
 
 
 """

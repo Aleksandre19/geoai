@@ -38,10 +38,10 @@ def chat(request, slug=None):
             questions = topic.question.all()
 
         # Testing formatting
-        # test_question = Question.objects.first()
+        # test_question = Question.objects.last()
         # ex = exclude_code(test_question.answer.eng_content)
         # print(ex)
-        # inc = include_back_code(ex)
+        #inc = include_back_code(ex)
         # print(inc, 'included')
 
         # It seems here is the problem when posting the new question and redirecting
@@ -62,6 +62,7 @@ def chat(request, slug=None):
             'slug': slug,
             # 'topics': topics,
             'question_form': question_form,
+            #'test': inc,
         }
         return render(request, 'chat/index.html', context)
     
@@ -183,7 +184,8 @@ def call_apis(user, geo_question, slug):
     response_return_snippet = include_back_code(geo_response_without_snippet)
     unformated_geo_response = response_return_snippet
 
-    formated_geo_response = text_format(response_return_snippet)
+    formated_geo_response = response_return_snippet
+    # formated_geo_response = text_format(response_return_snippet)
     # Reassembly the translated text and the extracted content.
 
     # if not slug:

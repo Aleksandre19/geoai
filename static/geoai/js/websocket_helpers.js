@@ -129,25 +129,25 @@ const addTopicTitle = (title) => {
 }
 
 // Replace the ' ``` ' with a <code> and the \n with the <p>.
-const textFormat = (text) => {
-    let formattedText = text.split('\n').map(line => `<p>${line}</p>`).join('');
-    const codePrefix = `<code class="answer-code-block">`;
-    const codeSuffix = `</code>`;
-    let codetText = '';
-    let asigned = 0;
+// const textFormat = (text) => {
+//     let formattedText = text.split('\n').map(line => `<p>${line}</p>`).join('');
+//     const codePrefix = `<code class="answer-code-block">`;
+//     const codeSuffix = `</code>`;
+//     let codetText = '';
+//     let asigned = 0;
     
-    const splited = formattedText.split('</p>');
-    for(let i = 0; i < splited.length; i++) {
-        if(splited[i] == '<p>```'){
-            if(asigned == 0){
-                splited[i] = codePrefix;
-            } else if(asigned == 1){
-                splited[i] = codeSuffix;
-            }
-            asigned++;
-            if(asigned > 1){asigned=0}
-        }
-        codetText += `${splited[i]}</p>`;
-    }
-    return codetText;
-}
+//     const splited = formattedText.split('</p>');
+//     for(let i = 0; i < splited.length; i++) {
+//         if(splited[i] == '<p>```'){
+//             if(asigned == 0){
+//                 splited[i] = codePrefix;
+//             } else if(asigned == 1){
+//                 splited[i] = codeSuffix;
+//             }
+//             asigned++;
+//             if(asigned > 1){asigned=0}
+//         }
+//         codetText += `${splited[i]}</p>`;
+//     }
+//     return codetText;
+// }
