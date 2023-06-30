@@ -1,28 +1,24 @@
 import logging
-
-#from django.http import Http404
-from django.core.cache import cache
-
-#from django.utils.html import format_html, escape
-
-from uuid import uuid4
+import importlib
+import sys
 import re
 import ast
+import pprint
 
+from django.http import Http404
+from django.core.cache import cache
+
+from django.utils.html import format_html, escape
+
+from uuid import uuid4
+
+from .lexers import Lexers
 from pygments import highlight, lex, format
-from pygments.lexers import guess_lexer, PythonLexer, CLexer
+from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 # from pygments.styles import get_style_by_name
 
-import pprint
-
 logger = logging.getLogger(__name__)
-
-
-attached_comment_name = {} # Save a attached comment
-test_attached_comment_name = {}
-not_tokenized_snippet = {}
-tokenized_snippet = {}
 
 
 """
@@ -31,6 +27,8 @@ wrappes rest of the text with <p> elements,
 attaches comment dict(grabed from the code snippet) for translation
 and returns the text.
 """
+attached_comment_name = {} # Save a attached comment
+tokenized_snippet = {}
 def exclude_code(text):
     # Text without code snippet. 
     result = re.sub(r'```(.*?)```', set_placeholder , text, flags=re.DOTALL)
@@ -51,7 +49,6 @@ and returns it.
 def set_placeholder(snippet):
     snippet_with_placeholder = exclud_comments(snippet.group(1))
     place_holder = generate_place_holder()
-    not_tokenized_snippet[place_holder] = snippet.group(1)
     tokenized_snippet[place_holder] = snippet_with_placeholder  
     return place_holder
 
@@ -61,7 +58,10 @@ This function receives a code snippet as a parameter,
 tokenizes it, grabs the comments, and stores them into a dictionary.
 """
 saved_comments = {}
+current_pr_lang = {}
 def exclud_comments(snippet):
+    current_pr_lang['name'] = snippet.splitlines()[0] # Programming language.
+
     tokenized = tokeneaze(snippet)
     tokenized_with_placeholder = []
     for token_type, value in tokenized:
@@ -74,11 +74,24 @@ def exclud_comments(snippet):
 
 
 """
-This function uses the Pygments lex method to tokenize a text.
+This function uses the Pygments lex method to tokenize the text.
 """
 def tokeneaze(snippet):
-    tokens = list(lex(snippet, CLexer()))
+    lexer = identify_lexer(current_pr_lang['name'])
+    tokens = list(lex(snippet, lexer))
     return tokens
+
+
+"""
+This function receives the current programming language name,
+imports it's lexer and if the lexer has not been found,
+it uses the guess_lexer().
+"""
+def identify_lexer(pr_lang):
+    lexer_instance = import_lexer_module(pr_lang)()
+    if lexer_instance is None:
+        return guess_lexer(pr_lang)
+    return lexer_instance
 
 
 """
@@ -89,7 +102,7 @@ def wrap_with_p(text):
     splited_value = text.splitlines()
     wrapped_by_p = []
     for item in splited_value:
-        if item and item not in not_tokenized_snippet:
+        if item and item not in tokenized_snippet:
             wrapped_by_p.append(f'<p>{item}</p>')
         else:
             wrapped_by_p.append(f' {item} ')
@@ -98,6 +111,47 @@ def wrap_with_p(text):
     for item in wrapped_by_p:
         reconstructed_value += item
     return reconstructed_value
+
+
+"""
+This function receives the current programming language name,
+grabs it's path string from Lexers.lexer,
+separates the module path and the class name
+and imports them.
+"""
+def import_lexer_module(pr_lang):
+    test_laxer_import() # This is just for testing purpose.
+    # Grab the current laxer's path string.
+    class_path = Lexers.lexer.get(pr_lang, None)
+    
+    if class_path:
+        module_name, class_name = class_path.rsplit('.', 1)
+        module = importlib.import_module(module_name)
+        if not module:
+            return lambda: None
+        lexer_class = getattr(module, class_name)
+        return lexer_class
+    return lambda: None
+
+
+"""
+This function parses the lexer dictionary,
+finds which modules cannnot be imported,
+stores not imported modules in dictionary
+and prints them in terminal.
+"""
+def test_laxer_import():
+    not_imported = {}
+    for key,value in Lexers.lexer.items():      
+        module_name, class_name = value.rsplit('.', 1)
+        if module_name not in sys.modules:
+            try:
+                importlib.import_module(module_name)
+            except ImportError:
+                not_imported[key] = value
+
+    print('NOT IMPORTED ================')
+    pprint.pprint(not_imported)
 
 
 # """
@@ -182,8 +236,8 @@ def include_back_code(text):
         pigmentized = formate_snippet(swapped)
         text = text.replace(skey, pigmentized)
     tokenized_snippet.clear()
-    not_tokenized_snippet.clear()
     saved_comments.clear()
+    current_pr_lang.clear()
     return text
 
 
