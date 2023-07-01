@@ -32,8 +32,10 @@ tokenized_snippet = {}
 def exclude_code(text):
     # Text without code snippet. 
     result = re.sub(r'```(.*?)```', set_placeholder , text, flags=re.DOTALL)
+    # Wrappe the backsticks into code snippet with the <span> element.
+    backstciks = re.sub(r'`(.*?)`', '<span class="bckstk-wrapper">\\1</span>' , result, flags=re.DOTALL)
     # Split the text by \n and wrappe them with the <p> element.
-    wrapped = wrap_with_p(result)
+    wrapped = wrap_with_p(backstciks)
     # Attache a comment to the text for translattion.
     attached_comment_name.clear()
     attached_comment_name['dict_name'] = generate_place_holder() # Attached dict name.
@@ -60,8 +62,12 @@ tokenizes it, grabs the comments, and stores them into a dictionary.
 saved_comments = {}
 current_pr_lang = {}
 def exclud_comments(snippet):
-    current_pr_lang['name'] = snippet.splitlines()[0] # Programming language.
-
+    # Store programming language name.
+    current_pr_lang['name'] = snippet.splitlines()[0] 
+    # Remove a language name from the beginning of the snippet.
+    if snippet.startswith(current_pr_lang['name']):
+        snippet = snippet.replace(current_pr_lang['name'], '', 1)
+        
     tokenized = tokeneaze(snippet)
     tokenized_with_placeholder = []
     for token_type, value in tokenized:
