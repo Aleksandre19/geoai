@@ -46,7 +46,7 @@
             url = 'ws://' + window.location.host + '/ws/chat/'+ slug
             return url
         }
-        
+   
         // Instantiate the WebSocket.
         const chatSocket = new WebSocket(generateUrl(slug));
 
@@ -56,6 +56,9 @@
             
             document.querySelector('.answer_waiting_gif').style.display = 'none';
             document.querySelector('#' + answerID).innerHTML = (data.message + '\n');
+            
+            // Enable button
+            enableButton('#chat-message-submit')
         };
 
 
@@ -67,6 +70,8 @@
         document.querySelector('#chat-message-submit').onclick = function(e) {
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
+            disableButton('#chat-message-submit')
+
             question(message);
             if(slug == null){
                 slug = addTopicTitle(message.slice(0, 20) + ' ...').slug;

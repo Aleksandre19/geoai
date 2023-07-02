@@ -1,7 +1,12 @@
 {% if request.user.is_active %}
     <form method="post">
         {% csrf_token %}
-        {{ question_form.as_p }}
-        <button type="submit" id='chat-message-submit'> Submit </button> 
+        {{ question_form }}
+        <button type="submit" id='chat-message-submit'> გავაგზავნო </button> 
     </form>
+    <p class='warning-msg'>
+        გახსოვდეთ რომ გენერირებული პასუხი შეიძლება არ წარმოადგენდეს
+        სიმართლეს და მისი გამოყენაბა გადამოწმების გარეშე მიზანშეუწონელია.
+        GeoGPT არ იღებს პასუხისმგებლობას გენერირებული პასუხის ნამდვილობასსა თუ შინაარსზე.
+    </p>
 {% endif %}

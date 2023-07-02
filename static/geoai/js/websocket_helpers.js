@@ -73,6 +73,29 @@ const question = (message) => {
 }
 
 
+// Grab button.
+const getButton = (btn) => {
+    const button = document.querySelector(btn);          
+    return button;
+}
+
+
+// Disable button.
+const disableButton = (attr) => {
+    const button = getButton(attr);
+    button.disabled = true;
+    button.classList.add('disabled-btn');
+}
+
+
+// Enable button.
+const enableButton = (attr) => {
+    const button = getButton(attr);
+    button.disabled = false;
+    button.classList.remove('disabled-btn');
+}
+
+
 // Slugify the string
 const slugify = (text) => {
     return text

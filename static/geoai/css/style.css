@@ -12,6 +12,8 @@
 
 body {
     font-family: 'FiraBook', sans-serif;
+    font-size: 100%;
+    letter-spacing: 0.03rem;
     line-height: 1.5;
     color: var(--text-color);
     background-color: #fcfcfc;
@@ -25,12 +27,19 @@ img {
     width: 100%;
 }
 
-
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Menu', sans-serif;
     line-height: 1.5;
 }
 
+.disabled-btn {
+    color: #d8d8d8 !important;
+    cursor: not-allowed !important;
+}
+
+.disabled-btn:hover{
+    background-color: var(--secondary-color) !important;
+}
 
 div#auth-main {
     width: 100%;
@@ -173,14 +182,16 @@ section#chat-main div#sidebar div.sidebar-sections{
 }
 
 #chat-main #chat-content .chat-qa-form > form {
+    width: 80%;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: 5fr 1fr;
 }
 
-#chat-main #chat-content .chat-qa-form > form p {
+/* #chat-main #chat-content .chat-qa-form > form p {
     display: inline-block;
     text-align: center;
-}
+} */
 
 #chat-main #chat-content .chat-qa-form > form label {
     display: none;
@@ -188,17 +199,51 @@ section#chat-main div#sidebar div.sidebar-sections{
 
 #chat-main #chat-content .chat-qa-form > form textarea {
     display: inline-block;
+    font-size: 1rem;
+    color: var(--text-color);
+    padding: 8px 4px;
     width: 100%;
     height: 50px;
-    margin: 16px 0px 16px 10%;
+    margin: 16px 0px 16px 0;
     padding-right: 90px;
     border: 1px solid var(--primary-color);
+    border-radius: 4px 0px 0px 4px;
+    outline: 0px solid var(--primary-color);
+    transition: outline 0.1s ease-in-out;
+}
+
+#chat-main #chat-content .chat-qa-form>form textarea:focus-visible{
     border-radius: 4px;
+    outline: 1px solid var(--primary-color);
 }
 
 #chat-main #chat-content .chat-qa-form  form button {
-    margin: 16px 50% 16px 0;
+    font-family: 'Menu', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.06rem;
+    margin: 16px 0 16px 0;
     height: 50px;
+    border: 1px solid var(--primary-color);
+    border-left: none;
+    border-radius: 0px 4px 4px 0px;
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+    transition: background-color 0.3s ease-in-out;
+
+}
+
+#chat-main #chat-content .chat-qa-form form button:hover {
+    cursor: pointer;
+    background-color: #dddddd;
+}
+
+#chat-main #chat-content .chat-qa-form p.warning-msg {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--primary-color);
 }
 
 #chat-main #chat-content .chat-qa-content {
@@ -231,7 +276,6 @@ section#chat-main div#sidebar div.sidebar-sections{
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block p {
-    letter-spacing: 0.05rem;
     margin: 16px 0px 24px 0px;
 }
 

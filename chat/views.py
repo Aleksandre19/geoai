@@ -39,10 +39,10 @@ def chat(request, slug=None):
 
         # Testing formatting
         # test_question = Question.objects.all().order_by('-id')[1]
-        test_question = Question.objects.last()
-        ex = exclude_code(test_question.answer.eng_content)
+        # test_question = Question.objects.last()
+        # ex = exclude_code(test_question.answer.eng_content)
         # print(ex)
-        inc = include_back_code(ex)
+        #inc = include_back_code(ex)
         # print(inc, 'included')
 
         # It seems here is the problem when posting the new question and redirecting
@@ -63,7 +63,7 @@ def chat(request, slug=None):
             'slug': slug,
             # 'topics': topics,
             'question_form': question_form,
-            'test': inc,
+            #'test': inc,
         }
         return render(request, 'chat/index.html', context)
     
