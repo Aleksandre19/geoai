@@ -41,6 +41,39 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--secondary-color) !important;
 }
 
+/* Loading animation for answer's container */
+.skeleton-loading {
+    opacity: 0.7;
+    background: linear-gradient(120deg,
+        rgba(229, 229, 229, 0.3) 30%,
+        rgba(240, 240, 240, 0.9) 38%,
+        rgba(240, 240, 240, 0.9) 40%,
+        rgba(229, 229, 229, 0.3) 48%
+    );
+    background-size: 200% 100%;
+    background-position: 100% 0;
+    animation: skeleton-loading 1s linear infinite alternate,
+               gradient-loading 2s infinite;
+}
+
+/* Background color animation */
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(0, 1%, 90%);
+    }
+
+    100% {
+        background-color: hsl(0, 1%, 97%);
+    }
+}
+
+/* Background gradient animation */ 
+@keyframes gradient-loading {
+    100% {
+        background-position: -100% 0;
+    }
+}
+
 div#auth-main {
     width: 100%;
     height: 100vh;
@@ -282,6 +315,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .bckstk-wrapper {
     display: inline-block;
     background-color: #fcfcfc;
+    font-size: 0.9rem;
     font-style: italic;
     border: 1px solid #dfdfdf;
     padding: 0px 8px;

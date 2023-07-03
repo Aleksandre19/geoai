@@ -57,8 +57,8 @@
             document.querySelector('.answer_waiting_gif').style.display = 'none';
             document.querySelector('#' + answerID).innerHTML = (data.message + '\n');
             
-            // Enable button
-            enableButton('#chat-message-submit')
+            removeLoading(); // Removie loading effect.
+            enableButton('#chat-message-submit') // Enable submit button.
         };
 
 
@@ -71,13 +71,13 @@
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
             disableButton('#chat-message-submit')
-
+            
             question(message);
             if(slug == null){
                 slug = addTopicTitle(message.slice(0, 20) + ' ...').slug;
             }    
             scrollBottom();
-
+            
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'slug': slug,

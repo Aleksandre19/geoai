@@ -8,12 +8,13 @@ const scrollBottom = () => {
     element.scrollTo({top:element.scrollHeight, behaviour: 'smooth'});
 }
 
-
+let qaID;
 // Generate random IDs.
 const generateID = () => {
     // Generate a unique value for adding to ID
-    const uv = Date.now().toString()
-    return 'qa' + uv;
+    const uv = Date.now().toString();
+    qaID = 'qa' + uv;
+    return qaID;
 }
 
 
@@ -32,7 +33,7 @@ const createElements = (qaBlockID) => {
 
     const answerWrapper = document.createElement('div')
     const answerParagraph = document.createElement('p')
-    answerWrapper.classList.add('a-block');
+    answerWrapper.classList.add('a-block', 'skeleton-loading');
     answerParagraph.classList.add('q-paragraph', 'b-block-content');
     answerID = 'a' + qaBlockID;
     answerParagraph.id = answerID;
@@ -81,7 +82,7 @@ const getButton = (btn) => {
 
 
 // Disable button.
-const disableButton = (attr) => {
+function disableButton(attr){
     const button = getButton(attr);
     button.disabled = true;
     button.classList.add('disabled-btn');
@@ -93,6 +94,12 @@ const enableButton = (attr) => {
     const button = getButton(attr);
     button.disabled = false;
     button.classList.remove('disabled-btn');
+}
+
+// Remove loading effect as soon as the response was received.
+function removeLoading() {
+    const elm = document.querySelector(`#${qaID} > .a-block`);
+    elm.classList.remove('skeleton-loading');
 }
 
 
