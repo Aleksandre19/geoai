@@ -2,7 +2,7 @@ from django.shortcuts import render
 from google.cloud import translate
 
 # Create your views here.
-def translate_text(text="", slngc="en-US", tlngc="ka", project_id="geoai-translator-test"):
+def translate_text(text="", excluded_words=[], slngc="en-US", tlngc="ka", project_id="geoai-translator-test"):
     """Translating Text."""
 
     client = translate.TranslationServiceClient()

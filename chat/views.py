@@ -38,11 +38,11 @@ def chat(request, slug=None):
             questions = topic.question.all()
 
         # Testing formatting
-        # test_question = Question.objects.all().order_by('-id')[1]
+        # test_question = Question.objects.all().order_by('-id')[5]
         # test_question = Question.objects.last()
-        # ex = exclude_code(test_question.answer.eng_content)
-        # print(ex)
-        #inc = include_back_code(ex)
+        #ex = exclude_code(test_question.answer.eng_content)
+        #pprint.pprint(ex['excluded_words'])
+        #inc = include_back_code(ex['text'])
         # print(inc, 'included')
 
         # It seems here is the problem when posting the new question and redirecting
@@ -177,7 +177,11 @@ def call_apis(user, geo_question, slug):
     response_exclude_snippet = exclude_code(unformated_eng_response)
 
     # Translate from ENG to GEO.
-    geo_response_without_snippet = translate_text(response_exclude_snippet, 'en-US', 'ka')
+    geo_response_without_snippet = translate_text(
+        response_exclude_snippet['text'],
+        response_exclude_snippet['excluded_words'],
+        'en-US', 'ka')
+    
     if not geo_response_without_snippet:
         logger.error("Couldn't translate from Eng to Geo.")
         return

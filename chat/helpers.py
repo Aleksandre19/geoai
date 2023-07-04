@@ -29,11 +29,12 @@ and returns the text.
 """
 attached_comment_name = {} # Save a attached comment
 tokenized_snippet = {}
+excluded_words = []
 def exclude_code(text):
     # Text without code snippet. 
     result = re.sub(r'```(.*?)```', set_placeholder , text, flags=re.DOTALL)
     # Wrappe the backsticks into code snippet with the <span> element.
-    backstciks = re.sub(r'`(.*?)`', '<span class="bckstk-wrapper">\\1</span>' , result, flags=re.DOTALL)
+    backstciks = re.sub(r'`(.*?)`', wrap_backsticks , result, flags=re.DOTALL)
     # Split the text by \n and wrappe them with the <p> element.
     wrapped = wrap_with_p(backstciks)
     # Attache a comment to the text for translattion.
@@ -41,7 +42,10 @@ def exclude_code(text):
     attached_comment_name['dict_name'] = generate_place_holder() # Attached dict name.
     comments = f'{attached_comment_name["dict_name"]} = {saved_comments}'  
     text = f'{wrapped} \n {comments}' # Combine a text and comment.
-    return text
+    return {
+        'text': text,
+        'excluded_words': excluded_words,
+    }
 
 
 """
@@ -245,6 +249,12 @@ def include_back_code(text):
     saved_comments.clear()
     current_pr_lang.clear()
     return text
+
+
+
+def wrap_backsticks(text):
+    excluded_words.append(text.group(1))
+    return f'<span class="bckstk-wrapper">{text.group(1)}</span>'
 
 
 """
