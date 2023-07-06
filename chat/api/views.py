@@ -10,6 +10,7 @@ from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from chat.api.serializers import( 
+    TopicSerializer,
     TopicQuestionSerializer, 
     UserSerializer,
     SingleTopicSerializer,
@@ -114,6 +115,13 @@ class SingleTopic(generics.RetrieveUpdateDestroyAPIView):
         return self.queryset.filter(
             user=self.request.user
         )
+
+
+class TopicViewSet(viewsets.ModelViewSet):
+    queryset = Topic.objects.all()
+    serializer_class = TopicSerializer
+    permission_classes = [IsOwner]
+
 
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()

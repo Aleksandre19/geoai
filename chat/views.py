@@ -130,34 +130,36 @@ def insert_content(
         # geo_unformated_answer,
         # eng_answer
     ):
-    add_topic = topic
-    # If the question is new then creating the topic for it. 
+    # geo_formated_answer = text_format(geo_unformated_answer)
     if not topic:
         topic_title = geo_question[:20]
         slug = slug
-        add_topic = Topic(user=user, title=topic_title, slug=slug)
-        add_topic.save()
-        # Add new topic in the cache.
-        add_to_cache(add_topic)
+        topic = Topic(
+                user=user,
+                title=topic_title,
+                slug=slug
+            )
+        
+        topic.save()
 
-    # geo_formated_answer = text_format(geo_unformated_answer)
+    add_question = Question(
+            user=user,
+            topic=topic,
+            content=geo_question,
+            translated=eng_question
+        )
+    add_question.save()
 
     add_answer = Answer(
         user=user,
+        question=add_question,
         geo_formated_content=formated_geo_response,
         geo_unformated_content=unformated_geo_response,
         eng_content=unformated_eng_response
     )
     add_answer.save()
-
-    add_question = Question(
-        user=user,
-        answer=add_answer,
-        content_object=add_topic,
-        content=geo_question,
-        translated=eng_question
-    )
-    add_question.save()
+    # Add new topic in the cache.
+    add_to_cache(topic)
 
 
 
@@ -178,10 +180,8 @@ def call_apis(user, geo_question, slug):
 
     # Translate from ENG to GEO.
     geo_response_without_snippet = translate_text(
-        response_exclude_snippet['text'],
-        response_exclude_snippet['excluded_words'],
+        response_exclude_snippet,
         'en-US', 'ka')
-    
     if not geo_response_without_snippet:
         logger.error("Couldn't translate from Eng to Geo.")
         return

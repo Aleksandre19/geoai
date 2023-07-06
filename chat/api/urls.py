@@ -13,13 +13,15 @@ from chat.api.views import (
     SingleTopic,
     AnswerViewSet,
     TagViewSet,
-    QuestionViewSet
+    QuestionViewSet,
+    TopicViewSet,
 )
 
 router = DefaultRouter()
 router.register("answers", AnswerViewSet)
 router.register("tags", TagViewSet)
 router.register("questions", QuestionViewSet)
+router.register("topics", TopicViewSet)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -33,8 +35,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('topics/', TopicList.as_view(), name='api_topic_list'),
-    path('topics/<int:pk>', SingleTopic.as_view(), name='api_single_topic'),
+    path('testtopics/', TopicList.as_view(), name='api_topic_list'),
+    path('testtopics/<int:pk>', SingleTopic.as_view(), name='api_single_topic'),
     path('users/<str:email>', UserDetail.as_view(), name='api_user_detail'),
 ]
 
