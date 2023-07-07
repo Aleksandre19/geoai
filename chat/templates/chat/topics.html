@@ -1,10 +1,62 @@
+{% load static %}
 <ul>
-{% for topic in topics %}
-    <!-- Subjext title -->
-    <li>    
-        <a href="{% url 'topic' topic.slug %}"> 
-            {{topic.title}}...
-        </a>
-    </li>
-{% endfor %}
+    {% for topic in topics %}
+        <!-- Subjext title -->
+        <li>    
+            <a href="{% url 'topic' topic.slug %}"> 
+                {{topic.title}}...
+            </a>
+            <div class='topic-title-act-btn'>
+                <a href="#" class="geoai-icons geoai-edit-icon"></a>
+                <a href="#" class="geoai-icons geoai-trash-icon"></a>       
+            </div> 
+            <div class='act-btn-confirm'>
+                <p class='confirm-msg'>წავშალო?</p>
+                <a href="#" class="geoai-icons geoai-check-icon"></a>
+                <a href="#" class="geoai-icons geoai-x-icon"></a>
+            </div>  
+        </li>
+    {% endfor %}
 </ul>
+{% block bottom_js %}
+    <script>
+        const trashIcons = Array.from(document.querySelectorAll('.geoai-trash-icon'));
+        const xIcons = Array.from(document.querySelectorAll('.geoai-x-icon'));
+        
+        trashIcons.forEach(element => {
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentNode.classList.add('hide-element');
+                const nextSibling = this.parentNode.nextElementSibling;
+                nextSibling.classList.add('display-act-btn-confirm');
+            });
+        });
+
+        xIcons.forEach(element => {
+            element.parentNode.addEventListener('mouseleave', function(e) {
+                this.classList.remove('display-act-btn-confirm');
+            })
+            element.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentNode.classList.remove('display-act-btn-confirm');
+                const prevSibling = this.parentNode.previousElementSibling;
+                prevSibling.classList.remove('hide-element');
+                //prevSibling.classList.add('display-element');
+            });
+        });
+
+
+        {% comment %} function addClickEvent(elm) {
+            elm.forEach(element => {
+            element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    this.parentNode.style.display = 'none';
+                    const nextSibling = this.parentNode.nextElementSibling;
+                    nextSibling.classList.add('display-act-btn-confirm');
+                });
+            })
+        } {% endcomment %}
+        
+
+    </script>
+{% endblock %}

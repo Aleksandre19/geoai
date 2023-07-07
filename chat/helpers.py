@@ -252,7 +252,11 @@ def include_back_code(text):
     return text
 
 
-
+"""
+This function takes text without code snippet,
+findes backsticks (`) into text and
+wrappes them with <span> element.
+"""
 def wrap_backsticks(text):
     excluded_words.append(text.group(1))
     return f'<span class="bckstk-wrapper">{text.group(1)}</span>'

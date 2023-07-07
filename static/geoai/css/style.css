@@ -2,6 +2,7 @@
     --primary-color: #9B999B;
     --secondary-color: #e6e6e6;
     --text-color: #4F4D4F;
+    --white-body-color: #fcfcfc;
 }
 
 * {
@@ -16,7 +17,7 @@ body {
     letter-spacing: 0.03rem;
     line-height: 1.5;
     color: var(--text-color);
-    background-color: #fcfcfc;
+    background-color: var(--white-body-color);
 }
 
 ul {
@@ -167,12 +168,12 @@ section#chat-main div#sidebar div.sidebar-sections{
     padding: 8px 16px;
 }
 
-/* #chat-main #sidebar .chat-history-links ul li {
-    width: 90%;
-    margin: auto;
-} */
+#chat-main #sidebar .chat-history-links ul li {
+    position: relative;
+}
 
-#chat-main #sidebar ul li a {
+
+#chat-main #sidebar ul li > a {
     text-decoration: none;
     color: var(--text-primary);
     display: inline-block;
@@ -182,9 +183,88 @@ section#chat-main div#sidebar div.sidebar-sections{
     transition: background-color 1s ease-out;
 }
 
-#chat-main #sidebar ul li a:hover {
+#chat-main #sidebar ul li > a:hover {
     background-color: var(--secondary-color)
 }
+
+#chat-main #sidebar ul li div.act-btn-confirm,
+#chat-main #sidebar ul li div.topic-title-act-btn{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 100%;
+    height: 100%;
+    display: none;
+    /* display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-end;
+    border: 1px solid red; */
+}
+
+#chat-main #sidebar ul li div.topic-title-act-btn {
+    display: none;
+}
+
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-icons,
+#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-icons {
+    /* display: inline-block; */
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    text-align: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.display-act-btn-confirm {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-end;
+    background-color: var(--secondary-color);
+}
+
+.display-element {
+    display: flex;
+}
+
+.hide-element {
+    display: none;
+}
+
+#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
+    background-image: url('../images/icons/geoai-edit-icon.png');
+}
+
+
+#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
+    background-image: url('../images/icons/geoai-trash-icon.png');
+}
+
+
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
+    background-image: url('../images/icons/geoai-check-icon.png');
+}
+
+
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
+    background-image: url('../images/icons/geoai-x-icon.png');
+} 
+
+#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg {
+    flex-grow: 1;
+    margin-left: 16px;
+}
+
+#chat-main #sidebar ul li div.topic-title-act-btn:hover, 
+#chat-main #sidebar ul li > a:hover ~ div.topic-title-act-btn{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: flex-end;
+}
+
 
 #chat-main #sidebar .sidebar-sections .chat-history-title {
     text-align: center;
@@ -196,7 +276,7 @@ section#chat-main div#sidebar div.sidebar-sections{
     color: var(--text-color);
 }
 
-#chat-main #sidebar .chat-history-links ul li:first-child a {
+#chat-main #sidebar .chat-history-links ul li:first-child a.topic-title {
     margin-top: 16px;
 }
 
