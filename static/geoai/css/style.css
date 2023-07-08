@@ -33,6 +33,14 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.5;
 }
 
+.display-element {
+    display: flex;
+}
+
+.hide-element {
+    display: none;
+}
+
 .disabled-btn {
     color: #d8d8d8 !important;
     cursor: not-allowed !important;
@@ -172,7 +180,6 @@ section#chat-main div#sidebar div.sidebar-sections{
     position: relative;
 }
 
-
 #chat-main #sidebar ul li > a {
     text-decoration: none;
     color: var(--text-primary);
@@ -195,26 +202,21 @@ section#chat-main div#sidebar div.sidebar-sections{
     width: 100%;
     height: 100%;
     display: none;
-    /* display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: flex-end;
-    border: 1px solid red; */
 }
 
 #chat-main #sidebar ul li div.topic-title-act-btn {
-    display: none;
+    width: 25%;
 }
 
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-icons,
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-icons {
-    /* display: inline-block; */
     width: 16px;
     height: 16px;
     margin-right: 8px;
     text-align: center;
     background-repeat: no-repeat;
     background-size: contain;
+    background-position: center center;
 }
 
 .display-act-btn-confirm {
@@ -225,46 +227,66 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color);
 }
 
-.display-element {
-    display: flex;
-}
-
-.hide-element {
-    display: none;
-}
-
+/* Topic title edition icon */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
     background-image: url('../images/icons/geoai-edit-icon.png');
 }
 
-
+/* Topic title deletion icon */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
     background-image: url('../images/icons/geoai-trash-icon.png');
 }
 
-
+/* Topic title approving icon */
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
+    display: inline-block;
+    height: 100%;
     background-image: url('../images/icons/geoai-check-icon.png');
+    transition: transform 0.3s ease-in-out;
 }
 
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon:hover{
+   transform: rotate(-20deg);
+}
 
+/* Topic title approving icon */
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
+    display: inline-block;
+    height: 100%;
     background-image: url('../images/icons/geoai-x-icon.png');
+    transition: transform 0.3s ease-in-out;
 } 
 
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon:hover {
+    transform: rotate(-90deg);
+}
+
+/* Action confirmatio message */
 #chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg {
+    display: flex;
+    align-items: center;
+    flex-basis: 0;
     flex-grow: 1;
+    padding: 8px;
     margin-left: 16px;
+    margin-right: 16px;
+}
+
+/* Action confirmatio message focus state */
+#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus,
+#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-within,
+#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-visible {
+    border-radius: 4px;
+    outline: 1px solid var(--primary-color);
 }
 
 #chat-main #sidebar ul li div.topic-title-act-btn:hover, 
-#chat-main #sidebar ul li > a:hover ~ div.topic-title-act-btn{
+#chat-main #sidebar ul li > a:hover ~ div .topic-title-act-btn{
     display: flex;
     flex-wrap: wrap;
     align-content: center;
     justify-content: flex-end;
 }
-
 
 #chat-main #sidebar .sidebar-sections .chat-history-title {
     text-align: center;

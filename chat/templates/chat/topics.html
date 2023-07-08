@@ -6,56 +6,80 @@
             <a href="{% url 'topic' topic.slug %}"> 
                 {{topic.title}}...
             </a>
-            <div class='topic-title-act-btn'>
-                <a href="#" class="geoai-icons geoai-edit-icon"></a>
-                <a href="#" class="geoai-icons geoai-trash-icon"></a>       
-            </div> 
-            <div class='act-btn-confirm'>
-                <p class='confirm-msg'>წავშალო?</p>
-                <a href="#" class="geoai-icons geoai-check-icon"></a>
-                <a href="#" class="geoai-icons geoai-x-icon"></a>
+            <div class='act-wrapper'>
+                <!-- Action buttons container -->
+                <div class='topic-title-act-btn'>
+                    <a href="#" class="geoai-icons geoai-edit-icon"></a> <!-- Edit -->
+                    <a href="#" class="geoai-icons geoai-trash-icon"></a> <!-- Delete -->      
+                </div>
+                <!-- Confirmation dialog container --> 
+                <div class='act-btn-confirm'>
+                    <p class='confirm-msg'></p> <!-- Confirmation message -->
+                    <a href="#" class="geoai-icons geoai-check-icon"></a> <!-- Approve -->
+                    <a href="#" class="geoai-icons geoai-x-icon"></a> <!-- Close -->
+                </div>
             </div>  
         </li>
     {% endfor %}
 </ul>
 {% block bottom_js %}
     <script>
-        const trashIcons = Array.from(document.querySelectorAll('.geoai-trash-icon'));
-        const xIcons = Array.from(document.querySelectorAll('.geoai-x-icon'));
+        /*
+            This script adds interection to the topic title's action buttons
+            such as Edit, Delete, Approve and close.
+        */
         
-        trashIcons.forEach(element => {
-            element.addEventListener('click', function(e) {
-                e.preventDefault();
-                this.parentNode.classList.add('hide-element');
-                const nextSibling = this.parentNode.nextElementSibling;
-                nextSibling.classList.add('display-act-btn-confirm');
-            });
-        });
-
-        xIcons.forEach(element => {
-            element.parentNode.addEventListener('mouseleave', function(e) {
+        // Grab wrapper element of action buttons
+        const actionWrapper = document.querySelectorAll('.act-wrapper');
+        actionWrapper.forEach(element => {
+            // Grab action buttons container
+            const actBtnConfirm = element.querySelector('.act-btn-confirm');
+            // Set a mouseleave evente to action buttons container.
+            actBtnConfirm.addEventListener('mouseleave', function(e) {
                 this.classList.remove('display-act-btn-confirm');
-            })
-            element.addEventListener('click', function(e) {
-                e.preventDefault();
-                this.parentNode.classList.remove('display-act-btn-confirm');
-                const prevSibling = this.parentNode.previousElementSibling;
-                prevSibling.classList.remove('hide-element');
-                //prevSibling.classList.add('display-element');
+                this.querySelector('.confirm-msg').contentEditable = false;
+            });
+
+            element.addEventListener('click', function(e){
+                event.preventDefault();
+                const target = e.target; // Get current element
+                const classNames = target.className.split(" "); // Grab current element's class attributes
+                const currentElm = classNames[classNames.length - 1]; // Current element's class name
+                // If action is deletion
+                if(currentElm == 'geoai-trash-icon'){
+                    // Add alert text to deletion.
+                    const actBtn = target.parentNode.nextElementSibling;
+                    actBtn.querySelector('.confirm-msg').textContent = 'წავშალო?';
+
+                    // Hide action buttons and open confirmation dialog box
+                    target.parentNode.classList.add('hide-element'); // class='topic-title-act-btn'
+                    const nextSibling = target.parentNode.nextElementSibling; // class='act-btn-confirm'
+                    nextSibling.classList.add('display-act-btn-confirm'); // Display confirmation container
+                
+                // If action is closing current action
+                }else if (currentElm == 'geoai-x-icon'){
+                    target.parentNode.classList.remove('display-act-btn-confirm'); // class='act-btn-confirm'
+                    const prevSibling = target.parentNode.previousElementSibling; // class='topic-title-act-btn'
+                    prevSibling.classList.remove('hide-element');
+                
+                    // If action is editions of topic title
+                }else if(currentElm == 'geoai-edit-icon'){
+                    // Topic title 'a' element
+                    const topicTitle = target.parentNode.parentNode.previousElementSibling;    
+                    const nextSibling = target.parentNode.nextElementSibling; // class='act-btn-confirm'
+                    // Grab message element
+                    const actMsg = nextSibling.querySelector(`p.confirm-msg`); // class='confirm-msg'
+                    // Display action buttons
+                    nextSibling.classList.add('display-act-btn-confirm');
+                    // Add title content to action's message
+                    actMsg.textContent = topicTitle.textContent.trim();
+                    // Make editable message element
+                    actMsg.contentEditable = true; // class='confirm-msg'
+                    // Auto focus message element
+                    actMsg.focus(); // class='confirm-msg'
+                }
             });
         });
-
-
-        {% comment %} function addClickEvent(elm) {
-            elm.forEach(element => {
-            element.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    this.parentNode.style.display = 'none';
-                    const nextSibling = this.parentNode.nextElementSibling;
-                    nextSibling.classList.add('display-act-btn-confirm');
-                });
-            })
-        } {% endcomment %}
         
 
     </script>
