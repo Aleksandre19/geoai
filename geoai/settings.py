@@ -134,6 +134,7 @@ class Dev(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'chat.middlewares.JwtMiddleware',
     ]
 
     ROOT_URLCONF = 'geoai.urls'
