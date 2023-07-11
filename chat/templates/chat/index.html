@@ -33,6 +33,7 @@
 
 {% block bottom_js %}
     {{ slug|json_script:'chat-name'}}
+    <script type="text/javascript" src="{% static 'geoai/js/slugify.js'%}"></script>
     <script type="text/javascript" src="{% static 'geoai/js/websocket_helpers.js'%}"></script>
     <script>
         let slug = JSON.parse(document.getElementById('chat-name').textContent);
@@ -56,7 +57,7 @@
             
             document.querySelector('.answer_waiting_gif').style.display = 'none';
             document.querySelector('#' + answerID).innerHTML = (data.message + '\n');
-            
+
             removeLoading(); // Removie loading effect.
             enableButton('#chat-message-submit') // Enable submit button.
         };
@@ -74,7 +75,7 @@
             
             question(message);
             if(slug == null){
-                slug = addTopicTitle(message.slice(0, 20) + ' ...').slug;
+                slug = addTopicTitle(message.slice(0, 20)).slug;
             }    
             scrollBottom();
             

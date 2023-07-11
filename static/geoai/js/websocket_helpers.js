@@ -102,53 +102,17 @@ function removeLoading() {
     elm.classList.remove('skeleton-loading');
 }
 
-
-// Slugify the string
-const slugify = (text) => {
-    return text
-        .toString()         // Convert to a string
-        .toLowerCase()      // Convert the string to lower case
-        .trim()             // Remove spaces from the start and end of the string
-        .replace(/\s+/g, '-')   // Replace spaces with -
-        .replace(/[^\w\-]+/g, '')   // Remove all non-word characters
-        .replace(/\-\-+/g, '-');  // Replace multiple - with single -
-}
-
-
-// Map the Georgian Alphabet to English.
-const georgianToEnglish = {
-    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v',
-    'ზ': 'z', 'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm',
-    'ნ': 'n', 'ო': 'o', 'პ': 'p', 'ჟ': 'zh', 'რ': 'r', 'ს': 's',
-    'უ': 'u', 'ფ': 'f', 'ქ': 'q', 'ღ': 'gh', 'ყ': 'k', 'შ': 'sh',
-    'ჩ': 'ch', 'ც': 'ts', 'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh',
-    'ჯ': 'j', 'ჰ': 'h', ' ': ' '
-};
-
-
-// Convert Georgian letter to English.
-const convertToGeorgian = (text) => {
-    let result = '';
-    for (let char of text.toLowerCase()) {
-        if (char in georgianToEnglish) {
-            result += georgianToEnglish[char];
-        } 
-    }
-    return result;
-}
-
-
 const addTopicTitle = (title) => {
     const ulElement = document.querySelector('.chat-history-links ul')
 
     const liElement = document.createElement('li');
     const aElement = document.createElement('a');
 
-    const toEnglish = convertToGeorgian(title);
-    const slug = slugify(toEnglish);
+    const slugify = new Slugify();
+    const slug = slugify.slug(title);
 
-    aElement.innerHTML = title ;
-    aElement.setAttribute('href','/chat/' +slug+ '/');
+    aElement.innerHTML = `${title} ...` ;
+    aElement.setAttribute('href', '/chat/' + slug + '/');
 
     liElement.appendChild(aElement)
     ulElement.insertBefore(liElement, ulElement.firstChild);
