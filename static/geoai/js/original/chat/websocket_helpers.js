@@ -1,9 +1,10 @@
+import { Slugify } from './slugify';
 // Grab the while QA container.
 const chatQaContent = document.querySelector('.chat-qa-content')
 let answerID;
 
 // Automaticaly scroll down after each question.
-const scrollBottom = () => {
+export function scrollBottom(){
     const element = document.querySelector('.chat-qa-content');
     element.scrollTo({top:element.scrollHeight, behaviour: 'smooth'});
 }
@@ -16,7 +17,6 @@ const generateID = () => {
     qaID = 'qa' + uv;
     return qaID;
 }
-
 
 // Create QA elements.
 const createElements = (qaBlockID) => {
@@ -60,6 +60,9 @@ const createElements = (qaBlockID) => {
     }
 }
 
+export function aID() {
+    return answerID;
+}
 
 const insertContent = (message, id) => {
     const element = document.querySelector('#' + id);
@@ -67,7 +70,7 @@ const insertContent = (message, id) => {
 }
 
 
-const question = (message) => {
+export function question(message) {
     const qaBlockID = generateID();
     const elements = createElements(qaBlockID);
     insertContent(message, elements.questionParagraph.id);
@@ -82,7 +85,7 @@ const getButton = (btn) => {
 
 
 // Disable button.
-function disableButton(attr){
+export function disableButton(attr){
     const button = getButton(attr);
     button.disabled = true;
     button.classList.add('disabled-btn');
@@ -90,19 +93,19 @@ function disableButton(attr){
 
 
 // Enable button.
-const enableButton = (attr) => {
+export function enableButton(attr){
     const button = getButton(attr);
     button.disabled = false;
     button.classList.remove('disabled-btn');
 }
 
 // Remove loading effect as soon as the response was received.
-function removeLoading() {
+export function removeLoading() {
     const elm = document.querySelector(`#${qaID} > .a-block`);
     elm.classList.remove('skeleton-loading');
 }
 
-const addTopicTitle = (title) => {
+export function addTopicTitle(title) {
     const ulElement = document.querySelector('.chat-history-links ul')
 
     const liElement = document.createElement('li');

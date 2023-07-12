@@ -2,8 +2,8 @@
 // otherwise defines it.
 // !!! Doing so, helpes to use this class in other files
 // without throwing errors, that it has bean already declared !!!.
-
-window.Slugify = window.Slugify || class {
+// window.Slugify = window.Slugify || 
+export class Slugify {
     constructor() {
         this.chars = {
             'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v',
