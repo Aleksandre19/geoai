@@ -1,10 +1,6 @@
 import {
     removeLoading,
     enableButton,
-    disableButton,
-    question,
-    addTopicTitle,
-    scrollBottom,
     aID
 } from './websocket_helpers'
 
@@ -41,21 +37,29 @@ export function createChatSocket(slug) {
 
 
     document.querySelector('#chat-message-submit').onclick = function (e) {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        disableButton('#chat-message-submit')
-        
-        question(message);
-        if (slug == null) {
-            slug = addTopicTitle(message.slice(0, 20)).slug;
-        }
-        scrollBottom();
-        
-        chatSocket.send(JSON.stringify({
-            'message': message,
-            'slug': slug,
-        }));
-        messageInputDom.value = '';
+        // Dinamicaly import websocket_helpers module.
+        import(/* webpackChunkName: "websocket_helpers" */ './websocket_helpers').then(({
+            disableButton,
+            question,
+            addTopicTitle,
+            scrollBottom
+        }) => {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            disableButton('#chat-message-submit')
+            
+            question(message);
+            if (slug == null) {
+                slug = addTopicTitle(message.slice(0, 20)).slug;
+            }
+            scrollBottom();
+            
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'slug': slug,
+            }));
+            messageInputDom.value = '';
+        });
     };
 
 

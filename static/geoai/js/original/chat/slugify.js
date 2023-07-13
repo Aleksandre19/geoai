@@ -1,8 +1,7 @@
-// Checks if class has been already defined in global scope,
-// otherwise defines it.
-// !!! Doing so, helpes to use this class in other files
-// without throwing errors, that it has bean already declared !!!.
-// window.Slugify = window.Slugify || 
+// This is a title's slugifyer class.
+// It checks it the letter in the title is Georgian,
+// If yes, it converts to Georgian letter and, 
+// finally sluglifyes the final string.
 export class Slugify {
     constructor() {
         this.chars = {
