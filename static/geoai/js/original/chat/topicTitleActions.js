@@ -20,7 +20,7 @@ export function topicTitleActions(e) {
         prevSibling.classList.remove('hide-element');
 
         // If action is editions of topic title
-    }else if(currentElm == 'geoai-edit-icon'){
+    } else if (currentElm == 'geoai-edit-icon') {
         // Topic title 'a' element
         const topicTitle = target.parentNode.parentNode.previousElementSibling;    
         const nextSibling = target.parentNode.nextElementSibling; // class='act-btn-confirm'
