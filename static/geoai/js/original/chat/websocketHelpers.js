@@ -1,4 +1,5 @@
-import { Slugify } from './slugify';
+import { Slugify } from './mixins';
+
 // Grab the while QA container.
 const chatQaContent = document.querySelector('.chat-qa-content')
 let answerID;
@@ -111,8 +112,9 @@ export function addTopicTitle(title) {
     const liElement = document.createElement('li');
     const aElement = document.createElement('a');
 
-    const slugify = new Slugify();
-    const slug = slugify.slug(title);
+    // const slugify = new Slugify();
+    // const slug = slugify.slug(title);
+    const slug = Slugify.result(title);
 
     aElement.innerHTML = `${title} ...` ;
     aElement.setAttribute('href', '/chat/' + slug + '/');

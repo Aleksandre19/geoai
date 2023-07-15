@@ -2,51 +2,57 @@
     This script adds interection to the topic title's action buttons
     such as Edit, Delete, Approve and close.
 */
-import { Element } from './mixins';
+import { Element, SetEvent, GrabElements } from './mixins';
 import { ModuleLoader } from './mixins'
 import { APIClient } from './apiClient';
 
-
-// Grab wrapper element of action buttons
-const actionWrapper = document.querySelectorAll('.act-wrapper');
-actionWrapper.forEach(element => {
-    // Grab action buttons container
-    const actBtnConfirm = element.querySelector('.act-btn-confirm');
-    // Set a mouseleave evente to action buttons container.
-    actBtnConfirm.addEventListener('mouseleave', function(e) {
-        this.classList.remove('display-act-btn-confirm');
-        this.querySelector('.confirm-msg').contentEditable = false;
-    });
-
-    element.addEventListener('click', function(e){
-        e.preventDefault();
-        // Dinamicaly import topicTitleActions module.
-        import(/* webpackChunkName: "topicTitleActions" */ './topicTitleActions')
-            .then(({topicTitleActions}) => {
-                topicTitleActions(e);
-            });
-    });
-});
-
-// Testing 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'GrabID' },
-    { module: 'slugify', func: 'Slugify' },
+    { module: 'mixins', func: 'Slugify' },
     { module: 'mixins', func: 'CurrentAction' },
+    { module: 'topicTitleActions', func: 'topicTitleActions' },
 ]);
+
+let actionWrapper = GrabElements.from('.act-wrapper');
+actionWrapper.forEach(element => {
+
+    const actBtnConfirm = GrabElements.from('.act-btn-confirm');
+
+    function actEventFunc(){
+        this.classList.remove('display-act-btn-confirm');
+        this.querySelector('.confirm-msg').contentEditable = false;
+    };
+
+    SetEvent.to(actBtnConfirm, 'mouseleave', actEventFunc);
+    
+    const elmEventFunc = (e) => {
+        e.preventDefault();
+        // const elmModulesList = [{ module: 'topicTitleActions', func: 'topicTitleActions' }];
+        // const elmImports = new ModuleLoader(elmModulesList);
+        loader.load(['topicTitleActions']).then(mixins => {
+            mixins.topicTitleActions(e);
+        });
+    }
+    SetEvent.to([element], 'click', elmEventFunc);
+});
+
+
+
+// Testing 
+
 
 
 function testFunc(e) {
     e.preventDefault();
-    loader.load(e).then(mixins => {
+    loader.load(['Slugify', 'GrabID', 'CurrentAction']).then(mixins => {
         const url = 'http://' + window.location.host + '/api/';
-        const id = new mixins.GrabID(e);
-        console.log(id.ID)
-        const endPoint = `topics/${id.ID}/`;
+        const id = mixins.GrabID.from(e);
+        console.log(id)
+        const endPoint = `topics/${id}/`;
 
-        const updated_title = 'da me 11100'
-        const slugify = new mixins.Slugify();
-        const slugA = slugify.slug(updated_title)
+        const updated_title = 'da me vashaaaa'
+        // const slugify = mixins.Slugify();
+        const slugA = mixins.Slugify.result(updated_title)
         const data = {
             "user": "http://127.0.0.1:8000/api/users/aleksandre.development@gmail.com",
             "title": updated_title,
@@ -54,11 +60,11 @@ function testFunc(e) {
         }
 
         const api = new APIClient(url)
-        const current = new mixins.CurrentAction('update'); // Testing
-
-        if (current.action == 'delete') {
+        const current = mixins.CurrentAction.get('update'); // Testing
+        console.log(current)
+        if (current == 'delete') {
             api.delete(endPoint)
-        } else if (current.action == 'update') {
+        } else if (current == 'update') {
             if (data) {
                 console.log('data')
                 api.update(endPoint, data)
@@ -69,7 +75,7 @@ function testFunc(e) {
     
 }
 
-const elm = new Element('.geoai-check-icon', 'click', testFunc);
+Element.setup('.geoai-check-icon', 'click', testFunc);
 
 // // Get Cookies
 // class Cookie {

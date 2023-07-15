@@ -2,7 +2,7 @@ import {
     removeLoading,
     enableButton,
     aID
-} from './websocket_helpers'
+} from './websocketHelpers'
 
 // Generate a WebSocket URL.
 const generateUrl = (slug) => {
@@ -38,7 +38,7 @@ export function createChatSocket(slug) {
 
     document.querySelector('#chat-message-submit').onclick = function (e) {
         // Dinamicaly import websocket_helpers module.
-        import(/* webpackChunkName: "websocket_helpers" */ './websocket_helpers').then(({
+        import(/* webpackChunkName: "websocket_helpers" */ './websocketHelpers').then(({
             disableButton,
             question,
             addTopicTitle,

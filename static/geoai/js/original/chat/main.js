@@ -1,5 +1,5 @@
 import { createChatSocket } from './websocket'
-import * as topic from './topics';
+import * as topic from './sidebar';
 
 //  Get slug from {{ slug|json_script:'chat-name'}} in chag/index.html.
 let slug = JSON.parse(document.getElementById('chat-name').textContent);
