@@ -1,4 +1,4 @@
-import { Slugify } from './mixins';
+import { Slugify } from './utilities';
 
 // Grab the while QA container.
 const chatQaContent = document.querySelector('.chat-qa-content')

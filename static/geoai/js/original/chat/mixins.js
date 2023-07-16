@@ -14,6 +14,52 @@ export class SetEvent {
 }
 
 
+export class Target {
+    constructor(e) {
+        this.e = e;
+    }
+    
+    get classes() {
+        return this.e.target.className.split(" ");
+    }
+
+    // Grabs the element from the right.
+    curClasse(nth) {
+        return this.classes[this.classes.length - nth];
+    }
+
+    get target() {
+        return this.e.target;
+    }
+
+    get parent() {
+        return this.target.parentNode;
+    }
+
+    get nextSibling() {
+        return this.parent.nextElementSibling;
+    }
+
+    get prevSibling() {
+        return this.parent.previousElementSibling;
+    }
+
+    get topicTitle() {
+        return this.parent.parentNode.previousElementSibling;
+    }
+
+    setContent(elm, attr, text) {
+        elm.querySelector(attr).textContent = text;
+    }
+
+    static id(e) {
+        return e.target.id;
+    }
+
+}
+
+
+
 export class GrabID {
     static from(e) {
         return e.target.id;
@@ -89,38 +135,5 @@ export class Element {
     }
 }
 
-
-export class Slugify {
-    static result(text) {
-        return text ? Slug.get(Convert.toEng(text)) : null;
-    }
-}
-
-
-export class ModuleLoader{
-    constructor(modules) {
-        // obj.reduce(accumulator, currentValue, currentIndex, sourceArray) => {}
-        this.modules = modules.reduce((obj, module) => {
-            obj[module.func] = module;
-            return obj;
-        }, {});
-    }
-
-    async load(moduleName) {
-        let combinedModules = {}
-        const imports = moduleName.map(async (moduleName) => {
-            const {module, func} = this.modules[moduleName];
-            return import(/* webpackChunkName: "[request]" */ `./${module}`)
-                .then(moduleObj => {
-                    if (moduleObj[func]) {
-                        combinedModules[func] = moduleObj[func];
-                    } else {
-                        throw new Error(`Module ${module} does not export a function ${func}.`);
-                    }
-                });
-        });
-        return Promise.all(imports).then(() => combinedModules);
-    }
-}
 
 

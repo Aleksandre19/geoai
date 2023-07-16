@@ -3,37 +3,23 @@
     such as Edit, Delete, Approve and close.
 */
 import { Element, SetEvent, GrabElements } from './mixins';
-import { ModuleLoader } from './mixins'
+import { ModuleLoader } from './utilities';
 import { APIClient } from './apiClient';
+import { ActBtn, TitleAction } from './functions';
 
 let loader = new ModuleLoader([
-    { module: 'mixins', func: 'GrabID' },
-    { module: 'mixins', func: 'Slugify' },
+    { module: 'mixins', func: 'Target' },
+    { module: 'utilities', func: 'Slugify' },
     { module: 'mixins', func: 'CurrentAction' },
-    { module: 'topicTitleActions', func: 'topicTitleActions' },
+    // { module: 'topicTitleActions', func: 'topicTitleActions' },
 ]);
+
 
 let actionWrapper = GrabElements.from('.act-wrapper');
 actionWrapper.forEach(element => {
-
-    const actBtnConfirm = GrabElements.from('.act-btn-confirm');
-
-    function actEventFunc(){
-        this.classList.remove('display-act-btn-confirm');
-        this.querySelector('.confirm-msg').contentEditable = false;
-    };
-
-    SetEvent.to(actBtnConfirm, 'mouseleave', actEventFunc);
-    
-    const elmEventFunc = (e) => {
-        e.preventDefault();
-        // const elmModulesList = [{ module: 'topicTitleActions', func: 'topicTitleActions' }];
-        // const elmImports = new ModuleLoader(elmModulesList);
-        loader.load(['topicTitleActions']).then(mixins => {
-            mixins.topicTitleActions(e);
-        });
-    }
-    SetEvent.to([element], 'click', elmEventFunc);
+    const actBtnConfirm = GrabElements.from('.act-btn-confirm')
+    SetEvent.to(actBtnConfirm, 'mouseleave', ActBtn.hide);
+    SetEvent.to([element], 'click', TitleAction.define);
 });
 
 
@@ -44,34 +30,39 @@ actionWrapper.forEach(element => {
 
 function testFunc(e) {
     e.preventDefault();
-    loader.load(['Slugify', 'GrabID', 'CurrentAction']).then(mixins => {
-        const url = 'http://' + window.location.host + '/api/';
-        const id = mixins.GrabID.from(e);
-        console.log(id)
-        const endPoint = `topics/${id}/`;
+    try {
+        loader.load(['Slugify', 'Target', 'CurrentAction']).then(mixins => {
+            const url = 'http://' + window.location.host + '/api/';
+            const id = mixins.Target.id(e);
+            console.log(id)
+            const endPoint = `topics/${id}/`;
 
-        const updated_title = 'da me vashaaaa'
-        // const slugify = mixins.Slugify();
-        const slugA = mixins.Slugify.result(updated_title)
-        const data = {
-            "user": "http://127.0.0.1:8000/api/users/aleksandre.development@gmail.com",
-            "title": updated_title,
-            "slug": slugA
-        }
-
-        const api = new APIClient(url)
-        const current = mixins.CurrentAction.get('update'); // Testing
-        console.log(current)
-        if (current == 'delete') {
-            api.delete(endPoint)
-        } else if (current == 'update') {
-            if (data) {
-                console.log('data')
-                api.update(endPoint, data)
+            const updated_title = 'da me vashaaaa'
+            // const slugify = mixins.Slugify();
+            const slugA = mixins.Slugify.result(updated_title)
+            const data = {
+                "user": "http://127.0.0.1:8000/api/users/aleksandre.development@gmail.com",
+                "title": updated_title,
+                "slug": slugA
             }
-        }
-        console.log(url);
-    });
+
+            const api = new APIClient(url)
+            const current = mixins.CurrentAction.get('update'); // Testing
+            console.log(current)
+            if (current == 'delete') {
+                console.log(endPoint);
+                api.delete(endPoint)
+            } else if (current == 'update') {
+                if (data) {
+                    console.log('data')
+                    api.update(endPoint, data)
+                }
+            }
+            console.log(url);
+        });
+    } catch (error) {
+       throw new Error(`Failed to load module: f${error.message}`);
+    }
     
 }
 

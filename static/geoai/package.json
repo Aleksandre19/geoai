@@ -17,6 +17,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
-    "loadash": "^1.0.0"
+    "loadash": "^1.0.0",
+    "uuid": "^9.0.0"
   }
 }
