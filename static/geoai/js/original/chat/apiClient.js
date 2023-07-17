@@ -43,15 +43,19 @@ export class APIClient {
             throw new Error(this.errorText + error)
         }
 
-        if (!response.ok) {
-            throw new Error(this.errorText + response.statusText)
+        if (!response.ok)
+            throw new Error(this.errorText + response.statusText);
+        
+        if(response.ok) {
+            // console.log('success');
+            return response.ok;
         }
 
         if (response.status != 204) {
             return response.json();
         } else {
             return null;
-        } 
+        }
         
     }
 

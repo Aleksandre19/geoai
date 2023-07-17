@@ -33,5 +33,6 @@
 
 {% block bottom_js %}
     {{ slug|json_script:'chat-name'}}
+    {{ user_id|json_script:'userID' }}
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
 {% endblock %}

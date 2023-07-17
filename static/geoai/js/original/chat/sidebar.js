@@ -15,9 +15,9 @@ let loader = new ModuleLoader([
 ]);
 
 
-let actionWrapper = GrabElements.from('.act-wrapper');
+let actionWrapper = GrabElements.for('.act-wrapper');
 actionWrapper.forEach(element => {
-    const actBtnConfirm = GrabElements.from('.act-btn-confirm')
+    const actBtnConfirm = GrabElements.for('.act-btn-confirm')
     SetEvent.to(actBtnConfirm, 'mouseleave', ActBtn.hide);
     SetEvent.to([element], 'click', TitleAction.define);
 });
@@ -34,7 +34,6 @@ function testFunc(e) {
         loader.load(['Slugify', 'Target', 'CurrentAction']).then(mixins => {
             const url = 'http://' + window.location.host + '/api/';
             const id = mixins.Target.id(e);
-            console.log(id)
             const endPoint = `topics/${id}/`;
 
             const updated_title = 'da me vashaaaa'
@@ -66,7 +65,7 @@ function testFunc(e) {
     
 }
 
-Element.setup('.geoai-check-icon', 'click', testFunc);
+// Element.setup('.geoai-check-icon', 'click', testFunc);
 
 // // Get Cookies
 // class Cookie {

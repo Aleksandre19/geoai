@@ -243,6 +243,7 @@ section#chat-main div#sidebar div.sidebar-sections{
     height: 100%;
     background-image: url('../images/icons/geoai-check-icon.png');
     transition: transform 0.3s ease-in-out;
+    z-index: 2;
 }
 
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon:hover{
@@ -255,6 +256,7 @@ section#chat-main div#sidebar div.sidebar-sections{
     height: 100%;
     background-image: url('../images/icons/geoai-x-icon.png');
     transition: transform 0.3s ease-in-out;
+    z-index: 1;
 } 
 
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon:hover {

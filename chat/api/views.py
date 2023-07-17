@@ -10,7 +10,7 @@ from chat.api.serializers import(
 )
 
 class UserDetail(generics.RetrieveAPIView):
-    lookup_field = 'email'
+    lookup_field = 'id'
     queryset = User.objects.all()
     serializer_class = UserSerializer
     #permission_classes = [IsOwner]

@@ -19,7 +19,6 @@ export class ModuleLoader{
     constructor(modules) {
         // obj.reduce(accumulator, currentValue, currentIndex, sourceArray) => {}
         this.modules = modules.reduce((obj, module) => {
-            console.log(module)
             obj[module.func] = module;
             return obj;
         }, {});

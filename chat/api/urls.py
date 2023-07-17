@@ -14,7 +14,7 @@ router = DefaultRouter()
 router.register("topics", TopicViewSet)
 
 urlpatterns = [
-    path('users/<str:email>', UserDetail.as_view(), name='api_user_detail'),
+    path('users/<int:id>', UserDetail.as_view(), name='api_user_detail'),
 ]
 
 urlpatterns += [

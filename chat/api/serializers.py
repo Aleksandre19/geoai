@@ -6,7 +6,7 @@ from chat.models import Topic
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['id','first_name', 'last_name']
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class TopicSerializer(serializers.ModelSerializer):
     user = serializers.HyperlinkedRelatedField(
         queryset=User.objects.all(),
         view_name='api_user_detail',
-        lookup_field='email'
+        lookup_field='id'
     )
 
     class Meta:

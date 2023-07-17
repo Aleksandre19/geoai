@@ -1,8 +1,11 @@
+// import { Target } from './mixins';
 import { ModuleLoader } from './utilities';
+import { State } from './mixins';
 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'Target' },
-    { module: 'functions', func: 'ActionBtnFunc'},
+    { module: 'apiClient', func: 'APIClient' },
+    { module: 'utilities', func: 'Slugify'},
 ]);
 
 
@@ -15,24 +18,137 @@ export class ActBtn {
     }
 };
 
+// This class runes the function from the array.
+class Func {
+    static execute(funcs, curClasse) {
+        funcs.forEach((actions) => {
+            if (!actions[curClasse]) return;
+
+            for (const action of actions[curClasse])
+                action();
+        });
+    }
+} 
+
+
+const state = new State();
 
 // Define actions (edit, delete) to topic titles. 
 export class TitleAction {
     static define(e) {
         e.preventDefault();
         try {
-            new ActionBtn(e);
+            new ActionBtn(e, state);
         } catch (error) { 
             throw new Error(error.message);
         }
     }
 }
 
+
+export class ActionBtn {
+    constructor(e, state) {     
+        this.e = e;
+        this.init();
+        this.state = state;
+    }
+
+    async init() {
+        try {
+            this.mixins = await loader.load(['Target', 'APIClient', 'Slugify']);
+            this.elm = new this.mixins.Target(this.e);
+            this.action = new ActionBtnFunc(this.elm);
+            this.curClasse = this.elm.curClasse(1);
+            
+            this.handleAction();
+        } catch (error) {
+            throw new Error(`Something went wrong. ${error.message}`);
+        }
+    }
+
+    confirm() {
+        const states = ['edit', 'delete'];
+        if (!states.includes(this.state.get))
+            return;
+        
+        const btnProcess = new BtnProcess(this.e, this.mixins);
+        // Enhanced version.
+        const exacute = [
+            {'edit': [() => btnProcess.edition()]},
+            {'delete': [() => btnProcess.deletion()]},
+        ];
+        Func.execute(exacute, this.state.get);
+    }
+
+    handleAction() {
+        const exacute = [
+            {'geoai-check-icon': [() => this.confirm()]},
+            {'geoai-trash-icon': [() => this.action.edit, () => this.state.store('delete')]},
+            {'geoai-x-icon': [() => this.action.close]},
+            {'geoai-edit-icon': [() => this.action.edit, () => this.state.store('edit')]}
+        ];
+
+        Func.execute(exacute, this.curClasse);
+    }
+}
+
+
+class BtnProcess {
+    constructor(e, mixins) {
+        this.e = e;
+        this.id = mixins.Target.id(this.e);
+        this.titleBlock = document.getElementById(`li-${this.id}`);
+        this.curTitle = this.e.target
+            .parentNode.parentNode        
+            .previousElementSibling
+
+        this.url = 'http://' + window.location.host + '/api/';
+        this.endPoint = `topics/${this.id}/`;
+
+        this.api = new mixins.APIClient(this.url);
+        this.slug = mixins.Slugify.result(this.updatedTitle);
+        this.userID = document.getElementById('userID').textContent;
+        
+    }
+
+    get updatedTitle() {
+        return this.e.target.previousElementSibling
+        .textContent.trim().substring(0, 20) + '...';
+    }
+
+    get data() {
+        return {
+            "user": `${this.url}users/${this.userID}`,
+            "title": this.updatedTitle,
+            "slug": this.slug
+        };
+    }
+
+    get updateTitleContent() {
+        this.curTitle.textContent = this.updatedTitle;
+    }
+
+    get removeBlock() {
+        this.titleBlock.remove();
+    }
+
+    async deletion() {
+        await this.api.delete(this.endPoint);
+        this.removeBlock;
+    }
+
+    async edition() {     
+        await this.api.update(this.endPoint, this.data);
+        this.updateTitleContent;
+    }   
+}
+
+
 // This is a class for handling actions such as: delete, edit of
 // the titles in the chat sidebar.
-export class ActionBtnFunc {
-    constructor(elm) {
-        this.elm = elm;
+class ActionBtnFunc {
+    constructor(e) {
+        this.elm = e;
     }
 
     get delete() {
@@ -55,44 +171,10 @@ export class ActionBtnFunc {
     }
 }
 
-export class ActionBtn {
-    constructor(e) {
-        this.e = e;
-        this.init();
-        this.prevAction;
-    }
 
-    async init() {
-        try {
-            const mixins = await loader.load(['Target', 'ActionBtnFunc']);
-            this.elm = new mixins.Target(this.e);
-            this.curClasse = this.elm.curClasse(1);
-            this.action = new mixins.ActionBtnFunc(this.elm);
-            
-            this.handleAction();
-        } catch (error) {
-            throw new Error(`Something went wrong. ${error.message}`);
-        }
-    }
 
-    handleAction() {
-        switch (this.curClasse) {
-            case 'geoai-trash-icon':
-                this.prevAction = 'delete'
-                this.action.delete;
-                break;
-            case 'geoai-x-icon':
-                this.action.close;
-                break;
-            case 'geoai-edit-icon':
-                this.prevAction = 'edit'
-                this.action.edit;
-                break;
-            default:
-                this.action.close;
-                break;
-        }
-    }
-}
+
+
+
 
 

@@ -1,5 +1,5 @@
 export class GrabElements {
-    static from(attr) {
+    static for(attr) {
         return Array.from(document.querySelectorAll(attr));
     }
 }
@@ -128,9 +128,24 @@ export class Convert {
 }
 
 
+export class State{
+    constructor() {
+        this.truck = {}
+    }
+
+    store(stp) {
+        this.truck['step'] = stp;
+    }
+
+    get get() {
+        return this.truck['step'];
+    }
+}
+
+
 export class Element {
     static setup(attr, event, func) {
-        const element = GrabElements.from(attr);
+        const element = GrabElements.for(attr);
         SetEvent.to(element, event, func);
     }
 }

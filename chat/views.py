@@ -61,6 +61,7 @@ def chat(request, slug=None):
             'topics': list(topics.values()),
             'questions': questions,
             'slug': slug,
+            'user_id': request.user.id,
             # 'topics': topics,
             'question_form': question_form,
             #'test': inc,

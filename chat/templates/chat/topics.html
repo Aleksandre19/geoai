@@ -2,7 +2,7 @@
 <ul>
     {% for topic in topics %}
         <!-- Subjext title -->
-        <li>    
+        <li id='li-{{topic.id}}'>    
             <a href="{% url 'topic' topic.slug %}"> 
                 {{topic.title}}...
             </a>
