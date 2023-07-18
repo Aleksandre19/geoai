@@ -1,5 +1,6 @@
 export class GrabElements {
     static for(attr) {
+        console.log(attr)
         return Array.from(document.querySelectorAll(attr));
     }
 }
@@ -134,11 +135,12 @@ export class State{
     }
 
     store(stp) {
-        this.truck['step'] = stp;
+        this.step = stp;
+        this.truck[this.step] = this.step;
     }
 
     get get() {
-        return this.truck['step'];
+        return this.truck[this.step];
     }
 }
 

@@ -5,7 +5,7 @@
 import { Element, SetEvent, GrabElements } from './mixins';
 import { ModuleLoader } from './utilities';
 import { APIClient } from './apiClient';
-import { ActBtn, TitleAction } from './functions';
+import { leaveActBtn, TitleAction } from './functions';
 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'Target' },
@@ -14,11 +14,16 @@ let loader = new ModuleLoader([
     // { module: 'topicTitleActions', func: 'topicTitleActions' },
 ]);
 
+// const l = document.querySelector('.act-btn-confirm');
+// l.addEventListener('mouseleave', () => {
+//     console.log('leaved');
+// });
 
 let actionWrapper = GrabElements.for('.act-wrapper');
 actionWrapper.forEach(element => {
-    const actBtnConfirm = GrabElements.for('.act-btn-confirm')
-    SetEvent.to(actBtnConfirm, 'mouseleave', ActBtn.hide);
+    const titleLink = element.parentNode;
+    console.log(titleLink);
+    //SetEvent.to([titleLink], 'mouseleave', () => leaveActBtn.hide(titleLink));
     SetEvent.to([element], 'click', TitleAction.define);
 });
 

@@ -194,15 +194,24 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color)
 }
 
+#chat-main #sidebar ul li>a:focus,
+#chat-main #sidebar ul li>a:focus-within,
+#chat-main #sidebar ul li>a:focus-visible {
+    border-radius: 4px;
+    outline: 1px solid var(--primary-color);
+}
+
 #chat-main #sidebar ul li div.act-btn-confirm,
 #chat-main #sidebar ul li div.topic-title-act-btn{
     position: absolute;
     top: 0px;
     right: 0px;
-    width: 100%;
+    width: 27%;
     height: 100%;
+    border-radius: 2px 0px 0px 2px;
     display: none;
 }
+
 
 #chat-main #sidebar ul li div.topic-title-act-btn {
     width: 25%;
@@ -275,12 +284,12 @@ section#chat-main div#sidebar div.sidebar-sections{
 }
 
 /* Action confirmatio message focus state */
-#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus,
+/* #chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus,
 #chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-within,
 #chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-visible {
     border-radius: 4px;
     outline: 1px solid var(--primary-color);
-}
+} */
 
 #chat-main #sidebar ul li div.topic-title-act-btn:hover, 
 #chat-main #sidebar ul li > a:hover ~ div .topic-title-act-btn{

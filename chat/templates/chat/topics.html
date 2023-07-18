@@ -3,20 +3,20 @@
     {% for topic in topics %}
         <!-- Subjext title -->
         <li id='li-{{topic.id}}'>    
-            <a href="{% url 'topic' topic.slug %}"> 
+            <a href="{% url 'topic' topic.slug %}" id='title-{{topic.id}}' class='title-link'> 
                 {{topic.title}}...
             </a>
             <div class='act-wrapper'>
                 <!-- Action buttons container -->
                 <div class='topic-title-act-btn'>
-                    <a href="#" class="geoai-icons geoai-edit-icon"></a> <!-- Edit -->
-                    <a href="#" class="geoai-icons geoai-trash-icon"></a> <!-- Delete -->      
+                    <a href="#" class="geoai-icons geoai-edit-icon" id='{{topic.id}}'></a> <!-- Edit -->
+                    <a href="#" class="geoai-icons geoai-trash-icon" id='{{topic.id}}'></a> <!-- Delete -->      
                 </div>
                 <!-- Confirmation dialog container --> 
                 <div class='act-btn-confirm'>
-                    <p class='confirm-msg'></p> <!-- Confirmation message -->
-                    <a href="#" id='{{ topic.id }}' class="geoai-icons geoai-check-icon"></a> <!-- Approve -->
-                    <a href="#" class="geoai-icons geoai-x-icon"></a> <!-- Close -->
+                    {% comment %} <p class='confirm-msg'></p> <!-- Confirmation message --> {% endcomment %}
+                    <a href="#" class="geoai-icons geoai-check-icon" id='{{ topic.id }}'></a> <!-- Approve -->
+                    <a href="#" class="geoai-icons geoai-x-icon" id='{{topic.id}}'></a> <!-- Close -->
                 </div>
             </div>  
         </li>

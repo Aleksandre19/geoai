@@ -1,6 +1,6 @@
 // import { Target } from './mixins';
 import { ModuleLoader } from './utilities';
-import { State } from './mixins';
+import { State, Element } from './mixins';
 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'Target' },
@@ -10,11 +10,12 @@ let loader = new ModuleLoader([
 
 
 // Functions used acrose the application.
-export class ActBtn {
-    static hide(e) { 
-        const elm = e.target;
-        elm.classList.remove('display-act-btn-confirm');
-        elm.querySelector('.confirm-msg').contentEditable = false;
+export class leaveActBtn {
+    static hide(titleWrapper) {
+        const actBtnElm = titleWrapper.querySelector('.act-btn-confirm');
+        const linkElm = titleWrapper.querySelector('.title-link');
+        actBtnElm.classList.remove('display-act-btn-confirm');
+        linkElm.blur();
     }
 };
 
@@ -57,7 +58,7 @@ export class ActionBtn {
         try {
             this.mixins = await loader.load(['Target', 'APIClient', 'Slugify']);
             this.elm = new this.mixins.Target(this.e);
-            this.action = new ActionBtnFunc(this.elm);
+            this.action = new ActionBtnFunc(this.elm, this.state);
             this.curClasse = this.elm.curClasse(1);
             
             this.handleAction();
@@ -83,7 +84,7 @@ export class ActionBtn {
     handleAction() {
         const exacute = [
             {'geoai-check-icon': [() => this.confirm()]},
-            {'geoai-trash-icon': [() => this.action.edit, () => this.state.store('delete')]},
+            {'geoai-trash-icon': [() => this.action.delete, () => this.state.store('delete')]},
             {'geoai-x-icon': [() => this.action.close]},
             {'geoai-edit-icon': [() => this.action.edit, () => this.state.store('edit')]}
         ];
@@ -97,6 +98,7 @@ class BtnProcess {
     constructor(e, mixins) {
         this.e = e;
         this.id = mixins.Target.id(this.e);
+        console.log(this.id);
         this.titleBlock = document.getElementById(`li-${this.id}`);
         this.curTitle = this.e.target
             .parentNode.parentNode        
@@ -144,15 +146,26 @@ class BtnProcess {
 }
 
 
+const state01 = new State();
 // This is a class for handling actions such as: delete, edit of
 // the titles in the chat sidebar.
 class ActionBtnFunc {
     constructor(e) {
         this.elm = e;
+        this.state = state01;
+        this.id = e.target.id;
+        this.titleElm = document.getElementById(`title-${this.id}`);
+        this.titleElm.contentEditable = 'false';
     }
 
     get delete() {
-        this.elm.setContent(this.elm.nextSibling, '.confirm-msg', 'წავშალო?'); // Confirmation text.
+        this.state.store(this.titleElm.textContent.trim());
+        console.log('titleElm', this.titleElm);
+        this.titleElm.style.backgroundColor = '#e6e6e6';
+        this.titleElm.textContent = 'წავშალო?'
+        this.titleElm.focus();
+        // this.elm.setContent(this.elm.nextSibling, '.confirm-msg', 'წავშალო?'); // Confirmation text.
+        // this.elm.setContent(this.titleElm, `title-${this.id}`, 'წავშალო?'); // Confirmation text.
         this.elm.parent.classList.add('hide-element'); // Hide the class='topic-title-act-btn'
         this.elm.nextSibling.classList.add('display-act-btn-confirm'); // Display confirmation container
     }
@@ -160,16 +173,27 @@ class ActionBtnFunc {
     get close() {
         this.elm.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
         this.elm.prevSibling.classList.remove('hide-element');
+        console.log('close', this.state.get);
+        this.titleElm.textContent = this.state.get;
     }
 
     get edit() {
-        const actMsg = this.elm.nextSibling.querySelector(`p.confirm-msg`);
+        this.titleElm.contentEditable = 'true';
+        this.titleElm.focus();
+        //const actMsg = this.elm.nextSibling.querySelector(`p.confirm-msg`);
         this.elm.nextSibling.classList.add('display-act-btn-confirm'); // Display action buttons.
-        actMsg.textContent = this.elm.topicTitle.textContent.trim(); // Add confirmation message.
-        actMsg.contentEditable = true; // class='confirm-msg'
-        actMsg.focus(); // class='confirm-msg'
+        // actMsg.textContent = this.elm.topicTitle.textContent.trim(); // Add confirmation message.
+        // actMsg.contentEditable = true; // class='confirm-msg'
+        // actMsg.focus(); // class='confirm-msg'
     }
 }
+
+// function testFunc(e) {
+//     const elm = document.querySelector('.act-btn-confirm');
+//     elm.removeEventListener('mouseleave');
+// }
+
+// Element.setup('.confirm-msg', 'focus', testFunc);
 
 
 
