@@ -21,17 +21,14 @@ let loader = new ModuleLoader([
 
 let actionWrapper = GrabElements.for('.act-wrapper');
 actionWrapper.forEach(element => {
-    const titleLink = element.parentNode;
-    console.log(titleLink);
-    //SetEvent.to([titleLink], 'mouseleave', () => leaveActBtn.hide(titleLink));
+    const titleLi = element.parentNode; // <li id='li-{{topic.id}}'>
+    SetEvent.to([titleLi], 'mouseleave', () => leaveActBtn.hide(titleLi));
     SetEvent.to([element], 'click', TitleAction.define);
 });
 
 
 
 // Testing 
-
-
 
 function testFunc(e) {
     e.preventDefault();

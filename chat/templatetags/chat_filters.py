@@ -1,9 +1,15 @@
-# from django import template
+from django import template
 # from django.utils.safestring import mark_safe
 # from django.utils.html import format_html, escape
 # import re
 
-# register = template.Library()
+register = template.Library()
+
+@register.filter
+def add_ellipsis(text):
+    if len(text) >= 15:
+        text = text + '...'
+    return text
 
 # # Replace the ' ``` ' with a <code> and the \n with the <p>
 # @register.filter

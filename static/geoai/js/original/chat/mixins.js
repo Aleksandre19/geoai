@@ -1,6 +1,5 @@
 export class GrabElements {
     static for(attr) {
-        console.log(attr)
         return Array.from(document.querySelectorAll(attr));
     }
 }
@@ -129,7 +128,7 @@ export class Convert {
 }
 
 
-export class State{
+export class Store{
     constructor() {
         this.truck = {}
     }
@@ -141,6 +140,18 @@ export class State{
 
     get get() {
         return this.truck[this.step];
+    }
+
+    get clear() {
+        this.truck = {}
+    }
+}
+
+export class Prevent {
+    static click(e) {
+        e.preventDefault();
+        console.log('prevent');
+        return false;
     }
 }
 

@@ -103,7 +103,7 @@ def post_question(request, topic=None):
             slug = topic.slug
 
         if not topic:
-            convert_alphabet = convertToEng(question_content[:20])
+            convert_alphabet = convertToEng(question_content[:15])
             slug = slugify(convert_alphabet)
             
         # Call OpenAi API & Google Translate API.
@@ -133,7 +133,7 @@ def insert_content(
     ):
     # geo_formated_answer = text_format(geo_unformated_answer)
     if not topic:
-        topic_title = geo_question[:20]
+        topic_title = geo_question[:15]
         slug = slug
         topic = Topic(
                 user=user,

@@ -46,6 +46,10 @@ h1, h2, h3, h4, h5, h6 {
     cursor: not-allowed !important;
 }
 
+.rm-cursor {
+   cursor: default;
+}
+
 .disabled-btn:hover{
     background-color: var(--secondary-color) !important;
 }
@@ -180,25 +184,29 @@ section#chat-main div#sidebar div.sidebar-sections{
     position: relative;
 }
 
+
+#chat-main #sidebar ul li {
+    border-bottom: 1px dotted var(--secondary-color);
+    transition: background-color 0.3s ease-out;
+}
+
+#chat-main #sidebar ul li:hover {
+    background-color: var(--secondary-color)
+}
+
+#chat-main #sidebar ul li:focus,
+#chat-main #sidebar ul li:focus-within,
+#chat-main #sidebar ul li:focus-visible {
+    border-radius: 4px;
+    outline: 1px solid var(--primary-color);
+}
+
 #chat-main #sidebar ul li > a {
     text-decoration: none;
     color: var(--text-primary);
     display: inline-block;
     width: 100%;
-    border-bottom: 1px dotted var(--secondary-color);
     padding: 8px 16px;
-    transition: background-color 1s ease-out;
-}
-
-#chat-main #sidebar ul li > a:hover {
-    background-color: var(--secondary-color)
-}
-
-#chat-main #sidebar ul li>a:focus,
-#chat-main #sidebar ul li>a:focus-within,
-#chat-main #sidebar ul li>a:focus-visible {
-    border-radius: 4px;
-    outline: 1px solid var(--primary-color);
 }
 
 #chat-main #sidebar ul li div.act-btn-confirm,
