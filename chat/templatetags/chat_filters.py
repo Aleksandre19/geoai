@@ -5,11 +5,23 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def add_ellipsis(text):
     if len(text) >= 15:
         text = text + '...'
     return text
+
+
+@register.filter
+def current_page(url):
+    splite_url = url.split('/')
+    pages = [item for item in splite_url if item]
+    if not pages:
+        return
+    return pages[-1]
+
+
 
 # # Replace the ' ``` ' with a <code> and the \n with the <p>
 # @register.filter

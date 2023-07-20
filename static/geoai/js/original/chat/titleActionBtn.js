@@ -3,9 +3,11 @@ import { Store, Prevent} from './mixins';
 export const titleAct = new Store(); // Title action storage.
 export const titleCont = new Store(); // Title content storage.
 
+
 // Map functions to their moduls. 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'Target' },
+    { module: 'mixins', func: 'Url' },
     { module: 'apiClient', func: 'APIClient' },
     { module: 'utilities', func: 'Slugify' },
     { module: 'functions', func: 'Func'},
@@ -35,7 +37,8 @@ class BtnSteup {
     async init() {
         try {
             // Load necessary functions on event from mixins.js.
-            this.mixins = await loader.load(['Target', 'APIClient', 'Slugify', 'Func']);
+            this.mixins = await loader.load([
+                'Target', 'APIClient', 'Slugify', 'Func', 'Url']);
 
             // Set up the required data.
             this.elm = new this.mixins.Target(this.e); // Get element for the current event.
@@ -62,6 +65,20 @@ class BtnSteup {
         }
     }
 
+    // Prepare and execute button action methods.
+    handleAction() {
+        // Map the elements to their corresponding methods by class attribute.
+        const exacute = [ 
+            {'geoai-check-icon': [() => this.confirm()]}, // Confirm.
+            {'geoai-trash-icon': [() => this.action.delete, () => this.titleAct.store('delete')]}, // Delete.
+            {'geoai-x-icon': [() => this.action.close]}, // Close.
+            {'geoai-edit-icon': [() => this.action.edit, () => this.titleAct.store('edit')]} // Edit.
+        ];
+
+        // Function executor.
+        this.mixins.Func.execute(exacute, this.curClasse);
+    }
+
     confirm() {
         // Check if the action is allowed.
         const allowedActs = ['edit', 'delete'];
@@ -79,34 +96,20 @@ class BtnSteup {
         // Function executor.
         this.mixins.Func.execute(exacute, this.titleAct.get);
     }
-
-    // Prepare and execute button action methods.
-    handleAction() {
-        // Map the elements to their corresponding methods by class attribute.
-        const exacute = [ 
-            {'geoai-check-icon': [() => this.confirm()]}, // Confirm.
-            {'geoai-trash-icon': [() => this.action.delete, () => this.titleAct.store('delete')]}, // Delete.
-            {'geoai-x-icon': [() => this.action.close]}, // Close.
-            {'geoai-edit-icon': [() => this.action.edit, () => this.titleAct.store('edit')]} // Edit.
-        ];
-
-        // Function executor.
-        this.mixins.Func.execute(exacute, this.curClasse);
-    }
 }
 
 // Prepare everything and call to the API client methods.
 class PrepareRequest {
     constructor(e, mixins) {
         this.e = e; // class='geoai-check-icon'
-        this.id = mixins.Target.id(this.e);
+        this.mixins = mixins;
+        this.id = this.mixins.Target.id(this.e);
         this.titleBlock = document.getElementById(`li-${this.id}`); // <li id='li-{{topic.id}}'>   
         this.curTitle = document.getElementById(`title-${this.id}`);// Title `a` element.
-        this.domain = window.location.host // Main url.
-        this.url = 'http://' + this.domain + '/api/';
         this.endPoint = `topics/${this.id}/`;
-        this.api = new mixins.APIClient(this.url); // API Client.
-        this.slug = mixins.Slugify.result(this.trimTitle);
+        this.url = this.mixins.Url.setup('/api/', '');      
+        this.api = new this.mixins.APIClient(this.url); // API Client.
+        this.slug = this.mixins.Slugify.result(this.trimTitle);
         this.userID = document.getElementById('userID').textContent; // Current user ID.     
     }
 
@@ -127,13 +130,17 @@ class PrepareRequest {
     // Update urls.
     get updateUrl() {
         const curPage = document.getElementById('currentPage').textContent; // Current page.
-        console.log(curPage);
-        const newUrl = `http://${this.domain}/chat/${this.slug}/`; // New Url.
-        const pages = ['/chat/']; // Page.
-        
+        const origSlug = this.mixins.Slugify.result(titleCont.get); // Original slug/
+        const newUrl = this.mixins.Url.setup('/chat/', `${this.slug}/`);
+        const pages = ['chat']; // Page.
+
         // Check if current page is not home.
-        if (!pages.includes(curPage)){
-            window.history.pushState({}, '', newUrl); // Update a url in browser address bar.
+        if (!pages.includes(curPage)) {
+            
+            // Update only the current topic URL in the browser address bar.
+            if(curPage === origSlug)
+                window.history.pushState({}, '', newUrl); 
+            
             this.curTitle.setAttribute('href', newUrl);
             return;
         }
@@ -215,6 +222,7 @@ class BtnFrontEndFunc {
     // Front-end of edition.
     get edit() {
         this.titleElm.contentEditable = 'true';
+        this.titleElm.style.cursor = 'text';
         this.titleElm.focus();
         this.titleCont.store(this.titleElm.textContent.trim()); // Store title content.
         this.elm.nextSibling.classList.add('display-act-btn-confirm'); // Display action buttons.

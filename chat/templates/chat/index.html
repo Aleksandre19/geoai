@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load chat_filters %}
 {% block content %}
 <section id="chat-main">
     <div id="sidebar">
@@ -27,13 +28,13 @@
             {% include 'chat/question_form.html' %}
         </div>
     </div>
-    
+
 </section>
 {% endblock %}
 
 {% block bottom_js %}
     {{ slug|json_script:'chat-name'}}
     {{ user_id|json_script:'userID' }}
-    <script id='currentPage' type='application/json'>{{ request.get_full_path }}</script>
+    <script id='currentPage' type='application/json'>{{ request.get_full_path|current_page }}</script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
 {% endblock %}

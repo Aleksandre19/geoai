@@ -150,8 +150,16 @@ export class Store{
 export class Prevent {
     static click(e) {
         e.preventDefault();
-        console.log('prevent');
         return false;
+    }
+}
+
+
+export class Url{  
+    static setup(path, slug) {
+        const domain = window.location.host;
+        const protocol = 'http://'
+        return `${protocol}${domain}${path}${slug}`;
     }
 }
 
