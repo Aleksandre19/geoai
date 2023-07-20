@@ -194,9 +194,9 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color)
 }
 
-#chat-main #sidebar ul li:focus,
-#chat-main #sidebar ul li:focus-within,
-#chat-main #sidebar ul li:focus-visible {
+#chat-main #sidebar ul li > a:focus,
+#chat-main #sidebar ul li > a:focus-within,
+#chat-main #sidebar ul li > a:focus-visible {
     border-radius: 4px;
     outline: 1px solid var(--primary-color);
 }
@@ -291,13 +291,6 @@ section#chat-main div#sidebar div.sidebar-sections{
     margin-right: 16px;
 }
 
-/* Action confirmatio message focus state */
-/* #chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus,
-#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-within,
-#chat-main #sidebar ul li div.act-btn-confirm p.confirm-msg:focus-visible {
-    border-radius: 4px;
-    outline: 1px solid var(--primary-color);
-} */
 
 #chat-main #sidebar ul li div.topic-title-act-btn:hover, 
 #chat-main #sidebar ul li > a:hover ~ div .topic-title-act-btn{

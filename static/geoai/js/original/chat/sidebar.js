@@ -5,7 +5,8 @@
 import { Element, SetEvent, GrabElements } from './mixins';
 import { ModuleLoader } from './utilities';
 import { APIClient } from './apiClient';
-import { leaveActBtn, TitleAction } from './functions';
+import { leaveActBtn} from './functions';
+import { TitleActionBtn } from './titleActionBtn';
 
 let loader = new ModuleLoader([
     { module: 'mixins', func: 'Target' },
@@ -23,7 +24,7 @@ let actionWrapper = GrabElements.for('.act-wrapper');
 actionWrapper.forEach(element => {
     const titleLi = element.parentNode; // <li id='li-{{topic.id}}'>
     SetEvent.to([titleLi], 'mouseleave', () => leaveActBtn.hide(titleLi));
-    SetEvent.to([element], 'click', TitleAction.define);
+    SetEvent.to([element], 'click', TitleActionBtn.define);
 });
 
 
