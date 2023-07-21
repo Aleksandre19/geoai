@@ -15,10 +15,6 @@ let loader = new ModuleLoader([
     // { module: 'topicTitleActions', func: 'topicTitleActions' },
 ]);
 
-// const l = document.querySelector('.act-btn-confirm');
-// l.addEventListener('mouseleave', () => {
-//     console.log('leaved');
-// });
 
 let actionWrapper = GrabElements.for('.act-wrapper');
 actionWrapper.forEach(element => {
@@ -27,10 +23,7 @@ actionWrapper.forEach(element => {
     SetEvent.to([element], 'click', TitleActionBtn.define);
 });
 
-
-
 // Testing 
-
 function testFunc(e) {
     e.preventDefault();
     try {

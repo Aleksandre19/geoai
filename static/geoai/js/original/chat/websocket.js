@@ -1,8 +1,19 @@
+import { ModuleLoader } from './utilities';
+import { SetEvent, Url } from './mixins';
+
+const loader = new ModuleLoader([
+    { module: 'mixins', func: 'SetEvent' },
+    { module: 'mixins', func: 'Element' },
+    { module: 'mixins', func: 'Prevent' },
+    { module: 'mixins', func: 'Disable' },
+]);
+
 import {
     removeLoading,
     enableButton,
     aID
 } from './websocketHelpers'
+
 
 // Generate a WebSocket URL.
 const generateUrl = (slug) => {
@@ -15,9 +26,69 @@ const generateUrl = (slug) => {
     return url
 }
 
+class WebSocketClient {
+    constructor(slug) {
+        this.slug = (typeof slug == 'undefined') ? '' : slug;
+        this.init();
+    }
+
+    init() { // Step 01.
+        this.socketUrl = Url.setup('ws://', '/ws/chat/', this.slug);
+        this.socket = new WebSocket(this.socketUrl);
+
+        this.onClick();
+    }
+
+    async onClick() { // Step 02.
+        try {
+            // Load modules.
+            this.mixins = await loader.load(['Element',
+                'SetEvent', 'Prevent', 'Disable']); 
+            
+            // Setup button element.
+            this.mixins.Element.setup('#chat-message-submit',
+                'click', this.eventFunc.bind(this)); 
+            
+        } catch (error) {
+            throw new Error(`Something went wrong. ${error.message}`);
+        }
+    }
+
+    eventFunc(e) { // Onclick event (Step 03)
+        this.mixins.Prevent.click(e);
+        const msgInput = document.getElementById('chat-message-input').value;
+
+        if (msgInput == '')
+             return;     
+        
+        this.mixins.Disable.btn('#chat-message-submit');
+        
+        this.questionProcess;
+    }
+
+    get questionProcess() { // Step 04
+        this.createQaHtml; 
+    }
+
+    get createQaHtml() { // Step 05
+        const imageUrl = 'http://' + window.location.host + '/static/geoai/images/answer_waiting_gray.gif';
+        const elmList = [
+            { elm: 'div', id: 'ID', classe: ['qa-block'] },
+            { elm: 'div', classe: ['q-block'] },
+            { elm: 'p', id: 'q-blockID', classe: ['q-paragraph', 'b-block-content'] },
+            { elm: 'div', classe: ['a-block', 'skeleton-loading'] },
+            { elm: 'p', id: 'aID', classe: ['q-paragraph', 'b-block-content'] },
+            { elm: 'img', classe: ['answer_waiting_gif'], imgUrl: imageUrl }
+        ]
+        this.mixins.Element.create(elmList);
+    }
+
+}
+
+const testSocket = new WebSocketClient();
+
 // Instantiate the WebSocket.
 export function createChatSocket(slug) {
-
     const chatSocket = new WebSocket(generateUrl(slug));
 
     chatSocket.onmessage = function (e) {

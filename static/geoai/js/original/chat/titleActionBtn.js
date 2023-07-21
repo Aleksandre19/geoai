@@ -107,7 +107,7 @@ class PrepareRequest {
         this.titleBlock = document.getElementById(`li-${this.id}`); // <li id='li-{{topic.id}}'>   
         this.curTitle = document.getElementById(`title-${this.id}`);// Title `a` element.
         this.endPoint = `topics/${this.id}/`;
-        this.url = this.mixins.Url.setup('/api/', '');      
+        this.url = this.mixins.Url.setup('http://','/api/', '');      
         this.api = new this.mixins.APIClient(this.url); // API Client.
         this.slug = this.mixins.Slugify.result(this.trimTitle);
         this.userID = document.getElementById('userID').textContent; // Current user ID.     
@@ -131,7 +131,7 @@ class PrepareRequest {
     get updateUrl() {
         const curPage = document.getElementById('currentPage').textContent; // Current page.
         const origSlug = this.mixins.Slugify.result(titleCont.get); // Original slug/
-        const newUrl = this.mixins.Url.setup('/chat/', `${this.slug}/`);
+        const newUrl = this.mixins.Url.setup('http://','/chat/', `${this.slug}/`);
         const pages = ['chat']; // Page.
 
         // Check if current page is not home.
@@ -160,6 +160,9 @@ class PrepareRequest {
         
         // Set updated content to title.
         this.curTitle.textContent = addEllipsis;
+
+        // Add a mouse ponter back.
+        this.curTitle.style.cursor = 'pointer';
 
         // Toggling styles of action btn and confirm btn blocks.
         this.e.target.parentNode.classList

@@ -1,14 +1,5 @@
-// import { ModuleLoader } from './utilities';
 import { Prevent } from './mixins';
 import { titleAct, titleCont } from './titleActionBtn';
-// const titleAct = new Store();
-// const titleCont = new Store();
-
-// let loader = new ModuleLoader([
-//     { module: 'mixins', func: 'Target' },
-//     { module: 'apiClient', func: 'APIClient' },
-//     { module: 'utilities', func: 'Slugify'},
-// ]);
 
 
 // Functions used acrose the application.

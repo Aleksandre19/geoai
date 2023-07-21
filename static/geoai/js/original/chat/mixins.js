@@ -1,6 +1,12 @@
+import { Unique } from "./utilities";
+
 export class GrabElements {
     static for(attr) {
         return Array.from(document.querySelectorAll(attr));
+    }
+
+    static single(attr) {
+        return document.querySelector(attr);
     }
 }
 
@@ -147,6 +153,7 @@ export class Store{
     }
 }
 
+
 export class Prevent {
     static click(e) {
         e.preventDefault();
@@ -156,10 +163,19 @@ export class Prevent {
 
 
 export class Url{  
-    static setup(path, slug) {
+    static setup(protocol,path, slug) {
         const domain = window.location.host;
-        const protocol = 'http://'
+        //const protocol = 'http://'
         return `${protocol}${domain}${path}${slug}`;
+    }
+}
+
+
+export class Disable{
+    static btn(attr) {
+        const elm = GrabElements.single(attr);
+        elm.disabel = true;
+        elm.classList.add('disabled-btn');
     }
 }
 
@@ -169,7 +185,30 @@ export class Element {
         const element = GrabElements.for(attr);
         SetEvent.to(element, event, func);
     }
+
+    static create(element) {
+        let createdElm = []
+        element.forEach(elm => {
+            let uniqueID = Unique.ID;
+            
+            const newElm = document.createElement(elm.elm);
+            newElm.classList.add(...elm.classe);
+
+            if (typeof elm.id != 'undefined')
+                elm.id = elm.id.replace('ID', uniqueID);
+            
+            if (typeof elm.imgUrl != 'undefined')
+                newElm.setAttribute('src', elm.imgUrl);
+
+            createdElm.push(newElm);
+        });
+        console.log(createdElm);
+        return createdElm;
+    }
 }
+
+// Jus for remainder. 
+// i = (i + 1) % array.length ---> `i` will not go over the length of the array.
 
 
 
