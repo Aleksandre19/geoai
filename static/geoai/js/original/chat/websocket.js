@@ -67,18 +67,18 @@ class WebSocketClient {
     }
 
     get questionProcess() { // Step 04
-        this.createQaHtml; 
+        this.createQaHtml;
     }
 
     get createQaHtml() { // Step 05
         const imageUrl = 'http://' + window.location.host + '/static/geoai/images/answer_waiting_gray.gif';
         const elmList = [
-            { elm: 'div', id: 'ID', classe: ['qa-block'] },
-            { elm: 'div', classe: ['q-block'] },
-            { elm: 'p', id: 'q-blockID', classe: ['q-paragraph', 'b-block-content'] },
-            { elm: 'div', classe: ['a-block', 'skeleton-loading'] },
-            { elm: 'p', id: 'aID', classe: ['q-paragraph', 'b-block-content'] },
-            { elm: 'img', classe: ['answer_waiting_gif'], imgUrl: imageUrl }
+            { elm: 'div', id: 'ID', classe: ['qa-block'], parent: 1, child: null},
+            { elm: 'div', classe: ['q-block'], parent: 2, child: 1},
+            { elm: 'p', id: 'q-blockID', classe: ['q-paragraph', 'b-block-content'], parent: 3, child: 2},
+            { elm: 'div', classe: ['a-block', 'skeleton-loading'], parent: 4, child: 1},
+            { elm: 'p', id: 'aID', classe: ['q-paragraph', 'b-block-content'], parent: 5, child: 4},
+            { elm: 'img', classe: ['answer_waiting_gif'], imgUrl: imageUrl, parent: 6, child: 5}
         ]
         this.mixins.Element.create(elmList);
     }

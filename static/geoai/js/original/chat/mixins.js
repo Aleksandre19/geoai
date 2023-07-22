@@ -186,24 +186,33 @@ export class Element {
         SetEvent.to(element, event, func);
     }
 
-    static create(element) {
-        let createdElm = []
-        element.forEach(elm => {
+    static create(elements) {
+        let createdElements = {};
+        elements.forEach(elm => {
             let uniqueID = Unique.ID;
             
             const newElm = document.createElement(elm.elm);
             newElm.classList.add(...elm.classe);
 
             if (typeof elm.id != 'undefined')
-                elm.id = elm.id.replace('ID', uniqueID);
+                newElm.id = elm.id.replace('ID', uniqueID);
             
             if (typeof elm.imgUrl != 'undefined')
                 newElm.setAttribute('src', elm.imgUrl);
+            
+            createdElements[elm.parent] = newElm;
 
-            createdElm.push(newElm);
         });
-        console.log(createdElm);
-        return createdElm;
+
+        // Create elements hierarchy.
+        elements.forEach(elm => {
+            if (elm.child === null || !createdElements[elm.child]) return;
+            createdElements[elm.child].appendChild(createdElements[elm.parent]);
+        });
+
+        // Append the created elements to the DOM.
+        let root = document.querySelector('.chat-qa-content');
+        root.appendChild(createdElements[1]);
     }
 }
 
