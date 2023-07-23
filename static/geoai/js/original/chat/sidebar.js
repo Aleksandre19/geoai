@@ -2,64 +2,67 @@
     This script adds interection to the topic title's action buttons
     such as Edit, Delete, Approve and close.
 */
-import { Element, SetEvent, GrabElements } from './mixins';
-import { ModuleLoader } from './utilities';
-import { APIClient } from './apiClient';
+import { SetEvent, GrabElements } from './mixins';
+// import { ModuleLoader } from './utilities';
+// import { APIClient } from './apiClient';
 import { leaveActBtn} from './functions';
 import { TitleActionBtn } from './titleActionBtn';
 
-let loader = new ModuleLoader([
-    { module: 'mixins', func: 'Target' },
-    { module: 'utilities', func: 'Slugify' },
-    { module: 'mixins', func: 'CurrentAction' },
-    // { module: 'topicTitleActions', func: 'topicTitleActions' },
-]);
+// let loader = new ModuleLoader([
+//     { module: 'mixins', func: 'Target' },
+//     { module: 'utilities', func: 'Slugify' },
+//     { module: 'mixins', func: 'CurrentAction' },
+//     // { module: 'topicTitleActions', func: 'topicTitleActions' },
+// ]);
 
-
-let actionWrapper = GrabElements.for('.act-wrapper');
-actionWrapper.forEach(element => {
-    const titleLi = element.parentNode; // <li id='li-{{topic.id}}'>
-    SetEvent.to([titleLi], 'mouseleave', () => leaveActBtn.hide(titleLi));
-    SetEvent.to([element], 'click', TitleActionBtn.define);
-});
+export class Sidebar {
+    static get setup() { 
+        let actionWrapper = GrabElements.for('.act-wrapper');
+        actionWrapper.forEach(element => {
+            const titleLi = element.parentNode; // <li id='li-{{topic.id}}'>
+            SetEvent.to([titleLi], 'mouseleave', () => leaveActBtn.hide(titleLi));
+            SetEvent.to([element], 'click', TitleActionBtn.define);
+        });
+    }
+}
 
 // Testing 
-function testFunc(e) {
-    e.preventDefault();
-    try {
-        loader.load(['Slugify', 'Target', 'CurrentAction']).then(mixins => {
-            const url = 'http://' + window.location.host + '/api/';
-            const id = mixins.Target.id(e);
-            const endPoint = `topics/${id}/`;
+// function testFunc(e) {
+//     e.preventDefault();
+//     try {
+//         loader.load(['Slugify', 'Target', 'CurrentAction']).then(mixins => {
+//             const url = 'http://' + window.location.host + '/api/';
+//             const id = mixins.Target.id(e);
+//             const endPoint = `topics/${id}/`;
 
-            const updated_title = 'da me vashaaaa'
-            // const slugify = mixins.Slugify();
-            const slugA = mixins.Slugify.result(updated_title)
-            const data = {
-                "user": "http://127.0.0.1:8000/api/users/aleksandre.development@gmail.com",
-                "title": updated_title,
-                "slug": slugA
-            }
+//             const updated_title = 'da me vashaaaa'
+//             // const slugify = mixins.Slugify();
+//             const slugA = mixins.Slugify.result(updated_title)
+//             const data = {
+//                 "user": "http://127.0.0.1:8000/api/users/aleksandre.development@gmail.com",
+//                 "title": updated_title,
+//                 "slug": slugA
+//             }
 
-            const api = new APIClient(url)
-            const current = mixins.CurrentAction.get('update'); // Testing
-            console.log(current)
-            if (current == 'delete') {
-                console.log(endPoint);
-                api.delete(endPoint)
-            } else if (current == 'update') {
-                if (data) {
-                    console.log('data')
-                    api.update(endPoint, data)
-                }
-            }
-            console.log(url);
-        });
-    } catch (error) {
-       throw new Error(`Failed to load module: f${error.message}`);
-    }
+//             const api = new APIClient(url)
+//             const current = mixins.CurrentAction.get('update'); // Testing
+//             console.log(current)
+//             if (current == 'delete') {
+//                 console.log(endPoint);
+//                 api.delete(endPoint)
+//             } else if (current == 'update') {
+//                 if (data) {
+//                     console.log('data')
+//                     api.update(endPoint, data)
+//                 }
+//             }
+//             console.log(url);
+//         });
+//     } catch (error) {
+//        throw new Error(`Failed to load module: f${error.message}`);
+//     }
     
-}
+// }
 
 // Element.setup('.geoai-check-icon', 'click', testFunc);
 

@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block bottom_js %}
-    {{ slug|json_script:'chat-name'}}
+    {{ slug|json_script:'slug'}}
     {{ user_id|json_script:'userID' }}
     <script id='currentPage' type='application/json'>{{ request.get_full_path|current_page }}</script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
