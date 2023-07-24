@@ -194,8 +194,9 @@ def call_apis(user, geo_question, slug):
     # formated_geo_response = text_format(response_return_snippet)
     # Reassembly the translated text and the extracted content.
 
-    # if not slug:
-    #     slug = slugify(question_geo_to_eng[:20])
+    if not slug:
+        slug = slugify(eng_question[:20])
+        
     topic = get_topic(slug)
     insert_content(
         topic, user, slug, 

@@ -68,7 +68,8 @@ export class Element {
             let uniqueID = Unique.ID;
             
             const newElm = document.createElement(elm.elm); // Create element.
-            newElm.classList.add(...elm.classe); // Add classes to created elements.
+            if (elm.classe)
+                newElm.classList.add(...elm.classe); // Add classes to created elements.
 
             // Set ids for created elements.
             if (typeof elm.id != 'undefined')
