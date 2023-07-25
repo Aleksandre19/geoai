@@ -28,4 +28,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
         result = await sync_to_async(websocket_chat)(self.scope['user'], message, slug)
         response = result['response']['geo']
         slug = result['response']['slug']
-        await self.send(text_data=json.dumps({"message": response, 'slug':slug}))
+        topic_id = result['response']['topic_id']
+        await self.send(text_data=json.dumps({"message": response, 'slug':slug, 'topicID':topic_id}))

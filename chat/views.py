@@ -162,6 +162,10 @@ def insert_content(
     # Add new topic in the cache.
     add_to_cache(topic)
 
+    return {
+        'topic_id': topic.id,
+    }
+
 
 
 def call_apis(user, geo_question, slug):
@@ -198,7 +202,7 @@ def call_apis(user, geo_question, slug):
         slug = slugify(eng_question[:20])
         
     topic = get_topic(slug)
-    insert_content(
+    result = insert_content(
         topic, user, slug, 
         geo_question,
         eng_question,
@@ -216,6 +220,7 @@ def call_apis(user, geo_question, slug):
             'geo': formated_geo_response,
             'eng': unformated_eng_response,
             'slug': slug,
+            'topic_id': result['topic_id'],
         }
     }
 

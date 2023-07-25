@@ -32,7 +32,7 @@ export class ModuleLoader{
     //
     async load(moduleName) {
         let combinedModules = {}
-        const imports = moduleName.map(async (moduleName) => { 
+        const imports = moduleName.map(async (moduleName) => { // Loop through module names.
 
             // Get module and function name.
             const { module, func } = this.modules[moduleName];
@@ -65,28 +65,29 @@ export class Element {
     static create(elements) {
         let createdElements = {};
         elements.forEach(elm => {
-            let uniqueID = Unique.ID;
+            let uniqueID = Unique.ID; // Generate unique id.
             
             const newElm = document.createElement(elm.elm); // Create element.
+
             if (elm.classe)
                 newElm.classList.add(...elm.classe); // Add classes to created elements.
 
             // Set ids for created elements.
-            if (typeof elm.id != 'undefined')
-                newElm.id = elm.id.replace('ID', uniqueID);
+            if (typeof elm.id != 'undefined' && elm.id.includes('ID')) // Check if id includes ID.
+                newElm.id = elm.id.replace('ID', uniqueID); // Replace ID with unique id.
+            else
+                newElm.id = elm.id; // If not ID, set id to element.
             
-            // Save ids of created elements.
-            if (elm.elm === 'p' && elm.id[0] === 'q')
-                createdElements['qp'] = newElm.id; // Question paragraph.
-            else if (elm.elm === 'p' && elm.id[0] === 'a')
-                createdElements['ap'] = newElm.id; // Answer paragraph.
-            else if (elm.elm === 'div' && elm.classe[0] === 'qa-block')
-                createdElements['qaBlock'] = newElm.id; // QA block.
+            if (elm.saveID) // Save id of created element.
+                createdElements[elm.saveID] = newElm.id; 
+            
+            if (elm.saveElm) // Save id of created element.
+                createdElements[elm.saveElm] = newElm; 
             
             // Set image url.
             if (typeof elm.imgUrl != 'undefined')
                 newElm.setAttribute('src', elm.imgUrl);
-            
+                    
             // Save created elements.
             createdElements[elm.parent] = newElm;
 
@@ -105,13 +106,35 @@ export class Element {
     }
 
     // Append elements to container.
-    static appentToContainer(elms, attr) {
+    static appentToContainer(elms, attr, before) {
         let container = document.querySelector(attr); // Get container.
+
+        // Append root element to container as first element. 
+        if (before) { container.insertBefore(elms[1], container.firstChild); return; }
+
         container.appendChild(elms[1]); // Append root element to container.
     }
+
+    static setAttribute(elmAttr, attr, value) {
+        document.querySelector(elmAttr).setAttribute(attr, value);
+    }
+
+    // static setAttribute(container, elmAttr, setAttr, value) {
+    //     const elements = Array.from(container.querySelectorAll(elmAttr));
+    //     elements.forEach(element => { 
+    //         element.setAttribute(setAttr, value);
+    //     });
+    // }
 
     // Set content to element.
     static setContent(attr, text) { 
         document.querySelector(attr).textContent = text; // Set content.      
+    }
+
+    static setElmStyle(attr, styles) {
+        const element = document.querySelector(attr);
+        for (const [prop, value] of Object.entries(styles)) {
+            element.style[prop] = value;
+        }
     }
 }

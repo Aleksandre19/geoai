@@ -184,11 +184,15 @@ export class Prevent {
 }
 
 
-// Generate url for API.
+// Generate url.
 export class Url {
     static setup(protocol, path, slug) {   
         const domain = window.location.host; // Get domain name.
         return `${protocol}${domain}${path}${slug}`;
+    }
+
+    static addressBar(url) {
+        window.history.pushState({}, '', url);
     }
 }
 

@@ -9,7 +9,10 @@ const loader = new ModuleLoader([
     { module: 'mixins', func: 'Button' },
     { module: 'mixins', func: 'Scroll' },
     { module: 'mixins', func: 'Remove' },
+    { module: 'mixins', func: 'Url' },
     { module: 'utilities', func: 'Slugify' },
+    { module: 'functions', func: 'leaveActBtn' },
+    { module: 'titleActionBtn', func: 'TitleActionBtn' },
 ]);
 
 
@@ -21,7 +24,6 @@ export class WebSocketClient {
         this.socketSlug = (slug) ? slug + '/' : ''; // add `/` for django urls.
         this.questionSent = false;
         this.init();
-        // console.log('Constructor newTopic', this.newTopic);
     }
 
     // Initialize the WebSocket.
@@ -57,7 +59,12 @@ export class WebSocketClient {
             await this.loadModulesOnEvent(); // Step 04 (Load modules on event).
             this.questionSent = true;
             this.newTopic = this.slug;
-            // console.log('eventFunc newTopic', this.newTopic);
+            this.topicTitle = this.questionText.slice(0, 15);
+            
+            // If title is longer than 15 characters, add `...` to the end.
+            this.topicTitle = (this.topicTitle.length >= 15)
+                ? this.topicTitle + '...' : this.topicTitle;
+            
             // Disable button.
             this.mixins.Button.disable('#chat-message-submit');
             this.questionProcess(); // Step 05 (Question process)
@@ -72,8 +79,8 @@ export class WebSocketClient {
     async loadModulesOnEvent() {
         try {
             this.mixins = await loader.load([
-                'SetEvent', 'Prevent', 'Button',
-                'Scroll', 'Remove', 'Slugify'
+                'SetEvent', 'Prevent', 'Button', 'Scroll', 'Url',
+                'Remove', 'Slugify', 'leaveActBtn', 'TitleActionBtn'   
             ]); 
         } catch (error) {
             this.questionSent = false;
@@ -95,18 +102,19 @@ export class WebSocketClient {
 
     get createQaElements() {
         // Loading image url.
-        const imageUrl = 'http://' + window.location.host + '/static/geoai/images/answer_waiting_gray.gif';
+        const imageUrl = 'http://' + window.location.host
+            + '/static/geoai/images/answer_waiting_gray.gif';
         
         // Setup elements settings.
             // Important notes:
             // 1. Element parent property is the index of the child element.
             // 2. Class and ID names must be as same as it is in the this example.
         const elmList = [
-            { elm: 'div', id: 'blockID', classe: ['qa-block'], parent: 1, child: null},
+            { elm: 'div', id: 'blockID', classe: ['qa-block'], parent: 1, child: null, saveID: 'qaBlock'},
             { elm: 'div', classe: ['q-block'], parent: 2, child: 1},
-            { elm: 'p', id: 'q-blockID', classe: ['q-paragraph', 'b-block-content'], parent: 3, child: 2},
+            { elm: 'p', id: 'q-blockID', classe: ['q-paragraph', 'b-block-content'], parent: 3, child: 2, saveID: 'qp'},
             { elm: 'div', classe: ['a-block', 'skeleton-loading'], parent: 4, child: 1},
-            { elm: 'p', id: 'aID', classe: ['q-paragraph', 'b-block-content'], parent: 5, child: 4},
+            { elm: 'p', id: 'aID', classe: ['q-paragraph', 'b-block-content'], parent: 5, child: 4, saveID: 'ap'},
             { elm: 'img', classe: ['answer_waiting_gif'], imgUrl: imageUrl, parent: 6, child: 5}
         ]
 
@@ -132,7 +140,7 @@ export class WebSocketClient {
     get handleSlug() {
         if(!this.slug) {
             this.slug = this.mixins.Slugify.result(
-                this.questionText.slice(0, 20)
+                this.topicTitle
             );
         }
     }
@@ -182,21 +190,71 @@ export class WebSocketClient {
         this.mixins.Remove.Loading(`#${this.createdElm['qaBlock']} > .a-block`, 'skeleton-loading'); // Remove loading gif.
         this.mixins.Button.enable('#chat-message-submit'); // Enable button.
         this.mixins.Scroll.toBottom('.chat-qa-content'); // Scroll to bottom.
-        this.slug = data.slug;
+        this.slug = data.slug; // Set slug from the response.
+        this.topicID = data.topicID // Set topic id from the response.;
         this.questionSent = false;
     }
 
     get addTitleToSidebar() {
-        // console.log('eventFunc newTopic', this.newTopic);
-        if (this.newTopic) return; // If slug is not empty, do nothing.
+        // If slug is not empty, do nothing.
+        if (this.newTopic) return;
 
         if(!this.newTopic) {
-            const elmList = [
-                { elm: 'li', id: 'li-ID', parent: 1, child: null },
-                { elm: 'a', id: 'a-ID', parent: 2, child: 1 },
+            const elmList = [ // Setup elements settings.
+                { elm: 'li', id: `li-${this.topicID}`, parent: 1, child: null, saveID: 't-li' },
+                { elm: 'a', id: `title-${this.topicID}`, classe: ['title-link'], parent: 2, child: 1,  saveID: 't-a' },
             ];
-            const titleElms = Element.create(elmList);
-            // console.log(titleElms);
+            this.titleElms = Element.create(elmList); // Create elements.
+
+            // Append elements to container.
+            Element.appentToContainer(this.titleElms, '.topic-title-ul', true);
+            
+            // Set content to the element.
+            Element.setContent(`#${this.titleElms['t-a']}`, this.topicTitle); 
+            
+            // Set `href` attribute to the new added title.
+            Element.setAttribute(`#${this.titleElms['t-a']}`, 'href', '/chat/' + this.slug);
+
+            // Set attributes to the new added title.
+            Element.setElmStyle(`#${this.titleElms['t-a']}`, 
+                { 'cursor': 'pointer', 'contenteditable': 'false' });
+            
+            // Set event to the new added title.
+            this.mixins.SetEvent.to([this.titleElms[1]], 'mouseleave',
+                () => this.mixins.leaveActBtn.hide(this.titleElms[1]));
+            
+            // Action buttons.
+            this.addActionBtn;
         }
+    }
+
+    // Action buttons.
+    get addActionBtn() {
+        const elmList = [ // Setup elements settings.
+            { elm: 'div', id: 'ID', classe: ['act-wrapper'], parent: 1, child: null, saveID: 'rootID'},
+            { elm: 'div', id: 'btnsID', classe: ['topic-title-act-btn'], parent: 2, child: 1 },
+            { elm: 'a', id: `${this.topicID}`, classe: ['geoai-icons', 'geoai-edit-icon'], parent: 3, child: 2 },
+            { elm: 'a', id: `${this.topicID}`, classe: ['geoai-icons', 'geoai-trash-icon'], parent: 4, child: 2 },
+            { elm: 'div', id: 'btnsID', classe: ['act-btn-confirm'], parent: 5, child: 1 },
+            { elm: 'a', id: `${this.topicID}`, classe: ['geoai-icons', 'geoai-check-icon'], parent: 6, child: 5 },
+            { elm: 'a', id: `${this.topicID}`, classe: ['geoai-icons', 'geoai-x-icon'], parent: 7, child: 5 },
+        ];
+        this.titleActElms = Element.create(elmList);//
+
+        // Append elements to container.
+        Element.appentToContainer(this.titleActElms, `#${this.titleElms['t-li']}`);
+
+        // Get all links.
+        const newLinks = this.titleActElms[1].querySelectorAll('.geoai-icons'); 
+
+        // Set attributies and events to the action buttons.
+        newLinks.forEach(element => {
+            element.setAttribute('href', '#');
+            this.mixins.SetEvent.to([element], 'click', this.mixins.TitleActionBtn.define);
+        });
+
+        // Update url in the address bar.
+        const newUrl = this.mixins.Url.setup('http://', '/chat/', this.slug);
+        this.mixins.Url.addressBar(newUrl);
     }
 }
