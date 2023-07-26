@@ -128,20 +128,35 @@ class PrepareRequest {
     }
 
     // Update urls.
-    get updateUrl() {
+    updateUrl(action) {
+        const allowedActions = ['edit', 'delete'];
+        if (!allowedActions.includes(action)) return;
+
         const curPage = document.getElementById('currentPage').textContent; // Current page.
-        const origSlug = this.mixins.Slugify.result(titleCont.get); // Original slug/
-        const newUrl = this.mixins.Url.setup('http://','/chat/', `${this.slug}/`);
+        const origSlug = this.mixins.Slugify.result(titleCont.get); // Original slug
+
+
+        let newUrl, txtContent;
+        if (action === 'delete') {
+            newUrl = this.mixins.Url.setup('http://', '/chat/', '');
+            txtContent = 'chat'
+        } else if (action === 'edit') {
+            newUrl = this.mixins.Url.setup('http://', '/chat/', `${this.slug}/`);
+            txtContent = this.slug;
+        }
+
         const pages = ['chat']; // Page.
 
         // Check if current page is not home.
         if (!pages.includes(curPage)) {
-            
             // Update only the current topic URL in the browser address bar.
             if(curPage === origSlug)
                 window.history.pushState({}, '', newUrl); 
             
             this.curTitle.setAttribute('href', newUrl);
+
+            // Update the current page in the chat/index.html.
+            document.getElementById('currentPage').textContent = txtContent;
             return;
         }
 
@@ -180,13 +195,14 @@ class PrepareRequest {
     async deletion() {
         await this.api.delete(this.endPoint);
         this.removeBlock;
+        this.updateUrl('delete');
     }
 
     // Call API's edition.
     async edition() {
         await this.api.update(this.endPoint, this.data);
         this.updateTitle;
-        this.updateUrl;
+        this.updateUrl('edit');
     }   
 }
 

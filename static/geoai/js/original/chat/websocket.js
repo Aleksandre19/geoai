@@ -256,5 +256,8 @@ export class WebSocketClient {
         // Update url in the address bar.
         const newUrl = this.mixins.Url.setup('http://', '/chat/', this.slug);
         this.mixins.Url.addressBar(newUrl);
+
+        // Update the current page in the chat/index.html.
+        document.getElementById('currentPage').textContent = this.slug;
     }
 }
