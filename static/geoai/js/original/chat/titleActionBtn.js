@@ -194,6 +194,7 @@ class PrepareRequest {
     // Call API's deletetion.
     async deletion() {
         await this.api.delete(this.endPoint);
+        titleAct.clear;
         this.removeBlock;
         this.updateUrl('delete');
     }

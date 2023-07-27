@@ -21,7 +21,7 @@ export class WebSocketClient {
     constructor(slug) {
         this.slug = slug; // Current slug.
         this.newTopic = (!slug) ? null : slug;;
-        this.socketSlug = (slug) ? slug + '/' : ''; // add `/` for django urls.
+        this.socketSlug = (slug) ? slug + '/' : ''; // add a `/` for django urls.
         this.questionSent = false;
         this.init();
     }
@@ -62,8 +62,8 @@ export class WebSocketClient {
             this.topicTitle = this.questionText.slice(0, 15);
             
             // If title is longer than 15 characters, add `...` to the end.
-            this.topicTitle = (this.topicTitle.length >= 15)
-                ? this.topicTitle + '...' : this.topicTitle;
+            // this.topicTitle = (this.topicTitle.length >= 15)
+            //     ? this.topicTitle + "..." : this.topicTitle;
             
             // Disable button.
             this.mixins.Button.disable('#chat-message-submit');
@@ -98,6 +98,8 @@ export class WebSocketClient {
         this.onSocketClose; // Step 12 (Handle socket close).
         await this.receiveAnswer(); // Step 13 (Receive answer from the server).
         this.addTitleToSidebar; // Step 14 (Add title to sidebar).
+        this.ellipsis; // Show/Hide Ellipsis.
+        this.addActionBtn; // Set up action button to newlly created title.
     }
 
     get createQaElements() {
@@ -202,15 +204,16 @@ export class WebSocketClient {
         if(!this.newTopic) {
             const elmList = [ // Setup elements settings.
                 { elm: 'li', id: `li-${this.topicID}`, parent: 1, child: null, saveID: 't-li' },
-                { elm: 'a', id: `title-${this.topicID}`, classe: ['title-link'], parent: 2, child: 1,  saveID: 't-a' },
+                { elm: 'a', id: `title-${this.topicID}`, classe: ['title-link'], parent: 2, child: 1, saveID: 't-a' },
             ];
             this.titleElms = Element.create(elmList); // Create elements.
 
             // Append elements to container.
-            Element.appentToContainer(this.titleElms, '.topic-title-ul', true);
+            Element.appentToContainer(this.titleElms, '.topic-title-ul', true);        
             
+            const titleCont = `${this.topicTitle}<spna id='ellipsis-id'>...</span>`;
             // Set content to the element.
-            Element.setContent(`#${this.titleElms['t-a']}`, this.topicTitle); 
+            Element.setContent(`#${this.titleElms['t-a']}`, titleCont);
             
             // Set `href` attribute to the new added title.
             Element.setAttribute(`#${this.titleElms['t-a']}`, 'href', '/chat/' + this.slug);
@@ -222,9 +225,19 @@ export class WebSocketClient {
             // Set event to the new added title.
             this.mixins.SetEvent.to([this.titleElms[1]], 'mouseleave',
                 () => this.mixins.leaveActBtn.hide(this.titleElms[1]));
-            
-            // Action buttons.
-            this.addActionBtn;
+        }
+    }
+
+    // Show/Hide Ellipsis.
+    get ellipsis() {
+        // If title is longer than 15 characters, add `...` to the end.
+        const elpsisElm = document.getElementById('ellipsis-id');
+        if (this.topicTitle.length >= 15) {
+            elpsisElm.classList.remove('hide-ellipsis');
+            elpsisElm.classList.add('show-ellipsis');
+        } else {
+            elpsisElm.classList.remove('show-ellipsis')
+            elpsisElm.classList.add('hide-ellipsis')
         }
     }
 

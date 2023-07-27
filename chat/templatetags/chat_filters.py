@@ -1,6 +1,6 @@
 from django import template
-# from django.utils.safestring import mark_safe
-# from django.utils.html import format_html, escape
+from django.utils.safestring import mark_safe
+from django.utils.html import format_html #, escape
 # import re
 
 register = template.Library()
@@ -9,8 +9,8 @@ register = template.Library()
 @register.filter
 def add_ellipsis(text):
     if len(text) >= 15:
-        text = text + '...'
-    return text
+        text = text + "<span classe='show-ellipsis'>...</span>"
+    return mark_safe(format_html(text));
 
 
 @register.filter

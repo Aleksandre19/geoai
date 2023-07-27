@@ -10,7 +10,10 @@ export class leaveActBtn {
         const titleElm = document.getElementById(`title-${wrapperID}`) // <a href="{% url 'topic' topic.slug %}"...
         titleElm.style.cursor = 'pointer';
         titleElm.contentEditable = 'false';
-        // Replace confirmation message with original title's content if delete was triggered before.
+
+        // If `deletion` was triggerd by clickin on trash icon, 
+        // and then leaving current title without confirming it
+        // the title content will be restored on the `mouseleace` event.
         const curActions = ['delete']; // Click on trash icon.
         if (curActions.includes(titleAct.get))
             titleElm.textContent = titleCont.get;

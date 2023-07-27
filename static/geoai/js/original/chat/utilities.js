@@ -128,7 +128,7 @@ export class Element {
 
     // Set content to element.
     static setContent(attr, text) { 
-        document.querySelector(attr).textContent = text; // Set content.      
+        document.querySelector(attr).innerHTML = text; // Set content.      
     }
 
     static setElmStyle(attr, styles) {
