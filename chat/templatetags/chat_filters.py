@@ -9,7 +9,9 @@ register = template.Library()
 @register.filter
 def add_ellipsis(text):
     if len(text) >= 15:
-        text = text + "<span classe='show-ellipsis'>...</span>"
+        text = '...'
+    else:
+        text = ''
     return mark_safe(format_html(text));
 
 

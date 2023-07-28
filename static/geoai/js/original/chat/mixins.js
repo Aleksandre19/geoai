@@ -233,6 +233,26 @@ export class Remove {
 }
 
 
+export class Ellipsis {
+    constructor(elmID) {
+        console.log(elmID);
+        this.elm = document.getElementById(elmID);
+    }
+
+    get hide() {
+        this.elm.classList.add('hide-ellipsis');
+    }
+
+    get show() {   
+        this.elm.classList.remove('hide-ellipsis');
+    } 
+    
+    get toggle() {   
+        this.elm.classList.toggle('hide-ellipsis');
+    }
+}
+
+
 // Jus for remainder. 
 // i = (i + 1) % array.length ---> `i` will not go over the length of the array.
 

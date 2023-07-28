@@ -205,15 +205,19 @@ export class WebSocketClient {
             const elmList = [ // Setup elements settings.
                 { elm: 'li', id: `li-${this.topicID}`, parent: 1, child: null, saveID: 't-li' },
                 { elm: 'a', id: `title-${this.topicID}`, classe: ['title-link'], parent: 2, child: 1, saveID: 't-a' },
+                { elm: 'span', id: `t-span-${this.topicID}`, parent: 3, child: 2, saveID: 't-span' },
+                { elm: 'span', id: `el-span-${this.topicID}`, parent: 4, child: 2, saveID: 'el-span' },
             ];
             this.titleElms = Element.create(elmList); // Create elements.
 
             // Append elements to container.
             Element.appentToContainer(this.titleElms, '.topic-title-ul', true);        
             
-            const titleCont = `${this.topicTitle}<spna id='ellipsis-id'>...</span>`;
             // Set content to the element.
-            Element.setContent(`#${this.titleElms['t-a']}`, titleCont);
+            Element.setContent(`#${this.titleElms['t-span']}`, this.topicTitle);
+
+            // Set content to the ellipsis.
+            Element.setContent(`#${this.titleElms['el-span']}`, '...');
             
             // Set `href` attribute to the new added title.
             Element.setAttribute(`#${this.titleElms['t-a']}`, 'href', '/chat/' + this.slug);
@@ -231,13 +235,13 @@ export class WebSocketClient {
     // Show/Hide Ellipsis.
     get ellipsis() {
         // If title is longer than 15 characters, add `...` to the end.
-        const elpsisElm = document.getElementById('ellipsis-id');
+        const elpsisElm = document.querySelector(`#${this.titleElms['el-span']}`);
+        console.log('elpsisElm', elpsisElm);
         if (this.topicTitle.length >= 15) {
-            elpsisElm.classList.remove('hide-ellipsis');
             elpsisElm.classList.add('show-ellipsis');
         } else {
-            elpsisElm.classList.remove('show-ellipsis')
-            elpsisElm.classList.add('hide-ellipsis')
+            elpsisElm.classList.remove('show-ellipsis');
+            elpsisElm.classList.add('hide-ellipsis');
         }
     }
 

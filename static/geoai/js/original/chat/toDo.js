@@ -18,3 +18,7 @@
 // END 2023-07-27
 
 // 6. By clicking on the title edit, the ellipsis should be hidden.
+
+// ============== HEAD
+
+// 7. Refactor the titleActionBtn.js file.

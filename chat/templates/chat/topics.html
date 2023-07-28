@@ -5,7 +5,8 @@
         <!-- Subjext title -->
         <li id='li-{{topic.id}}'>    
             <a href="{% url 'topic' topic.slug %}" id='title-{{topic.id}}' class='title-link'> 
-                {{topic.title|add_ellipsis}}
+                <span id='t-span-{{topic.id}}'>{{topic.title}}</span>
+                <span id='el-span-{{topic.id}}'>{{topic.title|add_ellipsis}}</span>
             </a>
             <div class='act-wrapper'>
                 <!-- Action buttons container -->
