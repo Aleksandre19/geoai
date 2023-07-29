@@ -2,6 +2,7 @@ import { ModuleLoader } from './utilities';
 import { Store, Prevent} from './mixins';
 export const titleAct = new Store(); // Title action storage.
 export const titleCont = new Store(); // Title content storage.
+let modulesLoaded = null; // Cache loaded modules.
 
 
 // Map functions to their moduls. 
@@ -20,11 +21,13 @@ export class TitleProperties {
     constructor(event) {
         event.preventDefault();
         this.event = event; // Current event.
+        //this.modulesLoaded = null; // Check if modules are loaded.
         this.init();
     }
 
 
     async init() {
+         
         if (!this.acctionIsAllowed) return; // STEP 01 (Check if the action is allowed.)
         this.module = await this.loadModules(); // STEP 02 (Load modules.)
         this.defineProperties; // STEP 03 (Define properties.)
@@ -32,11 +35,13 @@ export class TitleProperties {
         this.deleteAct = () => this.titleDeletion; // STEP 05 (Define title deletion action.)
         this.cancelAct = () => this.cancelAction; // STEP 06 (Define cancel action.)
         this.executeActionFunction(this.curElmClass); // STEP 07 (Execute `Edit`, `Delete` or `Cancel`.)
-
-        // This section runs only after confirming the edition or deletion.
-        if (!this.approvedAct) return; // To be continued...
-        // this.confirmAct = () => this.titleEdition;
-        console.log('approvedAct');
+        // Followin code runs only when the user clicks (approves) on the check icon.
+        if (!this.approvedAct) return; // STEP 08 (Check if the action is approved.)
+        this.prepareDataForAPI; // STEP 09 (Prepare data for API.)
+        await this.callAPI(); // STEP 10 (This method calls eather `edit` or `delete` action,
+                             // based on titleActStore, in which a desiered action is stored 
+                             // when the user clicks on the `edit` or `delete` icons.)
+        console.log('end api call');
     }
 
     // get getCurrentElemClass() {
@@ -60,9 +65,16 @@ export class TitleProperties {
 
     // Load modules.
     async loadModules() { // STEP 02
+        
+        // Check if modules are already loaded and if so return cache.
+        if (modulesLoaded)
+            return modulesLoaded;
+        
         try {
-            const modules = await loader.load(
+            const modules = await loader.load( // Load modules.
                 ['Target', 'APIClient', 'Slugify', 'Func', 'Url', 'Ellipsis', 'Prevent']);
+            
+            modulesLoaded = modules // Cache loaded modules.
             return modules
         } catch (error) {
             throw new Error(error.message);
@@ -84,9 +96,10 @@ export class TitleProperties {
         this.titleActStore = titleAct; // Store current title action.
         this.apiEndPoint = `topics/${this.elmID}/`; // API end point.
         this.apiUrl = this.module.Url.setup('http://','/api/', '');      
-        this.apiClient = new this.module.APIClient(this.apiuUrl); // API Client.
+        this.apiClient = new this.module.APIClient(this.apiUrl); // API Client.
         this.slug = this.module.Slugify.result(this.trimedTitle);
         this.userID = document.getElementById('userID').textContent; // Current user ID.
+        this.apiData = {}; // Data to be sent to the API.
     }
 
     // Title edition.
@@ -118,23 +131,9 @@ export class TitleProperties {
         this.ellipsisSpan.show; // Show ellipsis.
     }
 
-
-    // Check if the action is allowed.
-    get approvedAct() {  // STEP 07
-        const allowedActs = ['geoai-check-icon'];
-        if (allowedActs.includes(this.curElmClass)) return true;
-        // const allowedActs = ['edit', 'delete'];
-        // if (allowedActs.includes(this.titleActStore.get)) return true;
-    }
-
-    // Confirm current action.
-    get confirmAction() { // STEP 06
-        if (!this.allowedActions) return; // STEP 07 (Check if the action is allowed.)
-    } 
-
     // Proccess action button interactive functionalities.
     // Execute corresponding function to the action.
-    executeActionFunction(curClass, func) { // STEP 08
+    executeActionFunction(curClass) { // STEP 08
          // Map the elements to their corresponding methods by class attribute.
         const exacute = [ 
             {'geoai-edit-icon': [this.editAct, () => this.titleActStore.store('edit')]}, // Edit.
@@ -147,10 +146,73 @@ export class TitleProperties {
         this.module.Func.execute(exacute, curClass);
     }
 
+    // Check if the action is allowed.
+    get approvedAct() {  // STEP 07
+        const allowedActs = ['geoai-check-icon'];
+        if (allowedActs.includes(this.curElmClass)) return true;
+    }
+
+    // Data for the API.
+    get prepareDataForAPI() {
+        this.apiData = {
+            "user": `${this.apiUrl}users/${this.userID}`,
+            "title": this.trimedTitle,
+            "slug": this.slug
+        }; 
+    }
+    
+    async callAPI() {
+        // const exacute = [ 
+        //     {'edit': [async () => this.editionAPI()]},
+        //     {'delete': [async () => this.deletionAPI()]},
+        // ];
+
+        // // Function executor.
+        // this.module.Func.execute(exacute, this.titleActStore.get);
+        await new Promise(async (resolve, reject) => { 
+            try {
+                // Map the action types to their corresponding methods.
+                const exacute = [ 
+                    {'edit': [async () => await this.editionAPI()]},
+                    {'delete': [async () => await this.deletionAPI()]},
+                ];
+
+                // Function executor.
+                await this.module.Func.execute(exacute, this.titleActStore.get);
+
+                resolve();
+            } catch (error) {
+                reject(error.message);
+            }
+        });
+    }
+
+
+    async editionAPI() { 
+        console.log('Start editing');
+        try {
+            await this.apiClient.update(this.apiEndPoint, this.apiData);
+            console.log('Finish editing');
+        } catch (error) { 
+            console.log(error.message);
+        }
+    }
+
+
+    async deletionAPI() {
+        console.log('deletionAPI');
+        try {
+            await this.apiClient.delete(this.apiEndPoint);
+            this.titleActStore.clear;
+        } catch (error) {
+            console.log(error.message);
+        }
+    }    
+
 
 }
 
-
+// //////////////////////////////////// 
 
 // Define actions (edit, delete) to topic titles. 
 export class TitleActionBtn {

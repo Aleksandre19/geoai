@@ -28,13 +28,28 @@ export class leaveActBtn {
 
 
 // This class runes the function from the array.
-export class Func {
-    static execute(funcs, curClasse) {
-        funcs.forEach((actions) => {
-            if (!actions[curClasse]) return;
+// export class Func {
+//     static async execute(funcs, curClasse) {
+//         funcs.forEach(async (actions) => {
+//             if (!actions[curClasse]) return;
 
-            for (const action of actions[curClasse])
-                action();
-        });
+//             for (const action of actions[curClasse]) {
+//                 console.log(action);
+//                 await action();
+//             }
+//         });
+//     }
+// } 
+
+// This class runs the function from the array.
+export class Func {
+    static async execute(funcs, curClasse) {
+        for (const actions of funcs) {
+            if (!actions[curClasse]) continue;
+
+            for (const action of actions[curClasse]) {
+                await action();
+            }
+        }
     }
-} 
+}
