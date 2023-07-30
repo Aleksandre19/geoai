@@ -2,7 +2,7 @@ import { ModuleLoader } from './utilities';
 import { Store, Prevent} from './mixins';
 export const titleAct = new Store(); // Title action storage.
 export const titleCont = new Store(); // Title content storage.
-let modulesLoaded = null; // Cache loaded modules.
+let cachedModules = null; // Cache loaded modules.
 
 
 // Map functions to their moduls. 
@@ -21,13 +21,11 @@ export class TitleProperties {
     constructor(event) {
         event.preventDefault();
         this.event = event; // Current event.
-        //this.modulesLoaded = null; // Check if modules are loaded.
         this.init();
     }
 
 
-    async init() {
-         
+    async init() {     
         if (!this.acctionIsAllowed) return; // STEP 01 (Check if the action is allowed.)
         this.module = await this.loadModules(); // STEP 02 (Load modules.)
         this.defineProperties; // STEP 03 (Define properties.)
@@ -39,15 +37,14 @@ export class TitleProperties {
         if (!this.approvedAct) return; // STEP 08 (Check if the action is approved.)
         this.prepareDataForAPI; // STEP 09 (Prepare data for API.)
         await this.callAPI(); // STEP 10 (This method calls eather `edit` or `delete` action,
-                             // based on titleActStore, in which a desiered action is stored 
+                             // based on titleActStore, in which a desiered action is stored
                              // when the user clicks on the `edit` or `delete` icons.)
-        console.log('end api call');
+        this.defineNewUrl; // STEP 11 (Define new url.)
+        this.updateAddressBar; // STEP 12 (Update address bar.)
+        this.setHrefAttrToTitle; // STEP 13 (Set href attribute to title.)
+        this.updateCurrentPage; // STEP 14 (Update current page.)
+        this.updateTitleContent; // STEP 15 (Update title content.)
     }
-
-    // get getCurrentElemClass() {
-    //     const classes = this.event.target.className.split(" ");
-    //     return classes[classes.length - 1];  
-    // }
 
     // Check if the action is allowed class name of the element.
     get acctionIsAllowed() { // STEP 01
@@ -67,14 +64,14 @@ export class TitleProperties {
     async loadModules() { // STEP 02
         
         // Check if modules are already loaded and if so return cache.
-        if (modulesLoaded)
-            return modulesLoaded;
+        if (cachedModules)
+            return cachedModules;
         
         try {
             const modules = await loader.load( // Load modules.
                 ['Target', 'APIClient', 'Slugify', 'Func', 'Url', 'Ellipsis', 'Prevent']);
             
-            modulesLoaded = modules // Cache loaded modules.
+            cachedModules = modules // Cache loaded modules.
             return modules
         } catch (error) {
             throw new Error(error.message);
@@ -93,17 +90,21 @@ export class TitleProperties {
         this.ellipsisSpan = new this.module.Ellipsis(this.elmID) // Get current ellipsis span element.
         this.trimedTitle = this.titleContSpan.textContent.trim().substring(0, 15); // Trim tiitle content. 
         this.titleContStore = titleCont; // Get title content storage.
-        this.titleActStore = titleAct; // Store current title action.
+        this.titleActStore = titleAct; // Store current title action.     
         this.apiEndPoint = `topics/${this.elmID}/`; // API end point.
-        this.apiUrl = this.module.Url.setup('http://','/api/', '');      
+        this.apiUrl = this.module.Url.setup('http://', '/api/', '');
         this.apiClient = new this.module.APIClient(this.apiUrl); // API Client.
+        this.apiData = {}; // Data to be sent to the API.
         this.slug = this.module.Slugify.result(this.trimedTitle);
         this.userID = document.getElementById('userID').textContent; // Current user ID.
-        this.apiData = {}; // Data to be sent to the API.
+        this.curPage = document.getElementById('currentPage').textContent; // Current page.
+        this.updtCurPage = null; // Updated current page.
+        this.newUrl = null; // New url.
+        this.homePage = ['chat'];
     }
 
     // Title edition.
-    get titleEdition() { // Can be STEP 05
+    get titleEdition() { // STEP 04
         this.titleElm.contentEditable = 'true';
         this.titleElm.style.cursor = 'text';
         this.titleElm.focus();
@@ -113,17 +114,18 @@ export class TitleProperties {
     }
 
     // Title deletion.
-    get titleDeletion() { // Can be STEP 05
+    get titleDeletion() { // STEP 05
         this.titleContStore.store(this.titleContSpan.textContent.trim());
         this.titleContSpan.textContent = 'წავშალო?'; // Confirmation text.
         this.titleElm.focus();
         this.titleElm.style.cursor = 'default';
         this.target.parent.classList.add('hide-element'); // Hide the class='topic-title-act-btn'
         this.target.nextSibling.classList.add('display-act-btn-confirm'); // Display confirmation container
+        this.ellipsisSpan.hide; // Hide ellipsis.
     }
 
     // Cancel current action.
-    get cancelAction() { // Can be STEP 05
+    get cancelAction() { // STEP 06
         this.titleElm.style.cursor = 'pointer';
         this.target.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
         this.target.prevSibling.classList.remove('hide-element'); // class='topic-title-act-btn'
@@ -133,7 +135,7 @@ export class TitleProperties {
 
     // Proccess action button interactive functionalities.
     // Execute corresponding function to the action.
-    executeActionFunction(curClass) { // STEP 08
+    executeActionFunction(curClass) { // STEP 07
          // Map the elements to their corresponding methods by class attribute.
         const exacute = [ 
             {'geoai-edit-icon': [this.editAct, () => this.titleActStore.store('edit')]}, // Edit.
@@ -147,28 +149,22 @@ export class TitleProperties {
     }
 
     // Check if the action is allowed.
-    get approvedAct() {  // STEP 07
+    get approvedAct() {  // STEP 08
         const allowedActs = ['geoai-check-icon'];
         if (allowedActs.includes(this.curElmClass)) return true;
     }
 
     // Data for the API.
-    get prepareDataForAPI() {
+    get prepareDataForAPI() { // STEP 09
         this.apiData = {
-            "user": `${this.apiUrl}users/${this.userID}`,
-            "title": this.trimedTitle,
-            "slug": this.slug
+            "user": `${this.apiUrl}users/${this.userID}`, // User URL.
+            "title": this.trimedTitle, // Title.
+            "slug": this.slug // Slug.
         }; 
     }
     
-    async callAPI() {
-        // const exacute = [ 
-        //     {'edit': [async () => this.editionAPI()]},
-        //     {'delete': [async () => this.deletionAPI()]},
-        // ];
-
-        // // Function executor.
-        // this.module.Func.execute(exacute, this.titleActStore.get);
+    // Call the API to edit or delete the title.
+    async callAPI() { // STEP 10
         await new Promise(async (resolve, reject) => { 
             try {
                 // Map the action types to their corresponding methods.
@@ -187,28 +183,90 @@ export class TitleProperties {
         });
     }
 
-
-    async editionAPI() { 
-        console.log('Start editing');
+    // API title edition.
+    async editionAPI() {
         try {
             await this.apiClient.update(this.apiEndPoint, this.apiData);
-            console.log('Finish editing');
         } catch (error) { 
             console.log(error.message);
         }
     }
 
-
+    // API title deletion.
     async deletionAPI() {
-        console.log('deletionAPI');
         try {
             await this.apiClient.delete(this.apiEndPoint);
-            this.titleActStore.clear;
+            //this.titleActStore.clear;
         } catch (error) {
             console.log(error.message);
         }
-    }    
+    } 
 
+    // Url for the updated title `href` attribute.
+    get defineNewUrl() { // STEP 11
+        // Get the current action.
+        const action = this.titleActStore.get; 
+        
+        // If the action is delete.
+        if (action === 'delete') {
+            this.newUrl = this.module.Url.setup('http://', '/chat/', ''); // New url.
+            this.updtCurPage = 'chat'; // Update the current page.
+        }
+        
+        // If the action is edit.
+        if (action === 'edit') {
+            this.newUrl = this.module.Url.setup('http://', '/chat/', `${this.slug}/`); // New url.
+            this.updtCurPage = this.slug; // Update the current page.
+        }
+    }
+
+    // Update the URL in the browser address bar 
+    // if the current page is not the home page.
+    get updateAddressBar() {// STEP 12
+        // If the current page is not the home page.
+        if (!this.homePage.includes(this.curPage)) { 
+
+            // Slugify the title from the storage to get the original slug.
+            const origSlug = this.module.Slugify.result(this.titleContStore.get);
+    
+            // Check if the open page is the same as the edited one.
+            if (this.curPage == origSlug) { 
+                // Update the URL in the browser address bar.
+                window.history.pushState({}, '', this.newUrl); 
+            }
+        }
+    }
+
+    // Set the href attribute to the title.
+    get setHrefAttrToTitle() {// STEP 13
+        this.titleElm.setAttribute('href', this.newUrl);
+    }
+
+    get updateCurrentPage() { // STEP 14
+        // Update the current page.
+        document.getElementById('currentPage').textContent = this.updtCurPage; 
+    }
+
+    // Update the title content based on the action.
+    get updateTitleContent() {// STEP 15
+        // Get the action type.
+        const action = this.titleActStore.get;
+
+        // On deletion.
+        if (action === 'delete') {
+            this.liElm.remove();
+            this.titleActStore.clear;
+        }
+
+        // On edition.
+        if (action === 'edit') {
+            this.titleContSpan.textContent = this.trimedTitle; // Update the title content.
+            const contLength = this.trimedTitle.length; // Get the length of the title content.
+            if (contLength >= 15) this.ellipsisSpan.show; // Show ellipsis.
+            this.titleElm.style.cursor = 'pointer'; // Set cursor to pointer.
+            this.target.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
+        }
+    }
 
 }
 

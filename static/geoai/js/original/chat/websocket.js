@@ -236,7 +236,6 @@ export class WebSocketClient {
     get ellipsis() {
         // If title is longer than 15 characters, add `...` to the end.
         const elpsisElm = document.querySelector(`#${this.titleElms['el-span']}`);
-        console.log('elpsisElm', elpsisElm);
         if (this.topicTitle.length >= 15) {
             elpsisElm.classList.add('show-ellipsis');
         } else {

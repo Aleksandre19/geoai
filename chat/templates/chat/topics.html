@@ -6,7 +6,7 @@
         <li id='li-{{topic.id}}'>    
             <a href="{% url 'topic' topic.slug %}" id='title-{{topic.id}}' class='title-link'> 
                 <span id='t-span-{{topic.id}}'>{{topic.title}}</span>
-                <span id='el-span-{{topic.id}}'>{{topic.title|add_ellipsis}}</span>
+                {{topic|add_ellipsis}}
             </a>
             <div class='act-wrapper'>
                 <!-- Action buttons container -->

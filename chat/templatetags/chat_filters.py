@@ -6,12 +6,13 @@ from django.utils.html import format_html #, escape
 register = template.Library()
 
 
+# Determine a span element format based on the length of the topic title.
 @register.filter
-def add_ellipsis(text):
-    if len(text) >= 15:
-        text = '...'
+def add_ellipsis(topic):
+    if len(topic.title) >= 15:
+        text = """<span id='el-span-{}'>...</span>""".format(topic.id)
     else:
-        text = ''
+        text = """<span id='el-span-{}' class='hide-ellipsis'>...</span>""".format(topic.id)
     return mark_safe(format_html(text));
 
 

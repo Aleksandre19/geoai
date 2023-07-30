@@ -235,20 +235,22 @@ export class Remove {
 
 export class Ellipsis {
     constructor(elmID) {
-        console.log(elmID);
-        this.elm = document.getElementById(elmID);
+        this.elm = document.getElementById(`el-span-${elmID}`);
     }
 
     get hide() {
-        this.elm.classList.add('hide-ellipsis');
+        if (this.elm)
+            this.elm.classList.add('hide-ellipsis');
     }
 
     get show() {   
-        this.elm.classList.remove('hide-ellipsis');
+        if (this.elm)
+            this.elm.classList.remove('hide-ellipsis');
     } 
     
     get toggle() {   
-        this.elm.classList.toggle('hide-ellipsis');
+        if (this.elm)
+            this.elm.classList.toggle('hide-ellipsis');
     }
 }
 

@@ -22,3 +22,5 @@
 // ============== HEAD
 
 // 7. Refactor the titleActionBtn.js file.
+
+// 8. On removing (partialy or fully) topic title, the span in the the content is removing as well.
