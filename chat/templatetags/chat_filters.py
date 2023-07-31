@@ -10,9 +10,9 @@ register = template.Library()
 @register.filter
 def add_ellipsis(topic):
     if len(topic.title) >= 15:
-        text = """<span id='el-span-{}'>...</span>""".format(topic.id)
+        text = """<span id='el-span-{}' class='ell-span'>...</span>""".format(topic.id)
     else:
-        text = """<span id='el-span-{}' class='hide-ellipsis'>...</span>""".format(topic.id)
+        text = """<span id='el-span-{}' class='hide-ellipsis ell-span'>...</span>""".format(topic.id)
     return mark_safe(format_html(text));
 
 

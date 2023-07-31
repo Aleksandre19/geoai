@@ -202,9 +202,10 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color)
 }
 
-#chat-main #sidebar ul li > a:focus,
-#chat-main #sidebar ul li > a:focus-within,
-#chat-main #sidebar ul li > a:focus-visible {
+#chat-main #sidebar ul li > a span.title-span:focus,
+#chat-main #sidebar ul li > a span.title-span:focus-within,
+#chat-main #sidebar ul li > a span.title-span:focus-visible {
+    width: 75%;
     border-radius: 4px;
     outline: 1px solid var(--primary-color);
 }
@@ -214,7 +215,13 @@ section#chat-main div#sidebar div.sidebar-sections{
     color: var(--text-primary);
     display: inline-block;
     width: 100%;
-    padding: 8px 16px;
+    padding: 8px 12px;
+}
+
+#chat-main #sidebar ul li>a span.title-span {
+    display: inline-block;
+    padding: 2px 4px;
+    word-wrap: break-word;
 }
 
 #chat-main #sidebar ul li div.act-btn-confirm,

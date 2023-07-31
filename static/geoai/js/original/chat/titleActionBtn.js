@@ -11,6 +11,7 @@ let loader = new ModuleLoader([
     { module: 'mixins', func: 'Url' },
     { module: 'mixins', func: 'Ellipsis' },
     { module: 'mixins', func: 'Prevent' },
+    { module: 'mixins', func: 'SetEvent' },
     { module: 'apiClient', func: 'APIClient' },
     { module: 'utilities', func: 'Slugify' },
     { module: 'functions', func: 'Func' },
@@ -33,6 +34,7 @@ export class TitleProperties {
         this.deleteAct = () => this.titleDeletion; // STEP 05 (Define title deletion action.)
         this.cancelAct = () => this.cancelAction; // STEP 06 (Define cancel action.)
         this.executeActionFunction(this.curElmClass); // STEP 07 (Execute `Edit`, `Delete` or `Cancel`.)
+        this.onMouseLeave; // STEP 08 (Define mouse leave event.)
         // Followin code runs only when the user clicks (approves) on the check icon.
         if (!this.approvedAct) return; // STEP 08 (Check if the action is approved.)
         this.prepareDataForAPI; // STEP 09 (Prepare data for API.)
@@ -69,7 +71,7 @@ export class TitleProperties {
         
         try {
             const modules = await loader.load( // Load modules.
-                ['Target', 'APIClient', 'Slugify', 'Func', 'Url', 'Ellipsis', 'Prevent']);
+                ['Target', 'APIClient', 'Slugify', 'Func', 'Url', 'Ellipsis', 'Prevent', 'SetEvent']);
             
             cachedModules = modules // Cache loaded modules.
             return modules
@@ -85,7 +87,9 @@ export class TitleProperties {
         this.elmID = this.elm.id; // Get element's id attribute.
         this.curElmClass = this.target.curClasse(1); // Get element's class attribute. 
         this.liElm = document.getElementById(`li-${this.elmID}`); // Get current li element.
+        this.actBtnContainer = this.liElm.querySelector('.act-btn-confirm'); // Get current action button container.  
         this.titleElm = document.getElementById(`title-${this.elmID}`); // Get current title `a` element.
+        this.titleSpan = document.querySelector(`#title-${this.elmID}  > .title-span`); // Get current title `a` element.
         this.titleContSpan = document.getElementById(`t-span-${this.elmID}`); // Get current title content span element.
         this.ellipsisSpan = new this.module.Ellipsis(this.elmID) // Get current ellipsis span element.
         this.trimedTitle = this.titleContSpan.textContent.trim().substring(0, 15); // Trim tiitle content. 
@@ -105,32 +109,37 @@ export class TitleProperties {
 
     // Title edition.
     get titleEdition() { // STEP 04
-        this.titleElm.contentEditable = 'true';
-        this.titleElm.style.cursor = 'text';
-        this.titleElm.focus();
+        this.module.SetEvent.to([this.titleSpan], 'click', this.module.Prevent.click) // Prevent default event.
+        this.titleActStore.store('edit');
+        this.titleSpan.contentEditable = 'true';
+        this.titleSpan.style.cursor = 'text';
+        this.titleSpan.focus();
         this.titleContStore.store(this.titleContSpan.textContent.trim()); // Store title content.
         this.target.nextSibling.classList.add('display-act-btn-confirm'); // Display action buttons.
-        this.ellipsisSpan.hide; // Hide ellipsis.
+        if (this.titleContStore.get.length >= 15) this.ellipsisSpan.toggle; // Hide ellipsis.
     }
 
     // Title deletion.
     get titleDeletion() { // STEP 05
         this.titleContStore.store(this.titleContSpan.textContent.trim());
+        this.titleActStore.store('delete');
         this.titleContSpan.textContent = 'წავშალო?'; // Confirmation text.
         this.titleElm.focus();
         this.titleElm.style.cursor = 'default';
-        this.target.parent.classList.add('hide-element'); // Hide the class='topic-title-act-btn'
+        //this.target.parent.classList.add('hide-element'); // Hide the class='topic-title-act-btn'
         this.target.nextSibling.classList.add('display-act-btn-confirm'); // Display confirmation container
-        this.ellipsisSpan.hide; // Hide ellipsis.
+        if (this.titleContStore.get.length >= 15) this.ellipsisSpan.toggle; // Hide ellipsis.
     }
 
     // Cancel current action.
     get cancelAction() { // STEP 06
-        this.titleElm.style.cursor = 'pointer';
+        this.titleSpan.removeEventListener('click', this.module.Prevent.click); // Remove event listener.
+        this.titleSpan.style.cursor = 'pointer';
         this.target.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
-        this.target.prevSibling.classList.remove('hide-element'); // class='topic-title-act-btn'
+        //this.target.prevSibling.classList.remove('hide-element'); // class='topic-title-act-btn'
         this.titleContSpan.textContent = this.titleContStore.get; // Update with the title content.
-        this.ellipsisSpan.show; // Show ellipsis.
+        if (this.titleContStore.get.length >= 15) this.ellipsisSpan.toggle; // Hide ellipsis.
+        //this.titleActStore.clear;
     }
 
     // Proccess action button interactive functionalities.
@@ -138,14 +147,43 @@ export class TitleProperties {
     executeActionFunction(curClass) { // STEP 07
          // Map the elements to their corresponding methods by class attribute.
         const exacute = [ 
-            {'geoai-edit-icon': [this.editAct, () => this.titleActStore.store('edit')]}, // Edit.
-            {'geoai-trash-icon': [this.deleteAct, () => this.titleActStore.store('delete')]}, // Delete.
+            {'geoai-edit-icon': [this.editAct, () => this.titleActStore.get]}, // Edit.
+            {'geoai-trash-icon': [this.deleteAct, () => this.titleActStore.get]}, // Delete.
             {'geoai-x-icon': [this.cancelAct]}, // Cancel current action.
             //{'geoai-check-icon': [() => this.confirm()]}, // Confirm.
         ];
 
         // Function executor.
         this.module.Func.execute(exacute, curClass);
+    }
+
+    get onMouseLeave() {
+        this.module.SetEvent.to([this.liElm], 'mouseleave', () => {
+            
+            // Check if the action is allowed.
+            const allowedActions = ['edit', 'delete'];
+            if (!allowedActions.includes(this.titleActStore.get)) return;
+
+            const curAction = this.titleActStore.get;
+            console.log('curAction', curAction);
+
+            if(this.actBtnContainer.classList.contains('display-act-btn-confirm'))
+                this.actBtnContainer.classList.remove('display-act-btn-confirm');
+            
+            if (curAction === 'delete')
+                this.titleContSpan.textContent = this.titleContStore.get;
+            
+            if (curAction === 'edit') {
+                this.titleContSpan.textContent = this.titleContStore.get;
+                this.titleContSpan.contentEditable = 'false';
+                this.titleSpan.style.cursor = 'pointer';
+                this.titleContSpan.blur();
+            }
+
+            this.titleActStore.clear;
+            this.titleContStore.clear;
+                
+        });  
     }
 
     // Check if the action is allowed.
@@ -186,7 +224,7 @@ export class TitleProperties {
     // API title edition.
     async editionAPI() {
         try {
-            await this.apiClient.update(this.apiEndPoint, this.apiData);
+            this.response = await this.apiClient.update(this.apiEndPoint, this.apiData);
         } catch (error) { 
             console.log(error.message);
         }
@@ -255,17 +293,21 @@ export class TitleProperties {
         // On deletion.
         if (action === 'delete') {
             this.liElm.remove();
-            this.titleActStore.clear;
         }
 
         // On edition.
         if (action === 'edit') {
-            this.titleContSpan.textContent = this.trimedTitle; // Update the title content.
-            const contLength = this.trimedTitle.length; // Get the length of the title content.
-            if (contLength >= 15) this.ellipsisSpan.show; // Show ellipsis.
+            this.titleContSpan.textContent = this.response.title; // Update the title content.
+            this.titleContSpan.contentEditable = false; // Disable content editing.
+            this.titleContSpan.style.cursor = 'pointer';
+            //this.titleContStore.store = this.trimedTitle; // Store the new title content.
+            if (this.response.title.length >= 15) this.ellipsisSpan.show; // Show ellipsis.
             this.titleElm.style.cursor = 'pointer'; // Set cursor to pointer.
+            this.titleSpan.removeEventListener('click', this.module.Prevent.click);
             this.target.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
         }
+
+        this.titleActStore.clear;
     }
 
 }
@@ -459,7 +501,8 @@ class PrepareRequest {
 
     // Call API's edition.
     async edition() {
-        await this.api.update(this.endPoint, this.data);
+        this.response = await this.api.update(this.endPoint, this.data);
+        console.log(this.response);
         this.updateTitle;
         this.updateUrl('edit');
     }   
@@ -504,7 +547,7 @@ class BtnFrontEndFunc {
         this.titleElm.focus();
         this.titleCont.store(this.titleElm.textContent.trim()); // Store title content.
         this.elm.nextSibling.classList.add('display-act-btn-confirm'); // Display action buttons.
-        console.log(this.elm);
+        console.log('this.elm: ', this.elm);
     }
 
 }

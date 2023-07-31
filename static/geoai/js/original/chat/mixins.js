@@ -240,12 +240,14 @@ export class Ellipsis {
 
     get hide() {
         if (this.elm)
+            this.elm.classList.remove('show-ellipsis');
             this.elm.classList.add('hide-ellipsis');
     }
 
     get show() {   
         if (this.elm)
             this.elm.classList.remove('hide-ellipsis');
+            this.elm.classList.add('show-ellipsis');
     } 
     
     get toggle() {   

@@ -7,16 +7,20 @@ export class leaveActBtn {
     static hide(titleWrapper) {
         titleWrapper.removeEventListener('click', Prevent.click);
         const wrapperID = titleWrapper.id.split('-')['1']; // <li id='li-{{topic.id}}'>
-        const titleElm = document.getElementById(`title-${wrapperID}`) // <a href="{% url 'topic' topic.slug %}"...
-        titleElm.style.cursor = 'pointer';
-        titleElm.contentEditable = 'false';
+        const titleElm = document.getElementById(`title-${wrapperID}`);
+        const titleSpan = titleElm.querySelector(`span.title-span`) // <a href="{% url 'topic' topic.slug %}"...
+        const titleContent = titleSpan.textContent;
+        const titleElipsis = titleElm.querySelector(`span.title-ellipsis`); 
+        titleSpan.style.cursor = 'pointer';
+        titleSpan.contentEditable = 'false';
+        titleSpan.removeEventListener('click', Prevent.click);
 
         // If `deletion` was triggerd by clickin on trash icon, 
         // and then leaving current title without confirming it
         // the title content will be restored on the `mouseleace` event.
         const curActions = ['delete']; // Click on trash icon.
         if (curActions.includes(titleAct.get))
-            titleElm.textContent = titleCont.get;
+            titleSpan.textContent = titleCont.get;
             titleAct.clear;
         
         const actBtnElm = titleWrapper.querySelector('.act-btn-confirm');

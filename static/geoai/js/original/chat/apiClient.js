@@ -39,6 +39,7 @@ export class APIClient {
                 credentials: 'same-origin',
                 body: data ? JSON.stringify(data) : null
             });
+
         } catch (error) {
             throw new Error(this.errorText + error)
         }
@@ -46,21 +47,19 @@ export class APIClient {
         if (!response.ok)
             throw new Error(this.errorText + response.statusText);
         
-        if(response.ok) {
-            // console.log('success');
-            return response.ok;
+        if (response.ok) {
+            if (response.status === 204){
+                return;
+            } else {
+                return response.json();
+            }
         }
-
-        if (response.status != 204) {
-            return response.json();
-        } else {
-            return null;
-        }
+        
         
     }
 
-    async update(endpoint, data) {
-        return this._request('PUT', endpoint, data)
+    async update(endpoint, data) {  
+        return await this._request('PUT', endpoint, data);
     }
 
     async delete(endpoint) {

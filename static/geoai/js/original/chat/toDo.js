@@ -24,3 +24,9 @@
 // 7. Refactor the titleActionBtn.js file.
 
 // 8. On removing (partialy or fully) topic title, the span in the the content is removing as well.
+
+// 9. Fixing ellipsis toggling problem on topic title.
+
+// 10. Improve OpenAI Api plugin funnctionaliity.
+
+// 11. Implement text tokinizer calculator.
