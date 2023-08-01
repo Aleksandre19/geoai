@@ -19,14 +19,26 @@
 
 // 6. By clicking on the title edit, the ellipsis should be hidden.
 
-// ============== HEAD
-
 // 7. Refactor the titleActionBtn.js file.
 
 // 8. On removing (partialy or fully) topic title, the span in the the content is removing as well.
 
 // 9. Fixing ellipsis toggling problem on topic title.
 
-// 10. Improve OpenAI Api plugin funnctionaliity.
+// ============== HEAD
 
-// 11. Implement text tokinizer calculator.
+// 10. Adjust the webSocket.j to the refactored titleActionBtn.js file.
+
+// 11. Improve OpenAI Api plugin funnctionaliity.
+
+// 12. Try to convert exiting python code to OOP wherever it is possible.
+
+// 13. Implement text tokinizer calculator.
+
+// 14. Logged in users basic UI. (Posiblly with dark mode).
+
+// 15. Stripe Setup.
+
+// 16. Not logged users basic UI.
+
+// 17. Release 01.
