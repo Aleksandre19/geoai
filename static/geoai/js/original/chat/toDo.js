@@ -25,20 +25,26 @@
 
 // 9. Fixing ellipsis toggling problem on topic title.
 
+// 10. Adjust the webSocket.js to the refactored titleActionBtn.js file.
+
 // ============== HEAD
 
-// 10. Adjust the webSocket.j to the refactored titleActionBtn.js file.
+// 11. JSON formating for pygments package.
 
-// 11. Improve OpenAI Api plugin funnctionaliity.
+// 12. Improving response formatting.(`` wrapping this with span tag).
 
-// 12. Try to convert exiting python code to OOP wherever it is possible.
+// 13. Create glossaries in Google Translate API.
 
-// 13. Implement text tokinizer calculator.
+// 14. Improve OpenAI Api plugin funnctionaliity.
 
-// 14. Logged in users basic UI. (Posiblly with dark mode).
+// 15. Try to convert exiting python code to OOP wherever it is possible.
 
-// 15. Stripe Setup.
+// 16. Implement text tokinizer calculator.
 
-// 16. Not logged users basic UI.
+// 17. Logged in users basic UI. (Posiblly with dark mode).
 
-// 17. Release 01.
+// 18. Stripe Setup.
+
+// 19. Not logged users basic UI.
+
+// 20. Release 01.

@@ -14,7 +14,7 @@ let loader = new ModuleLoader([
     { module: 'mixins', func: 'SetEvent' },
     { module: 'apiClient', func: 'APIClient' },
     { module: 'utilities', func: 'Slugify' },
-    { module: 'functions', func: 'Func' },
+    { module: 'utilities', func: 'Func' },
 ]);
 
 
@@ -136,7 +136,7 @@ export class TitleProperties {
         this.titleSpan.style.cursor = 'pointer';
         this.target.parent.classList.remove('display-act-btn-confirm'); // ---> class='act-btn-confirm'
         this.titleContSpan.textContent = this.titleContStore.get; // Update with the title content.
-        if (this.titleContStore.get.length >= 15) this.ellipsisSpan.toggle; // Hide ellipsis.
+        this.titleSpan.contentEditable = 'false';
     }
 
     // Proccess action button interactive functionalities.
@@ -156,7 +156,7 @@ export class TitleProperties {
 
     get onMouseLeave() { // STEP 08
         this.module.SetEvent.to([this.liElm], 'mouseleave', () => {
-            
+
             // Check if the action is allowed.
             const allowedActions = ['edit', 'delete'];
             if (!allowedActions.includes(this.titleActStore.get)) return;
@@ -291,7 +291,8 @@ export class TitleProperties {
 
         // On deletion.
         if (action === 'delete') {
-            this.liElm.remove();
+            this.liElm.remove(); // Remove the title from the list.
+            document.querySelector('.chat-qa-content').innerHTML = ''; // Clear chat content.
         }
 
         // On edition.

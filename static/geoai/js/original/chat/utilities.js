@@ -18,6 +18,20 @@ export class Slugify {
 }
 
 
+// This class runs the function from the array.
+export class Func {
+    static async execute(funcs, curClasse) {
+        for (const actions of funcs) {
+            if (!actions[curClasse]) continue;
+
+            for (const action of actions[curClasse]) {
+                await action();
+            }
+        }
+    }
+}
+
+
 
 export class ModuleLoader{ 
     constructor(modules) {
@@ -69,8 +83,8 @@ export class Element {
             
             const newElm = document.createElement(elm.elm); // Create element.
 
-            if (elm.classe)
-                newElm.classList.add(...elm.classe); // Add classes to created elements.
+            if (elm.class)
+                newElm.classList.add(...elm.class); // Add classes to created elements.
 
             // Set ids for created elements.
             if (typeof elm.id != 'undefined' && elm.id.includes('ID')) // Check if id includes ID.
