@@ -42,11 +42,11 @@ def exclude_code(text):
     attached_comment_name['dict_name'] = generate_place_holder() # Attached dict name.
     comments = f'{attached_comment_name["dict_name"]} = {saved_comments}'  
     text = f'{wrapped} \n {comments}' # Combine a text and comment.
-    return text
-    # return {
-    #     'text': text,
-    #     'excluded_words': excluded_words,
-    # }
+    # return text
+    return {
+        'text': text,
+        'excluded_words': excluded_words,
+    }
 
 
 """

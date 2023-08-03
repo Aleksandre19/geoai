@@ -1,7 +1,10 @@
 import logging
+from typing import Any, Dict
+from django.db.models.query import QuerySet
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+
 from chat.models import Topic, Answer, Question
 from chat.forms import QuestionForm
 
@@ -17,6 +20,8 @@ from openaiapi.client import openai_response
 from .helpers import *
 
 
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 logger = logging.getLogger(__name__)
 
@@ -26,50 +31,66 @@ logger = logging.getLogger(__name__)
 #2 Write a conditions for the else:
 #3 Use DjDT debug to optimaze performance of the webpage
 
-# Create your views here.
+class ChatView(LoginRequiredMixin, ListView):
 
-@login_required
-def chat(request, slug=None):
-    if request.user.is_active:
-        questions = None
-        topic = None
+    # Define the model and template to be used.
+    template_name = 'chat/index.html'
+    model = Topic
+
+    def get_queryset(self):
+        """
+        Returns the QuerySet that will be used to retrieve the objects.
+        """
+        slug = self.kwargs.get('slug')
         if slug:
+            # Filter the QuerySet based on user and slug if slug exists.
+            return Topic.objects.filter(user = self.request.user, slug=slug)
+        else:
+            # If no slug, return all Topics of the user
+            return Topic.objects.filter(user = self.request.user)
+        
+    
+    def get_context_data(self, **kwargs: Any):
+        """
+        Returns the context data to be used in the template
+        """
+        context = super().get_context_data(**kwargs)
+        
+        titles = Topic.objects.filter(user=self.request.user)
+        slug = self.kwargs.get('slug')
+        questions = None
+        
+        if slug:
+            # If slug exists, get the Topic object and its related Questions.
             topic = get_object_or_404(Topic, slug=slug)
             questions = topic.question.all()
 
-        # Testing formatting
-        # test_question = Question.objects.all().order_by('-id')[5]
-        # test_question = Question.objects.last()
-        #ex = exclude_code(test_question.answer.eng_content)
-        #pprint.pprint(ex['excluded_words'])
-        #inc = include_back_code(ex['text'])
-        # print(inc, 'included')
-
-        # It seems here is the problem when posting the new question and redirecting
-        # to the index page. it display only the current question's topic. 
-
-        topics = get_all_topics_by_user(request)
-        question_form = QuestionForm()
-
-        if request.method == 'POST':
-            question = post_question(request, topic)
-            if question: 
-                return redirect('topic', slug=question.get('slug'))  
-
-        context = {
-            # Used for caching
-            'topics': list(topics.values()),
-            'questions': questions,
-            'slug': slug,
-            'user_id': request.user.id,
-            # 'topics': topics,
-            'question_form': question_form,
-            #'test': inc,
-        }
-        return render(request, 'chat/index.html', context)
+        context.update({
+                'topics': titles,
+                'questions': questions,
+                'question_form': QuestionForm(),
+                'user_id': self.request.user.id,
+                'slug': slug
+        })
+        return context
     
-    # ATTANTION - needs to be complited
-    return render(request, 'chat/index.html')
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles the POST requests
+        """
+        slug = self.kwargs.get('slug')
+        topic = get_object_or_404(Topic, slug=slug) if slug else None
+        
+        # Call the function to handle posting a question
+        post_question(request, topic)
+
+        # Redirect based on whether slug exists or not.
+        if slug:
+            return redirect('topic', slug=slug)
+        else:
+            return redirect('chat_home')
+
 
 
 def get_all_topics_by_user(request):
@@ -118,14 +139,9 @@ def post_question(request, topic=None):
 
 
 def insert_content(
-        topic,
-        user,
-        slug,
-        geo_question,
-        eng_question,
-        formated_geo_response,
-        unformated_geo_response,
-        unformated_eng_response 
+        topic,user,slug,geo_question,
+        eng_question,formated_geo_response,
+        unformated_geo_response, unformated_eng_response 
         # questionText,
         # translatedQ,
         # geo_unformated_answer,
@@ -135,30 +151,26 @@ def insert_content(
     if not topic:
         topic_title = geo_question[:15]
         slug = slug
-        topic = Topic(
-                user=user,
-                title=topic_title,
-                slug=slug
-            )
+        topic = Topic(user=user,
+                title=topic_title,slug=slug)
         
         topic.save()
 
     add_question = Question(
-            user=user,
-            topic=topic,
-            content=geo_question,
+            user=user,topic=topic,content=geo_question,
             translated=eng_question
         )
+    
     add_question.save()
 
     add_answer = Answer(
-        user=user,
-        question=add_question,
+        user=user, question=add_question,
         geo_formated_content=formated_geo_response,
         geo_unformated_content=unformated_geo_response,
         eng_content=unformated_eng_response
     )
     add_answer.save()
+
     # Add new topic in the cache.
     add_to_cache(topic)
 
@@ -181,12 +193,13 @@ def call_apis(user, geo_question, slug):
         logger.error("Couldn't get the response from the OpenAI.")
         return
     
-    response_exclude_snippet = exclude_code(unformated_eng_response)
+    response_exclude_snippet = exclude_code(unformated_eng_response)['text']
 
     # Translate from ENG to GEO.
     geo_response_without_snippet = translate_text(
         response_exclude_snippet,
         'en-US', 'ka')
+    
     if not geo_response_without_snippet:
         logger.error("Couldn't translate from Eng to Geo.")
         return
