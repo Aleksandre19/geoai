@@ -33,11 +33,8 @@ class Topic(models.Model):
 
 
 class Question(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, 
-                             on_delete=models.CASCADE)
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE,
-                                null=True, blank=True,
-                                related_name='question')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE,null=True, blank=True, related_name='question')
     content = models.TextField()
     translated = models.TextField(null=True, blank=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -45,11 +42,8 @@ class Question(models.Model):
     # object_id = models.PositiveIntegerField(db_index=True)
     # content_object = GenericForeignKey("content_type", "object_id")
     tags = models.ManyToManyField(Tag, related_name="question")
-    avatar = models.ImageField(
-        upload_to="images/avatars",
-        null=True, 
-        blank=True
-    )
+    avatar = models.ImageField( upload_to="images/avatars", null=True, blank=True)
+
     def __str__(self):
         return self.content[:50] + '...' if len(self.content) > 50 else self.content
 
