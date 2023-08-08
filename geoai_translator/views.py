@@ -10,7 +10,7 @@ class Translator:
         self.text = text
         self.from_lan = from_lan
         self.to_lan = to_lan
-        self.translated_text = None
+        self.result = None
 
 
     @classmethod
@@ -31,7 +31,7 @@ class Translator:
             }
         )
 
-        self.translated_text = result.translations[0].translated_text
+        self.result = result.translations[0].translated_text
 
     
 

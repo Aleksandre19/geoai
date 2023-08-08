@@ -11,7 +11,7 @@ class QuestionForm(forms.ModelForm):
         fields = ["content"]
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+        # self.user = kwargs.pop('user', None)
         self.topic = kwargs.pop('topic', None)
         super(QuestionForm, self).__init__(*args, **kwargs)
         self.fields['content'].widget.attrs.update({'id': 'chat-message-input'})
@@ -19,16 +19,17 @@ class QuestionForm(forms.ModelForm):
 
     def clean(self):
         """
-        Validates the form.
+        Grab a cleaned data.
         """
         cleaned_data = super().clean()
         question_content = cleaned_data.get('content')
 
         slug = self.generate_slug(question_content)
 
-        # Here i cannot call the call_apis() function from the views.py
-        # because it will cause a circular import.
-        # I have to find other way to call the call_apis() function.
+        return {
+            'slug': slug,
+            'content': question_content,
+        }
 
     
     def generate_slug(self, question_content):
