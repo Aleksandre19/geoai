@@ -110,13 +110,13 @@ class ChatView(LoginRequiredMixin, ListView):
         )
 
         # Insert the content to the database.
-        insert_content(
-            api.user, 
-            api.slug, 
-            api.question,
-            api.geo_eng,
-            api.final_res,
-            api.openAI.answer
+        InsertIntoDB( 
+            user=api.user, 
+            slug=api.slug, 
+            geo_qst=api.question,
+            eng_qst=api.geo_eng,
+            geo_res=api.final_res,
+            eng_res=api.openAI.answer
         )
 
         # Redirect based on whether slug exists or not.
@@ -145,8 +145,8 @@ class Form:
 
 class Apis:
     """
-    This class takes question, it into english by Google Translate API, 
-    sends it to OpenAI, excludes the code from the response if it exists, 
+    This class takes question, translates it into english by Google Translate API, 
+    sends it to OpenAI, excludes the code from the OpenAI response if it exists, 
     translates the response back to georgian, includes back the excluded code
     and returns the final response.
     """
@@ -202,65 +202,84 @@ class Apis:
             self.slug = slugify(self.geo_eng.result[:20])
 
 
+class InsertIntoDB:
+    """
+    Handles inserting the content into the database 
+    for topic, question and answer models.
+    """
+    def __init__(self, user, slug, geo_qst, eng_qst, geo_res, eng_res):
+        self.user = user # Current user.
+        self.slug = slug # Slug of the topic.
+        self.topic = self.grab_topic() # Topic object.
+        self.topic_id = None # Inserted topic id.
+        self.geo_qst = geo_qst # Question in georgian.
+        self.eng_qst = eng_qst # Question in english.
+        self.geo_res = geo_res # Response in georgian.
+        self.eng_res = eng_res # Response in english.
+        self.inserted_qst = None # Inserted question.
+        self.process_insertion() # Insert the content into the database.
 
-def insert_content(
-        user,slug,geo_question,
-        eng_question,formated_geo_response,
-        unformated_geo_response, unformated_eng_response 
-        # questionText,
-        # translatedQ,
-        # geo_unformated_answer,
-        # eng_answer
-    ):
-    # geo_formated_answer = text_format(geo_unformated_answer)
-    topic = get_topic(slug)
+    # Process insertion of models.
+    def process_insertion(self):
+        self.insert_topic()
+        self.insert_question()
+        self.insert_response()
+        self.add_to_cache() # Add to cache.
 
-    if not topic:
-        topic_title = geo_question[:15]
-        slug = slug
-        topic = Topic(user=user,
-                title=topic_title,slug=slug)
-        
-        topic.save()
+    # Create topic if it does not exist.
+    def insert_topic(self):
+        if not self.topic:
+            topic_title = self.geo_qst[:15]
+            self.topic = Topic(user=self.user,
+                    title=topic_title,slug=self.slug)     
+            self.topic.save()
+            # Store the inserted topic id for websockets.
+            self.topic_id = self.topic.id
 
-    add_question = Question(
-            user=user,topic=topic,content=geo_question,
-            translated=eng_question
-        )
+    # Insert question.
+    def insert_question(self):
+        self.inserted_qst = Question(
+                user=self.user, topic=self.topic, 
+                content=self.geo_qst, translated=self.eng_qst)
+        self.inserted_qst.save()
+
+    # Insert response.
+    def insert_response(self):
+        insert_res = Answer(
+                user=self.user, question=self.inserted_qst, 
+                geo_formated_content=self.geo_res, # Formated response in georgian.
+                geo_unformated_content=self.geo_res, # This at this moment is just a placeholder.
+                eng_content=self.eng_res)
+        insert_res.save()
+
+    # Grab topic if slug exists.
+    def grab_topic(self):
+        try:
+            topic = Topic.objects.get(slug=self.slug)
+        except:
+            topic = None
+        return topic
     
-    add_question.save()
-
-    add_answer = Answer(
-        user=user, question=add_question,
-        geo_formated_content=formated_geo_response,
-        geo_unformated_content=unformated_geo_response,
-        eng_content=unformated_eng_response
-    )
-    add_answer.save()
-
-    # Add new topic in the cache.
-    add_to_cache(topic)
-
-    return {
-        'topic_id': topic.id,
-    }
+    # Add to cache.
+    def add_to_cache(self):
+        add_to_cache(self.topic)
 
 
 
 #########################
 
-def get_all_topics_by_user(request):
-    user_topics = Topic.objects.filter(user=request.user)
-    topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
-    return topics_by_user
+# def get_all_topics_by_user(request):
+#     user_topics = Topic.objects.filter(user=request.user)
+#     topics_by_user = {f"topic_{topic.pk}": topic for topic in user_topics}
+#     return topics_by_user
 
 
-def get_topic(slug):
-    try:
-        topic = get_object_or_404(Topic, slug=slug)
-    except Http404:
-        topic = None
-    return topic
+# def get_topic(slug):
+#     try:
+#         topic = get_object_or_404(Topic, slug=slug)
+#     except Http404:
+#         topic = None
+#     return topic
 
 
 def websocket_chat(user, message, slug):
@@ -269,14 +288,14 @@ def websocket_chat(user, message, slug):
         return result
 
 
-@login_required
-def post_question(request, topic=None):
-    form = QuestionForm(request.POST, topic=topic)
-    if form.is_valid():
-        form_cont = form.clean();
-        print('===================================', form_cont['content'])
-        api_caller(request.user, form_cont['content'], form_cont['slug'])
-    else: return False
+# @login_required
+# def post_question(request, topic=None):
+#     form = QuestionForm(request.POST, topic=topic)
+#     if form.is_valid():
+#         form_cont = form.clean();
+#         print('===================================', form_cont['content'])
+#         api_caller(request.user, form_cont['content'], form_cont['slug'])
+#     else: return False
 
     #     # add_topic = topic
     #     # Grab content from the form element.
