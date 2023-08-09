@@ -1,4 +1,6 @@
 from django.conf import settings
+from asgiref.sync import sync_to_async, async_to_sync
+from chat.models import Question
 import openai
 
 
@@ -9,34 +11,46 @@ class OpenAI:
     """
     This class is used to call the OpenAI API.
     """
-    def __init__(self, question, slug, topic, modele):
-        self.modele = modele
-        self.temperature = 0.3
+    def __init__(self, question, slug, topic, modele, webscoket):
+        self.question = question
         self.slug = slug
         self.topic = topic
-        self.question = question
+        self.modele = modele
+        self.temperature = 0.3
+        self.webscoket = webscoket
+        print('TOPIC IN __init__ =====================', self.topic)
+        
         self.answer = None
 
     # Method to be accessed outside by async call.
     @classmethod 
-    async def call(cls, question, slug, topic, modele):
-        instance = cls(question, slug, topic, modele)
+    async def call(cls, question, slug, topic, modele, webscoket):
+        instance = cls(question, slug, topic, modele, webscoket)
         await instance.api_request()
         return instance   
 
+    async def prepare_message(self):
+        if self.webscoket:
+            return await self.messages()
+        return async_to_sync(self.messages)()
+        
     # Calls the API and returns the response.
     async def api_request(self):
         response = openai.ChatCompletion.create(
             model=self.modele,
-            messages=self.messages(),
+            messages= await self.prepare_message(),
             temperature=self.temperature,
         )
+        
         self.answer = response['choices'][0]['message']['content']
     
     # Generates messages to be sent to the API.
-    def messages(self):
-        topic_msg = self.system_prompt()   
-        topic_msg = self.prev_msg(topic_msg)
+    async def messages(self):
+        topic_msg = self.system_prompt()  
+        if self.webscoket:
+            topic_msg = await self.prev_msg_async(topic_msg)
+        else:
+            topic_msg = self.prev_msg_sync(topic_msg)
         topic_msg.append(self.current_question())
         return topic_msg
     
@@ -46,24 +60,34 @@ class OpenAI:
 
     # Generates the current question JSON.
     def current_question(self):
-        return {'role': 'user', 'content': self.question}   
+        return {'role': 'user', 'content': self.question} 
     
     # Generates the previous messages.
-    def prev_msg(self, msg):
+    def prev_msg_sync(self, msg):
+        if  not self.topic: return msg
+        questions_list = Question.objects.select_related('answer').filter(topic=self.topic)
+        self.for_loop_questions(msg, questions_list) 
+        return msg
 
+    async def prev_msg_async(self, msg):
         # If the topic does not exist, return the current messages.
-        if  not self.topic: return msg 
+        if  not self.topic: return msg
+   
+        questions = await sync_to_async(self.fetch_questions)()
+        questions_list = await sync_to_async(list)(questions)
 
-        # If the topic exists, add the previous messages.    
-        questions = self.topic.question.all()
-        for question in questions:
+        self.for_loop_questions(msg, questions_list)
+        return msg 
+
+    def for_loop_questions(self, msg, questions_list):
+        for question in questions_list:
             user_question = {'role': 'user', 'content': question.translated}
             msg.append(user_question)
             ai_answer = {'role': 'assistant', 'content': question.answer.eng_content}
             msg.append(ai_answer)
-        return msg
 
-
+    def fetch_questions(self):
+        return Question.objects.select_related('answer').filter(topic=self.topic)
 
 # def get_openai_response(content):
 #     response = openai.Completion.create(

@@ -105,7 +105,8 @@ class ChatView(LoginRequiredMixin, ListView):
                 question=form['content'],
                 slug=form['slug'], 
                 topic=topic, 
-                openai_model='gpt-3.5-turbo' 
+                openai_model='gpt-3.5-turbo',
+                webscoket=False 
             )
         )
 
@@ -150,12 +151,13 @@ class Apis:
     translates the response back to georgian, includes back the excluded code
     and returns the final response.
     """
-    def __init__(self, user, question, slug, topic, openai_model):
+    def __init__(self, user, question, slug, topic, openai_model, webscoket):
         self.user = user # Current user.
         self.question = question # Original question.
         self.slug = slug # Slug of the topic.
         self.topic = topic # Topic object.
         self.openai_model = openai_model # OpenAI model version.
+        self.webscoket = webscoket # Websocket object.
         self.geo_eng = None # Question translated from geo to eng.
         self.eng_geo = None # Response translated from eng to geo.
         self.openAI = None # OpenAI response.
@@ -163,8 +165,8 @@ class Apis:
         self.final_res = None # Final response (translated and with code snippet)
 
     @classmethod
-    async def call(cls, user, question, slug, topic, openai_model):
-        inst = cls(user, question, slug, topic, openai_model)
+    async def call(cls, user, question, slug, topic, openai_model, webscoket):
+        inst = cls(user, question, slug, topic, openai_model, webscoket)
         await inst.apis()
         return inst
 
@@ -172,10 +174,10 @@ class Apis:
     async def apis(self):
         # Translate question from geo to eng.
         self.geo_eng = await self.translator(self.question, 'ka', 'en-US')
-
+        
         # Get response from OpenAI.
         self.openAI = await self.openai()
-
+      
         # Exclude code (if it is in) from the response.
         self.without_code = exclude_code(self.openAI.answer)['text']
 
@@ -194,7 +196,13 @@ class Apis:
 
     # OpenAI API.
     async def openai(self):
-        return await OpenAI.call(self.geo_eng.result, self.slug, self.topic, self.openai_model)
+        return await OpenAI.call(
+            self.geo_eng.result, 
+            self.slug, 
+            self.topic, 
+            self.openai_model, 
+            self.webscoket
+        )
 
     # Generate slug.
     def gen_slug(self):
@@ -234,7 +242,7 @@ class InsertIntoDB:
                     title=topic_title,slug=self.slug)     
             self.topic.save()
             # Store the inserted topic id for websockets.
-            self.topic_id = self.topic.id
+        self.topic_id = self.topic.id
 
     # Insert question.
     def insert_question(self):
@@ -264,8 +272,37 @@ class InsertIntoDB:
     def add_to_cache(self):
         add_to_cache(self.topic)
 
+async def websocket_chat(user, message, slug):
+    if user.is_authenticated:
+        openai_model='gpt-3.5-turbo'
+        topic = None
+        if slug:
+            print('IF SLUG =====================')
+            topic = await sync_to_async(get_object_or_404)(Topic, slug=slug)
+        print('Topic in WebSocket =====================', topic)
+        api =  await Apis.call(user, message, slug, topic, openai_model, webscoket=True)
+        
+        print('BEFORE RESULT =====================')
+        result = await sync_to_async(InsertIntoDB)( 
+            user=api.user, 
+            slug=api.slug, 
+            geo_qst=api.question,
+            eng_qst=api.geo_eng,
+            geo_res=api.final_res,
+            eng_res=api.openAI.answer
+        )
+        print('RESULT =====================')
+        # result = api_caller(user, message, slug)
+        return result
 
 
+@sync_to_async
+def async_get_object_or_404(slug):
+    try:
+        topic = get_object_or_404(Topic, slug=slug)
+    except Http404:
+        topic = None
+    return topic
 #########################
 
 # def get_all_topics_by_user(request):
@@ -282,10 +319,7 @@ class InsertIntoDB:
 #     return topic
 
 
-def websocket_chat(user, message, slug):
-    if user.is_authenticated:
-        result = api_caller(user, message, slug)
-        return result
+
 
 
 # @login_required
