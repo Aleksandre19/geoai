@@ -8,10 +8,12 @@ from django.contrib.auth.decorators import login_required
 
 from chat.models import Topic, Answer, Question
 from chat.forms import QuestionForm
+from chat.api.serializers import QuestionSerializer
 
 from django.utils.text import slugify
 from geoai_translator.views import translate_text, Translator
 from geoai_openai.views import OpenAI
+
 
 # from geoai_openai.views import get_openai_response
 
@@ -99,20 +101,27 @@ class ChatView(LoginRequiredMixin, ListView):
         slug = self.kwargs.get('slug')
 
         # Get the Topic object if slug exists.
-        topic = get_object_or_404(Topic, slug=slug) if slug else None
+        topic = None
+        questions_json = None
+        if slug:
+            # If slug exists, get the Topic object and its related Questions.
+            topic = get_object_or_404(Topic, slug=slug)
+            questions = Question.objects.prefetch_related('answer').filter(topic=topic)
+            questions_json = QuestionSerializer(questions, many=True).data
              
         # Grab the content from the form.
         form = Form(request, topic).content()
 
+        print('questions_json ==== ', questions_json)
         # Call the APIs (Openai and Google Translate)
         api = asyncio.run(
             Apis.call(
                 user=request.user, 
                 question=form['content'],
-                slug=form['slug'], 
+                slug=slug,
                 topic=topic, 
-                openai_model='gpt-3.5-turbo',
-                webscoket=False 
+                qst_json=questions_json,
+                openai_model='gpt-3.5-turbo'
             )
         )
 
@@ -157,13 +166,13 @@ class Apis:
     translates the response back to georgian, includes back the excluded code
     and returns the final response.
     """
-    def __init__(self, user, question, slug, topic, openai_model, webscoket):
+    def __init__(self, user, question, slug, topic, qst_json, openai_model):
         self.user = user # Current user.
         self.question = question # Original question.
         self.slug = slug # Slug of the topic.
         self.topic = topic # Topic object.
+        self.qst_json = qst_json # Questions in json format.
         self.openai_model = openai_model # OpenAI model version.
-        self.webscoket = webscoket # Websocket object.
         self.geo_eng = None # Question translated from geo to eng.
         self.eng_geo = None # Response translated from eng to geo.
         self.openAI = None # OpenAI response.
@@ -171,8 +180,8 @@ class Apis:
         self.final_res = None # Final response (translated and with code snippet)
 
     @classmethod
-    async def call(cls, user, question, slug, topic, openai_model, webscoket):
-        inst = cls(user, question, slug, topic, openai_model, webscoket)
+    async def call(cls, user, question, slug, topic, qst_json, openai_model):
+        inst = cls(user, question, slug, topic, qst_json, openai_model)
         await inst.apis()
         return inst
 
@@ -206,8 +215,8 @@ class Apis:
             self.geo_eng.result, 
             self.slug, 
             self.topic, 
-            self.openai_model, 
-            self.webscoket
+            self.qst_json,
+            self.openai_model
         )
 
     # Generate slug.
@@ -277,6 +286,7 @@ class InsertIntoDB:
     # Add to cache.
     def add_to_cache(self):
         add_to_cache(self.topic)
+
 
 async def websocket_chat(user, message, slug):
     if user.is_authenticated:

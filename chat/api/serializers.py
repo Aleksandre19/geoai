@@ -30,8 +30,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answer = AnswerSerializer(read_only=True)
+    answer = AnswerSerializer()
     class Meta:
         model = Question
         fields = ['translated', 'answer']
-        readonly = ['created_at']
