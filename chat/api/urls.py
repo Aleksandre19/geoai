@@ -8,10 +8,12 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from chat.api.views import (
     UserDetail,
     TopicViewSet,
+    QuestionViewSet,
 )
 
 router = DefaultRouter()
 router.register("topics", TopicViewSet)
+router.register("questions", QuestionViewSet)
 
 urlpatterns = [
     path('users/<int:id>', UserDetail.as_view(), name='api_user_detail'),
