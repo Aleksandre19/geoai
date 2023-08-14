@@ -27,116 +27,160 @@ wrappes rest of the text with <p> elements,
 attaches comment dict(grabed from the code snippet) for translation
 and returns the text.
 """
-class MainHelper:
-    _instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+class Store:
+    cur_prog_lang = {} # Code snippet's programming language
+    saved_org_comments = {} # Save a original comments from the code snippet
+    tokinized_snippet = {} # Save a tokenized code snippet with placeholder of comments.
+    attached_comment = {} # Save a attached comment
+    excluded_words = [] # Save a code snippet 
+
+    def generate_place_holder(length=6):
+        return str(uuid4().int)[-length:] 
+
+
+class ExcludeCode:
+    """
+    This class takes a text, extracts a code snippet from it,
+    tokenizes it, extracts comments from the tokinezed code snippet
+    and replaice them the with the place holders, 
+    wrapps hilighted text with the <span> element,
+    wrapps the text with the paragraphs with the <p> element 
+    and attache a comment to the text for translattion.
     
-    def __init__(self):
-        if not self.__dict__:
-            self.cur_prog_lang = {} # Code snippet's programming language
-            self.saved_org_comments = {} # Save a original comments from the code snippet
-            self.attached_comment_name = {} # Save a attached comment
-            self.tokinized_snippet = {} # Save a code snippet
-            self.excluded_words = [] # Save a code snippet
-
-    def generate_place_holder(self, length=6):
-        return str(uuid4().int)[-length:]
-    
-
-class ExcludeCode(MainHelper):
+    """
     def __init__(self, text):
-        super().__init__()
         self.text = text
-        self.code = None    
-
+        self.code = None
+    
     @classmethod
     def to(cls, text):
-        instance = cls(text)
-        return instance.process()
-    
+        isinstance = cls(text)
+        return isinstance.process()
+
     def process(self):
+        # Exclude a code snippet from the text if it exists and grab a plain text.
         plain_text = ExtractCode.to(self.text)
-        return plain_text
+        print('plain_text ============= ')
+        pprint.pprint(plain_text)
+
+        # Wrappe the snippets in the text with the <span> element and hilight them.
+        highlighted = Highlight.to(plain_text)
+        print('highlighted ============= ')
+        pprint.pprint(highlighted)
+
+        # Wrappe the text with the paragraphs with the <p> element.
+        wrapped = WrapWithP.to(highlighted)
+        print('wrapped ============= ')
+        pprint.pprint(wrapped)
+
+
+        # Attache a comment to the text for translattion.
+        ready_for_translation = AttacheComment.to(wrapped)
+
+        return ready_for_translation
     
 
-
-class ExtractCode(MainHelper):
+class ExtractCode:
+    """
+    This class takes a text, extracts a code snippet from it,
+    tokenizes it, extracts comments from the tokinezed code snippet 
+    and replaice them the with the place holders.
+    """
     def __init__(self, text):
-        super().__init__()
         self.text = text
-        
+
     @classmethod
     def to(cls, text):
-        instance = cls(text)
-        return instance.extract()
+        isinstance = cls(text)
+        return isinstance.extract()
 
+    # Extract a code snippet from the text.
     def extract(self):
+        # Exclude a code snippet from the text if it exists and grab a plain text.
         plain_text = re.sub(r'```(.*?)```', self.re_func , self.text, flags=re.DOTALL)
         return plain_text
 
+    # The functionn wich is being called by the re.sub() method each time it finds a match.
     def re_func(self, snippet):
-        code_snippet = snippet.group(1) # Grab a code snippet from Regex match.
-        prog_lang_name = code_snippet.splitlines()[0] # Grab a programming language name.
+        # Grab a code snippet from Regex match.
+        code_snippet = snippet.group(1) 
+
+        # Grab a programming language name.
+        prog_lang_name = code_snippet.splitlines()[0] 
 
         # Save programming language name.
-        self.cur_prog_lang['name'] = prog_lang_name
+        Store.cur_prog_lang['name'] = prog_lang_name
 
         # Remove a language name from the beginning of the snippet.
-        if code_snippet.startswith(self.cur_prog_lang['name']):
-            code_snippet = code_snippet.replace(self.cur_prog_lang['name'], '', 1)
+        if code_snippet.startswith(Store.cur_prog_lang['name']):
+            code_snippet = code_snippet.replace(Store.cur_prog_lang['name'], '', 1)
 
         # Tokenize the code snippet.
         tokenized = TokenizeText.to(code_snippet)
 
         # Replace the comments with the place holders.
-        extracted = self.replace_comment_with_plcholder(tokenized) 
+        extracted = self.replace_comment_with_plcholder(tokenized)
 
-        return extracted
+        # Generate a place holder for the comments in the code snippet.
+        placeholder = Store.generate_place_holder()
 
-    # Replace the comments with the place holders and save them.
+        # Save the code snippet with the place holder of the comments.
+        Store.tokinized_snippet[placeholder] = extracted
+   
+        return placeholder
+
+    # Loop through the tokenized code snippet and replace the comments with the place holders.
     def replace_comment_with_plcholder(self, tokenized):
         tokenized_with_placeholder = []
         for token_type, value in tokenized:
             if 'Comment' in str(token_type):
-                place_holder = self.generate_place_holder(lenght=6)
-                self.saved_org_comments[place_holder] = value
+                place_holder = Store.generate_place_holder()
+                Store.saved_org_comments[place_holder] = value
                 value = place_holder
             tokenized_with_placeholder.append((token_type, value))
         return tokenized_with_placeholder
     
  
-class TokenizeText(MainHelper):
+class TokenizeText:
+    """"
+    This class takes a code snippet, tokenizes it with PyGments lex method to be 
+    posible to exclude comments from the code snippet for translation.
+    """
     def __init__(self, code):
-        super().__init__()
         self.code = code
-        
 
     @classmethod
     def to(cls, code):
-        instance = cls(code)
-        return instance.tokenize()
-
+        isinstance = cls(code)
+        return isinstance.tokenize()
+    
+    # Identify the lexer and tokenize the code snippet.
     def tokenize(self):
-        print('=========== self.cur_prog_lang in Tokinaizer')
-        pprint.pprint(self.cur_prog_lang)
-        lexer = self.identify_lexer(self.cur_prog_lang['name'])
+        # Identify the lexer for the current programming language.
+        lexer = self.identify_lexer(Store.cur_prog_lang['name'])
+
+        # Tokenize the code snippet.
         tokens = list(lex(self.code, lexer))
         return tokens  
 
+    # Identify the lexer for the current programming language.
     def identify_lexer(self, prog_lang):
+        # Dinamically import the lexer for the current programming language.
         lexer_instance = self.import_lexer_module(prog_lang)()
+
+        # If not found, use the default guess_lexer().
         if lexer_instance is None:
             return guess_lexer(prog_lang)
+        
         return lexer_instance
     
     # Import only lexer for the current programming language.
     def import_lexer_module(self, prog_lang):
+        # Grab the current laxer's path string from lexers.py.
         class_path = Lexers.lexer.get(prog_lang, None)
-    
+
+        # Split the path string into module path and class name and import them.
         if class_path:
             module_name, class_name = class_path.rsplit('.', 1)
             module = importlib.import_module(module_name)
@@ -144,7 +188,94 @@ class TokenizeText(MainHelper):
                 return lambda: None
             lexer_class = getattr(module, class_name)
             return lexer_class
+        
+        # If not found, return empty function.
         return lambda: None
+
+
+class Highlight:
+    """
+    This class takes a plain text, finds the words which are wrapped with the backsticks,
+    and wraps them with the <span> element to highlight them.
+    """
+    def __init__(self, plain_text):
+        self.plain_text = plain_text
+
+    @classmethod
+    def to(cls,plain_text):
+        isinstance = cls(plain_text)
+        return isinstance.wrap()
+
+    # Find thw words which are wrapped with the backsticks.
+    def wrap(self):
+        return re.sub(r'`(.*?)`', self.wrap_func , self.plain_text, flags=re.DOTALL)
+    
+    # Wrappe the backsticks into text snippet with the <span> element.
+    def wrap_func(self, text):
+        Store.excluded_words.append(text.group(1))
+        return f'<span class="bckstk-wrapper">{text.group(1)}</span>'
+
+
+class WrapWithP:
+    """
+    This class takes a plain text and wraps it with the <p> element.
+    """
+    def __init__(self, plain_text):
+        self.plain_text = plain_text
+
+    @classmethod
+    def to(cls, plain_text):
+        isinstance = cls(plain_text)
+        return isinstance.wrap()
+    
+    # Split the text by \n and wrappe them with the <p> element.
+    def wrap(self):
+        # Split the text by \n.
+        splited_value = self.plain_text.splitlines()
+        wrapped_by_p = []
+
+        # Wrappe each line with the <p> element.
+        for item in splited_value:
+            if item and item not in tokenized_snippet:
+                wrapped_by_p.append(f'<p>{item}</p>')
+            else:
+                wrapped_by_p.append(f' {item} ') 
+
+        # Reconstruct the text.                  
+        reconstructed_value = ''
+        for item in wrapped_by_p:
+            reconstructed_value += item
+        return reconstructed_value
+
+
+class AttacheComment:
+    """
+    This class takes comments excluded from the code snippet,
+    and attaches them to the text to be translated both at same time.
+    """
+    def __init__(self, wrapped):
+        self.wrapped = wrapped
+
+    @classmethod
+    def to(cls, wrapped):
+        isinstance = cls(wrapped)
+        return isinstance.attache()
+    
+    # Save comment and combine it with the text.
+    def attache(self):
+       # Save original comments.
+       comments = self.save_comment()
+
+       # Combine a text and comment. 
+       combined = f'{self.wrapped} \n {comments}' # Combine a text and comment.
+       return combined 
+    
+    # Save original comments.
+    def save_comment(self):
+        Store.attached_comment.clear()
+        Store.attached_comment['dict_name'] = Store.generate_place_holder() # Attached dict name.
+        comments = f'{Store.attached_comment["dict_name"]} = {Store.saved_org_comments}'
+        return comments
 
 
 
@@ -152,6 +283,7 @@ attached_comment_name = {} # Save a attached comment
 tokenized_snippet = {}
 excluded_words = []
 def exclude_code(text):
+    pprint.pprint(text)
     # Text without code snippet. 
     result = re.sub(r'```(.*?)```', set_placeholder , text, flags=re.DOTALL)
     # Wrappe the backsticks into code snippet with the <span> element.
