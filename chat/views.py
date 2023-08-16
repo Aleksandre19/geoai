@@ -18,10 +18,9 @@ from .helpers import *
 logger = logging.getLogger(__name__)
 
 # Notes
-#1 Complite caching the questions and answers.
+# 1. Complite caching the questions and answers.
     # subject caching is implemented.
-#2 Write a conditions for the else:
-#3 Use DjDT debug to optimaze performance of the webpage
+# 2. Use DjDT debug to optimaze performance of the webpage
 
 class ChatView(LoginRequiredMixin, ListView):
 
@@ -62,9 +61,8 @@ class ChatView(LoginRequiredMixin, ListView):
 
         ##### FOR TESTING #####
         # test =  Question.objects.last()
-        # ex = exclude_code(test.answer.eng_content)
-        # inc = include_back_code(ex['text'])
-        # post_question(test.topic)
+        # ex = ExcludeCode.to(test.answer.eng_content)
+        # inc = IncludeCode.to(ex)
 
         context.update({
                 'topics': titles,
@@ -72,7 +70,7 @@ class ChatView(LoginRequiredMixin, ListView):
                 'question_form': QuestionForm(),
                 'user_id': self.request.user.id,
                 'slug': slug,
-                #'test': inc,
+                # 'test': inc,
         })
         return context
     
@@ -157,22 +155,28 @@ class Apis:
         await inst.apis()
         return inst
 
-
     async def apis(self):
         # Translate question from geo to eng.
         self.geo_eng = await self.translator(self.question, 'ka', 'en-US')
         
         # Get response from OpenAI.
         self.openAI = await self.openai()
-      
+
+        # TESTING NEW FEATURE
+        # testing_new_code_exclution = ExcludeCode(self.openAI.answer)
+        # print('testing_new_code_exclution ===================')
+        # pprint.pprint(testing_new_code_exclution)
+
         # Exclude code (if it is in) from the response.
-        self.without_code = exclude_code(self.openAI.answer)['text']
+        # self.without_code = exclude_code(self.openAI.answer)['text']
+        self.without_code = ExcludeCode.to(self.openAI.answer)
 
         # Translate response from eng to geo.
         self.eng_geo = await self.translator(self.without_code, 'en-US', 'ka')
 
         # Include code (if it is in) in the response.
-        self.final_res = include_back_code(self.eng_geo.result)
+        # self.final_res = include_back_code(self.eng_geo.result)
+        self.final_res = IncludeCode.to(self.eng_geo.result)
 
         # Generate slug.
         self.gen_slug()

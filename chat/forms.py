@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from django import forms
 from chat.models import Question
-from chat.helpers import convertToEng
+from chat.helpers import ConvertText
 from django.utils.text import slugify
 
 
@@ -39,7 +39,7 @@ class QuestionForm(forms.ModelForm):
         if self.topic:
             slug = self.topic.slug
 
-        convert_alphabet = convertToEng(question_content[:15])
+        convert_alphabet = ConvertText.to(question_content[:15])
         return slugify(convert_alphabet)    
     
         
