@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+
 from asgiref.sync import sync_to_async, async_to_sync 
 
 from chat.models import Topic, Answer, Question
@@ -162,20 +163,13 @@ class Apis:
         # Get response from OpenAI.
         self.openAI = await self.openai()
 
-        # TESTING NEW FEATURE
-        # testing_new_code_exclution = ExcludeCode(self.openAI.answer)
-        # print('testing_new_code_exclution ===================')
-        # pprint.pprint(testing_new_code_exclution)
-
         # Exclude code (if it is in) from the response.
-        # self.without_code = exclude_code(self.openAI.answer)['text']
         self.without_code = ExcludeCode.to(self.openAI.answer)
 
         # Translate response from eng to geo.
         self.eng_geo = await self.translator(self.without_code, 'en-US', 'ka')
 
         # Include code (if it is in) in the response.
-        # self.final_res = include_back_code(self.eng_geo.result)
         self.final_res = IncludeCode.to(self.eng_geo.result)
 
         # Generate slug.

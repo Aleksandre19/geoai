@@ -1,8 +1,12 @@
 :root{
     --primary-color: #9B999B;
-    --secondary-color: #e6e6e6;
-    --text-color: #4F4D4F;
-    --white-body-color: #fcfcfc;
+    /* --secondary-color: #e6e6e6; */
+    /* --text-color: #4F4D4F; */
+    /* --white-body-color: #fcfcfc; */
+    /* Dark Mode Colors */
+    --secondary-color: #868686;
+    --text-color: #f3f3f3;
+    --white-body-color: #646464;
 }
 
 * {
@@ -65,12 +69,20 @@ h1, h2, h3, h4, h5, h6 {
 /* Loading animation for answer's container */
 .skeleton-loading {
     opacity: 0.7;
-    background: linear-gradient(120deg,
+    /* background: linear-gradient(120deg,
         rgba(229, 229, 229, 0.3) 30%,
         rgba(240, 240, 240, 0.9) 38%,
         rgba(240, 240, 240, 0.9) 40%,
         rgba(229, 229, 229, 0.3) 48%
-    );
+    ); */
+
+    /* Dark Mode */
+    background: linear-gradient(120deg,
+        rgba(84, 84, 84, 1) 30%,
+        rgba(99, 99, 99, 1) 38%,
+        rgba(99, 99, 99, 1) 40%,
+        rgba(84, 84, 84, 1) 48%);
+
     background-size: 200% 100%;
     background-position: 100% 0;
     animation: skeleton-loading 1s linear infinite alternate,
@@ -260,20 +272,36 @@ section#chat-main div#sidebar div.sidebar-sections{
 }
 
 /* Topic title edition icon */
-#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
+/* #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
     background-image: url('../images/icons/geoai-edit-icon.png');
+} */
+/* Dark Mode */
+#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
+    background-image: url('../images/icons/dm-geoai-edit-icon.png');
 }
 
 /* Topic title deletion icon */
-#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
+/* #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
     background-image: url('../images/icons/geoai-trash-icon.png');
+} */
+/* Dark Mode */
+#chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
+    background-image: url('../images/icons/dm-geoai-trash-icon.png');
 }
 
 /* Topic title approving icon */
-#chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
+/* #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
     display: inline-block;
     height: 100%;
     background-image: url('../images/icons/geoai-check-icon.png');
+    transition: transform 0.3s ease-in-out;
+    z-index: 2;
+} */
+/* Dark Mode */
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
+    display: inline-block;
+    height: 100%;
+    background-image: url('../images/icons/dm-geoai-check-icon.png');
     transition: transform 0.3s ease-in-out;
     z-index: 2;
 }
@@ -283,13 +311,21 @@ section#chat-main div#sidebar div.sidebar-sections{
 }
 
 /* Topic title approving icon */
-#chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
+/* #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
     display: inline-block;
     height: 100%;
     background-image: url('../images/icons/geoai-x-icon.png');
     transition: transform 0.3s ease-in-out;
     z-index: 1;
-} 
+}  */
+/* Dark Mode */
+#chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
+    display: inline-block;
+    height: 100%;
+    background-image: url('../images/icons/dm-geoai-x-icon.png');
+    transition: transform 0.3s ease-in-out;
+    z-index: 1;
+}
 
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon:hover {
     transform: rotate(-90deg);
@@ -368,7 +404,10 @@ section#chat-main div#sidebar div.sidebar-sections{
     height: 50px;
     margin: 16px 0px 16px 0;
     padding-right: 90px;
-    border: 1px solid var(--primary-color);
+    /* Dark Mode */
+    background-color: var(--primary-color);
+    border: 1px solid var(--secondary-color);
+    /* border: 1px solid var(--primary-color); */
     border-radius: 4px 0px 0px 4px;
     outline: 0px solid var(--primary-color);
     transition: outline 0.1s ease-in-out;
@@ -397,6 +436,8 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content .chat-qa-form form button:hover {
     cursor: pointer;
     background-color: #dddddd;
+    /* Dark Mode */
+    color: var(--secondary-color);
 }
 
 #chat-main #chat-content .chat-qa-form p.warning-msg {
@@ -405,7 +446,8 @@ section#chat-main div#sidebar div.sidebar-sections{
     text-align: center;
     font-size: 0.7rem;
     font-style: italic;
-    color: var(--primary-color);
+    color: var(--text-color);
+    /* color: var(--primary-color); */
 }
 
 #chat-main #chat-content .chat-qa-content {
@@ -423,18 +465,28 @@ section#chat-main div#sidebar div.sidebar-sections{
     margin: auto;
     padding: 16px 24px;
     border-radius: 4px 4px  0px 0px;
-    background-color: var(--secondary-color);
+    /* Dark Mode */
+    background-color: #7c7c7c;
+    /* background-color: var(--primary-color); */
 }
 
-#chat-main #chat-content .chat-qa-content .qa-block .a-block {
+/* #chat-main #chat-content .chat-qa-content .qa-block .a-block {
     background-color: #f3f2f2;
+} */
+
+/* Dark Mode */
+#chat-main #chat-content .chat-qa-content .qa-block .a-block {
+    border-radius: 0px;
+    background-color: #545454;
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .highlight {
     margin: 24px 0px;
     padding: 16px 8px;
     overflow-x: auto;
-    background-color: #fffdfd;
+    /* Dark Mode */
+    /* background-color: #272822; */
+    /* background-color: #fffdfd; */
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block p {
@@ -443,10 +495,14 @@ section#chat-main div#sidebar div.sidebar-sections{
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .bckstk-wrapper {
     display: inline-block;
-    background-color: #fcfcfc;
+    /* Dark Mode */
+    background-color: #717171;
+    /* background-color: #fcfcfc; */
     font-size: 0.9rem;
     font-style: italic;
-    border: 1px solid #dfdfdf;
+    /* Dark Mode */
+    border: #8b8b8b 1px solid;
+    /* border: 1px solid #dfdfdf; */
     padding: 0px 8px;
     margin: 0px 2px;
     border-radius: 2px;

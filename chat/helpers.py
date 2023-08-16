@@ -1,16 +1,22 @@
 import ast
 import importlib
 import logging
+import pprint
 import re
+import sys
 
+from django.http import Http404
 from django.core.cache import cache
+from django.utils.html import format_html, escape
 
-from pygments import lex, format
+from pygments import highlight, lex, format
 from pygments.lexers import guess_lexer
+from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 from uuid import uuid4
 
 from .lexers import Lexers
+
 
 
 logger = logging.getLogger(__name__)
@@ -24,11 +30,12 @@ and returns the text.
 """
 
 class Store:
-    cur_prog_lang = {} # Code snippet's programming language
-    saved_org_comments = {} # Save a original comments from the code snippet
+    cur_prog_lang = {} # Code snippet's programming language.
+    saved_org_comments = {} # Save a original comments from the code snippet.
     tokenized_snippet = {} # Save a tokenized code snippet with placeholder of comments.
-    attached_comment = {} # Save a attached comment
-    excluded_words = [] # Save a code snippet 
+    attached_comment = {} # Save a attached comment.
+    excluded_words = [] # Save a code snippet.
+    current_lexer = None # Save a current lexer.
 
     def generate_place_holder(length=6):
         return str(uuid4().int)[-length:] 
@@ -156,6 +163,9 @@ class TokenizeText:
     def identify_lexer(self, prog_lang):
         # Dinamically import the lexer for the current programming language.
         lexer_instance = self.import_lexer_module(prog_lang)()
+
+        # Save the current lexer.
+        Store.current_lexer = lexer_instance
 
         # If not found, use the default guess_lexer().
         if lexer_instance is None:
@@ -401,10 +411,22 @@ class EmbedComment:
     
     # Format the code snippet by Pygments formater.
     def formate_snippet(self, snippet):
-        output = ''
+        # Convert to string.
+        detokenized = ''.join(value for token, value in snippet)
+
+        # Get the Pygments formater.
         formatter = HtmlFormatter(linenos=True)
-        output = format(snippet, formatter)
+
+        # Format the code snippet.
+        output = highlight(detokenized, Store.current_lexer, formatter)
+        
         return output
+    
+        # Print the PyGments formatters style in terminal.
+        # style = get_style_by_name('solarized-dark')
+        # styel_form = HtmlFormatter(style=style, linenos=True)
+        # print('Formatter Style ============ ')
+        # pprint.pprint(styel_form.get_style_defs('.highlight'))
     
     # Clear the dictionaries.
     def clean_dict(self):

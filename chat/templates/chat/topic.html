@@ -1,9 +1,9 @@
  {% load static %}
  {% block extra_style %}
-    <link rel="stylesheet" href="{% static 'geoai/css/pygments_style.css' %}" />
+    <link rel="stylesheet" href="{% static 'geoai/css/pygments_styles/monokai.css' %}" />
  {% endblock %}
  <!-- For Testing -->
- {% comment %} <div class='qa-block'>
+ <div class='qa-block'>
     <div class='q-block'>
         <p class='b-block-content'>
             Question
@@ -12,7 +12,7 @@
     <div class='a-block'>
         {{test|safe}}
     </div>   
-</div> {% endcomment %}
+</div>
 <!-- Questions & Answers -->
 {% for question in questions %}
     <div class='qa-block'>
