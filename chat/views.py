@@ -61,9 +61,9 @@ class ChatView(LoginRequiredMixin, ListView):
             questions = Question.objects.prefetch_related('answer').filter(topic=topic)
 
         ##### FOR TESTING #####
-        # test =  Question.objects.last()
-        # ex = ExcludeCode.to(test.answer.eng_content)
-        # inc = IncludeCode.to(ex)
+        test =  Question.objects.last()
+        ex = ExcludeCode.to(test.answer.eng_content)
+        inc = IncludeCode.to(ex)
 
         context.update({
                 'topics': titles,
@@ -71,7 +71,7 @@ class ChatView(LoginRequiredMixin, ListView):
                 'question_form': QuestionForm(),
                 'user_id': self.request.user.id,
                 'slug': slug,
-                # 'test': inc,
+                'test': inc,
         })
         return context
     
