@@ -10,7 +10,7 @@ from django.core.cache import cache
 from django.utils.html import format_html, escape
 
 from pygments import highlight, lex, format
-from pygments.lexers import guess_lexer
+from pygments.lexers import guess_lexer, get_lexer_by_name
 from pygments.styles import get_style_by_name
 from pygments.formatters import HtmlFormatter
 from uuid import uuid4
@@ -162,7 +162,8 @@ class TokenizeText:
     # Identify the lexer for the current programming language.
     def identify_lexer(self, prog_lang):
         # Dinamically import the lexer for the current programming language.
-        lexer_instance = self.import_lexer_module(prog_lang)()
+        lexer_instance = get_lexer_by_name(prog_lang)
+        # lexer_instance = self.import_lexer_module(prog_lang)()
 
         # Save the current lexer.
         Store.current_lexer = lexer_instance
@@ -174,21 +175,21 @@ class TokenizeText:
         return lexer_instance
     
     # Import only lexer for the current programming language.
-    def import_lexer_module(self, prog_lang):
-        # Grab the current laxer's path string from lexers.py.
-        class_path = Lexers.lexer.get(prog_lang, None)
+    # def import_lexer_module(self, prog_lang):
+    #     # Grab the current laxer's path string from lexers.py.
+    #     class_path = Lexers.lexer.get(prog_lang, None)
 
-        # Split the path string into module path and class name and import them.
-        if class_path:
-            module_name, class_name = class_path.rsplit('.', 1)
-            module = importlib.import_module(module_name)
-            if not module:
-                return lambda: None
-            lexer_class = getattr(module, class_name)
-            return lexer_class
+    #     # Split the path string into module path and class name and import them.
+    #     if class_path:
+    #         module_name, class_name = class_path.rsplit('.', 1)
+    #         module = importlib.import_module(module_name)
+    #         if not module:
+    #             return lambda: None
+    #         lexer_class = getattr(module, class_name)
+    #         return lexer_class
         
-        # If not found, return empty function.
-        return lambda: None
+    #     # If not found, return empty function.
+    #     return lambda: None
 
 
 class Highlight:
@@ -416,10 +417,10 @@ class EmbedComment:
 
         # Get the Pygments formater.
         formatter = HtmlFormatter(linenos=True)
-
+        
         # Format the code snippet.
         output = highlight(detokenized, Store.current_lexer, formatter)
-        
+
         return output
     
         # Print the PyGments formatters style in terminal.
