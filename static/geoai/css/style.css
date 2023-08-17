@@ -1,79 +1,65 @@
 :root{
+    /* Main colors */
     --primary-color: #9B999B;
-    /* --secondary-color: #e6e6e6; */
-    /* --text-color: #4F4D4F; */
-    /* --body-bg-color: #fcfcfc; */
+    --secondary-color: #e6e6e6;
+    --text-color: #4F4D4F;
+    --body-bg-color: #fcfcfc;
 
-    /* --a-block: #f3f2f2; */
-    /* --q-block: #7c7c7c; Check color! */
+    /* Color of the question/answer block */
+    --a-block: #f3f2f2;
+    --q-block: #d3d3d3;
 
-    /* --bckstk-bg-color: #fcfcfc; */
-    /* --bckstk-border-color: #dfdfdf; */
+    /* Color of the backtick in the response text */
+    --bckstk-bg-color: #fcfcfc;
+    --bckstk-border-color: #dfdfdf;
 
-    /* --edit-icon: url('../images/icons/geoai-edit-icon.png'); */
-    /* --check-icon: url('../images/icons/geoai-check-icon.png'); */
-    /* --trash-icon: url('../images/icons/geoai-trash-icon.png'); */
-    /* --x-icon: url('../images/icons/geoai-x-icon.png'); */
+    /* Title action buttons icons */
+    --edit-icon: url('../images/icons/geoai-edit-icon.png');
+    --check-icon: url('../images/icons/geoai-check-icon.png');
+    --trash-icon: url('../images/icons/geoai-trash-icon.png');
+    --x-icon: url('../images/icons/geoai-x-icon.png');
 
-    /* --answer-waiting-gif-color-01: rgba(229, 229, 229, 0.3); */
-    /* --answer-waiting-gif-color-02: rgba(240, 240, 240, 0.9); */
-    /* --answer-waiting-gif-color-03: rgba(240, 240, 240, 0.9); */
-    /* --answer-waiting-gif-color-04: rgba(229, 229, 229, 0.3); */
+    /* Answer waiting gif colors */
+    --answer-waiting-gif-color-01: rgba(229, 229, 229, 0.3);
+    --answer-waiting-gif-color-02: rgba(240, 240, 240, 0.9);
+    --answer-waiting-gif-color-03: rgba(240, 240, 240, 0.9);
+    --answer-waiting-gif-color-04: rgba(229, 229, 229, 0.3);
 
-
-    /* Dark Mode Colors */
-    /* --primary-color: #5f5f5f; */
-    /* --secondary-color: #868686; */
-    --secondary-color: #5a5a5a;
-    --text-color: #f3f3f3;
-    /* --body-bg-color: #646464; */
-    --body-bg-color: #3e3e3e;
-
-    --textarea-btn: #7e7d7d;
-    --textarea-btn-hover: #8d8b8b;
-
-    --a-block: #545454;
-    --q-block: #7c7c7c;
-
-    --bckstk-bg-color: #717171;
-    --bckstk-border-color: #8b8b8b;
-
-    --edit-icon: url('../images/icons/dm-geoai-edit-icon.png');
-    --check-icon: url('../images/icons/dm-geoai-check-icon.png');
-    --trash-icon: url('../images/icons/dm-geoai-trash-icon.png');
-    --x-icon: url('../images/icons/dm-geoai-x-icon.png');
-
-    --answer-waiting-gif-color-01: rgba(84, 84, 84, 1);
-    --answer-waiting-gif-color-02: rgba(99, 99, 99, 1);
-    --answer-waiting-gif-color-03: rgba(99, 99, 99, 1);
-    --answer-waiting-gif-color-04: rgba(84, 84, 84, 1);
-                
-               
-                
-                
+    /* Question input colors */
+    --textarea-btn: #d3d3d3;
+    --textarea-btn-hover: #bfbfbf;           
 }
 
 [data-theme="dark"] {
+    /* Main colors */
     --primary-color: #9B999B;
     --secondary-color: #868686;
     --text-color: #f3f3f3;
     --body-bg-color: #646464;
 
+    /* Color of the question/answer block */
     --a-block: #545454;
     --q-block: #7c7c7c;
 
+    /* Color of the backtick in the response text */
     --bckstk-bg-color: #717171;
     --bckstk-border-color: #8b8b8b;
 
+    /* Title action buttons icons */
     --edit-icon: url('../images/icons/dm-geoai-edit-icon.png');
     --check-icon: url('../images/icons/dm-geoai-check-icon.png');
     --trash-icon: url('../images/icons/dm-geoai-trash-icon.png');
     --x-icon: url('../images/icons/dm-geoai-x-icon.png');
 
+    /* Answer waiting gif colors */
     --answer-waiting-gif-color-01: rgba(84, 84, 84, 1);
     --answer-waiting-gif-color-02: rgba(99, 99, 99, 1);
     --answer-waiting-gif-color-03: rgba(99, 99, 99, 1);
     --answer-waiting-gif-color-04: rgba(84, 84, 84, 1);
+
+    /* Question input colors */
+    --textarea-btn: #7c7c7c;
+    --textarea-btn-hover: #656565;
 }
 
 
@@ -91,6 +77,7 @@ body {
     line-height: 1.5;
     color: var(--text-color);
     background-color: var(--body-bg-color);
+    transition: background-color 0.2s, color 0.2s;
 }
 
 ul {
@@ -337,33 +324,14 @@ section#chat-main div#sidebar div.sidebar-sections{
     background-color: var(--secondary-color);
 }
 
-/* Topic title edition icon */
-/* #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
-    background-image: url('../images/icons/geoai-edit-icon.png');
-} */
-/* Dark Mode */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
     background-image: var(--edit-icon);
 }
 
-/* Topic title deletion icon */
-/* #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
-    background-image: url('../images/icons/geoai-trash-icon.png');
-} */
-/* Dark Mode */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
     background-image: var(--trash-icon);
 }
 
-/* Topic title approving icon */
-/* #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
-    display: inline-block;
-    height: 100%;
-    background-image: url('../images/icons/geoai-check-icon.png');
-    transition: transform 0.3s ease-in-out;
-    z-index: 2;
-} */
-/* Dark Mode */
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
     display: inline-block;
     height: 100%;
@@ -376,15 +344,6 @@ section#chat-main div#sidebar div.sidebar-sections{
    transform: rotate(-20deg);
 }
 
-/* Topic title approving icon */
-/* #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
-    display: inline-block;
-    height: 100%;
-    background-image: url('../images/icons/geoai-x-icon.png');
-    transition: transform 0.3s ease-in-out;
-    z-index: 1;
-}  */
-/* Dark Mode */
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
     display: inline-block;
     height: 100%;
@@ -470,11 +429,6 @@ section#chat-main div#sidebar div.sidebar-sections{
     grid-template-columns: 5fr 1fr;
 }
 
-/* #chat-main #chat-content .chat-qa-form > form p {
-    display: inline-block;
-    text-align: center;
-} */
-
 #chat-main #chat-content .chat-qa-form > form label {
     display: none;
 }
@@ -488,10 +442,7 @@ section#chat-main div#sidebar div.sidebar-sections{
     height: 50px;
     margin: 16px 0px 16px 0;
     padding-right: 90px;
-    /* Dark Mode */
     background-color: var(--a-block);
-    /* border: 1px solid var(--secondary-color); */
-    /* border: 1px solid var(--primary-color); */
     border-radius: 4px 0px 0px 4px;
     outline: 0px solid var(--secondary-color);
     transition: outline 0.1s ease-in-out;
@@ -512,17 +463,14 @@ section#chat-main div#sidebar div.sidebar-sections{
     border-left: none;
     border-radius: 0px 4px 4px 0px;
     color: var(--text-color);
-    background-color: var(--q-block);
+    background-color: var(--textarea-btn);
     transition: background-color 0.3s ease-in-out;
 
 }
 
 #chat-main #chat-content .chat-qa-form form button:hover {
     cursor: pointer;
-    /* background-color: #dddddd; */
-    /* Dark Mode */
     background-color: var(--textarea-btn-hover);
-    /* color: var(--secondary-color); */
 }
 
 #chat-main #chat-content .chat-qa-form p.warning-msg {
@@ -532,7 +480,6 @@ section#chat-main div#sidebar div.sidebar-sections{
     font-size: 0.7rem;
     font-style: italic;
     color: var(--text-color);
-    /* color: var(--primary-color); */
 }
 
 #chat-main #chat-content .chat-qa-content {
@@ -552,18 +499,11 @@ section#chat-main div#sidebar div.sidebar-sections{
     border-radius: 4px 4px  0px 0px;
 }
 
-/* Light mode */
-/* #chat-main #chat-content .chat-qa-content .qa-block .a-block {
-    background-color: #f3f2f2;
-} */
-
-/* Dark Mode */
 #chat-main #chat-content .chat-qa-content .qa-block .a-block {
     border-radius: 0px;
     background-color: var(--a-block)
 }
 
-/* Dark Mode */
 #chat-main #chat-content .chat-qa-content .qa-block .q-block {
     background-color: var(--q-block);
 }
@@ -580,14 +520,10 @@ section#chat-main div#sidebar div.sidebar-sections{
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .bckstk-wrapper {
     display: inline-block;
-    /* Dark Mode */
     background-color: var(--bckstk-bg-color);
-    /* background-color: #fcfcfc; */
     font-size: 0.9rem;
     font-style: italic;
-    /* Dark Mode */
     border: 1px solid var(--bckstk-border-color);
-    /* border: 1px solid #dfdfdf; */
     padding: 0px 8px;
     margin: 0px 2px;
     border-radius: 2px;

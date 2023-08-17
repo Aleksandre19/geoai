@@ -421,13 +421,13 @@ class EmbedComment:
         # Format the code snippet.
         output = highlight(detokenized, Store.current_lexer, formatter)
 
-        return output
-    
         # Print the PyGments formatters style in terminal.
-        # style = get_style_by_name('solarized-dark')
+        # style = get_style_by_name('sas')
         # styel_form = HtmlFormatter(style=style, linenos=True)
         # print('Formatter Style ============ ')
         # pprint.pprint(styel_form.get_style_defs('.highlight'))
+
+        return output
     
     # Clear the dictionaries.
     def clean_dict(self):

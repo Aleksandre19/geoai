@@ -1,6 +1,6 @@
  {% load static %}
  {% block extra_style %}
-    <link rel="stylesheet" href="{% static 'geoai/css/pygments_styles/monokai.css' %}" />
+    <link id='pygmentsStyle' rel="stylesheet" href="{% static user_setting.mode_style %}" />
  {% endblock %}
  <!-- For Testing -->
  <div class='qa-block'>

@@ -4,7 +4,8 @@ import { Sidebar } from './sidebar';
 // Get slug.
 let slug = JSON.parse(document.getElementById('slug').textContent); 
 
-Sidebar.setup; // Setup sidebar.
+Sidebar.toggleMode // Set event to mode button.
+Sidebar.actionButtons; // Sidebar action buttons.
 
 // instantiate WebSocketClient.
 new WebSocketClient(slug); 

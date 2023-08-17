@@ -2,7 +2,7 @@
 {% load static %}
 {% load chat_filters %}
 {% block extra_style %}
-    <link rel="stylesheet" href="{% static 'geoai/css/bg-mode.css' %}" />
+    <link rel="stylesheet" href="{% static 'geoai/css/mode-btn.css' %}" />
 {% endblock %}
 {% block content %}
 <section id="chat-main">
@@ -52,7 +52,7 @@
 {% block bottom_js %}
     {{ slug|json_script:'slug'}}
     {{ user_id|json_script:'userID' }}
-    {{ user_settting.light_mode|json_script:'lightMode'}}
+    {{ user_setting.light_mode|json_script:'currentMode'}}
     <script id='currentPage' type='application/json'>{{ request.get_full_path|current_page }}</script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
 {% endblock %}
