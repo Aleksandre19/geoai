@@ -441,7 +441,12 @@ section#chat-main div#sidebar div.sidebar-sections{
 
 #chat-main #sidebar ul li div.bg-mode div.bg-mode-title {
     display: flex;
+    flex-grow: 2;
     align-items: center;
+}
+
+#chat-main #sidebar ul li div.bg-mode div.bg-mode-switch {
+    flex-grow: 1;
 }
 
 #chat-main #sidebar .sidebar-sections .profile-links li {

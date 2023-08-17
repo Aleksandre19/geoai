@@ -70,6 +70,7 @@ class ChatView(LoginRequiredMixin, ListView):
                 'questions': questions,
                 'question_form': QuestionForm(),
                 'user_id': self.request.user.id,
+                'user_settting': self.request.user.setting,
                 'slug': slug,
                 'test': inc,
         })

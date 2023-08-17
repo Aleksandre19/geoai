@@ -31,6 +31,9 @@
                         </div>
                     </div>
                 </li>
+                <li>
+                    {{user_settting.light_mode}}
+                </li>
             </ul>
         </div>
     </div>
@@ -49,6 +52,7 @@
 {% block bottom_js %}
     {{ slug|json_script:'slug'}}
     {{ user_id|json_script:'userID' }}
+    {{ user_settting.light_mode|json_script:'lightMode'}}
     <script id='currentPage' type='application/json'>{{ request.get_full_path|current_page }}</script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
 {% endblock %}

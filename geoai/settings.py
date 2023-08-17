@@ -63,6 +63,7 @@ class Dev(Configuration):
         'geoai_openai',
         'geoai_translator',
         'channels',
+        'user_setting',
     ]
 
     PASSWORD_HASHERS = [
