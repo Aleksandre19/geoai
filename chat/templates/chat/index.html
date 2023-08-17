@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% load chat_filters %}
+{% block extra_style %}
+    <link rel="stylesheet" href="{% static 'geoai/css/bg-mode.css' %}" />
+{% endblock %}
 {% block content %}
 <section id="chat-main">
     <div id="sidebar">
@@ -16,6 +19,17 @@
             <ul class='profile-links'>
                 <li>
                     <a href="{% url "account_logout" %}">გასვლას</a>
+                </li>
+                <li>
+                    <div class='bg-mode'>
+                        <div class='bg-mode-title'>გარემო</div>
+                        <div class='bg-mode-switch'>
+                            <input type="checkbox" id="darkmode-toggle" />
+                            <label for="darkmode-toggle">
+                                {% include 'chat/bg-mode-svgs.html' %}
+                            </label>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

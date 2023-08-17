@@ -2,12 +2,81 @@
     --primary-color: #9B999B;
     /* --secondary-color: #e6e6e6; */
     /* --text-color: #4F4D4F; */
-    /* --white-body-color: #fcfcfc; */
+    /* --body-bg-color: #fcfcfc; */
+
+    /* --a-block: #f3f2f2; */
+    /* --q-block: #7c7c7c; Check color! */
+
+    /* --bckstk-bg-color: #fcfcfc; */
+    /* --bckstk-border-color: #dfdfdf; */
+
+    /* --edit-icon: url('../images/icons/geoai-edit-icon.png'); */
+    /* --check-icon: url('../images/icons/geoai-check-icon.png'); */
+    /* --trash-icon: url('../images/icons/geoai-trash-icon.png'); */
+    /* --x-icon: url('../images/icons/geoai-x-icon.png'); */
+
+    /* --answer-waiting-gif-color-01: rgba(229, 229, 229, 0.3); */
+    /* --answer-waiting-gif-color-02: rgba(240, 240, 240, 0.9); */
+    /* --answer-waiting-gif-color-03: rgba(240, 240, 240, 0.9); */
+    /* --answer-waiting-gif-color-04: rgba(229, 229, 229, 0.3); */
+
+
     /* Dark Mode Colors */
+    /* --primary-color: #5f5f5f; */
+    /* --secondary-color: #868686; */
+    --secondary-color: #5a5a5a;
+    --text-color: #f3f3f3;
+    /* --body-bg-color: #646464; */
+    --body-bg-color: #3e3e3e;
+
+    --textarea-btn: #7e7d7d;
+    --textarea-btn-hover: #8d8b8b;
+
+    --a-block: #545454;
+    --q-block: #7c7c7c;
+
+    --bckstk-bg-color: #717171;
+    --bckstk-border-color: #8b8b8b;
+
+    --edit-icon: url('../images/icons/dm-geoai-edit-icon.png');
+    --check-icon: url('../images/icons/dm-geoai-check-icon.png');
+    --trash-icon: url('../images/icons/dm-geoai-trash-icon.png');
+    --x-icon: url('../images/icons/dm-geoai-x-icon.png');
+
+    --answer-waiting-gif-color-01: rgba(84, 84, 84, 1);
+    --answer-waiting-gif-color-02: rgba(99, 99, 99, 1);
+    --answer-waiting-gif-color-03: rgba(99, 99, 99, 1);
+    --answer-waiting-gif-color-04: rgba(84, 84, 84, 1);
+                
+               
+                
+                
+}
+
+[data-theme="dark"] {
+    --primary-color: #9B999B;
     --secondary-color: #868686;
     --text-color: #f3f3f3;
-    --white-body-color: #646464;
+    --body-bg-color: #646464;
+
+    --a-block: #545454;
+    --q-block: #7c7c7c;
+
+    --bckstk-bg-color: #717171;
+    --bckstk-border-color: #8b8b8b;
+
+    --edit-icon: url('../images/icons/dm-geoai-edit-icon.png');
+    --check-icon: url('../images/icons/dm-geoai-check-icon.png');
+    --trash-icon: url('../images/icons/dm-geoai-trash-icon.png');
+    --x-icon: url('../images/icons/dm-geoai-x-icon.png');
+
+    --answer-waiting-gif-color-01: rgba(84, 84, 84, 1);
+    --answer-waiting-gif-color-02: rgba(99, 99, 99, 1);
+    --answer-waiting-gif-color-03: rgba(99, 99, 99, 1);
+    --answer-waiting-gif-color-04: rgba(84, 84, 84, 1);
 }
+
+
 
 * {
     padding:0;
@@ -21,7 +90,7 @@ body {
     letter-spacing: 0.03rem;
     line-height: 1.5;
     color: var(--text-color);
-    background-color: var(--white-body-color);
+    background-color: var(--body-bg-color);
 }
 
 ul {
@@ -69,19 +138,12 @@ h1, h2, h3, h4, h5, h6 {
 /* Loading animation for answer's container */
 .skeleton-loading {
     opacity: 0.7;
-    /* background: linear-gradient(120deg,
-        rgba(229, 229, 229, 0.3) 30%,
-        rgba(240, 240, 240, 0.9) 38%,
-        rgba(240, 240, 240, 0.9) 40%,
-        rgba(229, 229, 229, 0.3) 48%
-    ); */
-
-    /* Dark Mode */
+    
     background: linear-gradient(120deg,
-        rgba(84, 84, 84, 1) 30%,
-        rgba(99, 99, 99, 1) 38%,
-        rgba(99, 99, 99, 1) 40%,
-        rgba(84, 84, 84, 1) 48%);
+        var(--answer-waiting-gif-color-01) 30%,
+        var(--answer-waiting-gif-color-02) 38%,
+        var(--answer-waiting-gif-color-03) 40%,
+        var(--answer-waiting-gif-color-04) 48%);
 
     background-size: 200% 100%;
     background-position: 100% 0;
@@ -151,7 +213,7 @@ div.wrapper form.login > p input[type="password"] {
 }
 
 div.wrapper form.login > button[type="submit"] {
-    border: 1px solid var(--primary-ccolor);
+    border: 1px solid var(--primary-color);
     border-radius: 4px;
     display: block;
     width: 100%;
@@ -226,6 +288,10 @@ section#chat-main div#sidebar div.sidebar-sections{
     text-decoration: none;
     color: var(--text-primary);
     display: inline-block;
+}
+
+#chat-main #sidebar ul li > a,
+#chat-main #sidebar ul li div.bg-mode{
     width: 100%;
     padding: 8px 12px;
 }
@@ -277,7 +343,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 } */
 /* Dark Mode */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-edit-icon {
-    background-image: url('../images/icons/dm-geoai-edit-icon.png');
+    background-image: var(--edit-icon);
 }
 
 /* Topic title deletion icon */
@@ -286,7 +352,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 } */
 /* Dark Mode */
 #chat-main #sidebar ul li div.topic-title-act-btn a.geoai-trash-icon {
-    background-image: url('../images/icons/dm-geoai-trash-icon.png');
+    background-image: var(--trash-icon);
 }
 
 /* Topic title approving icon */
@@ -301,7 +367,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-check-icon {
     display: inline-block;
     height: 100%;
-    background-image: url('../images/icons/dm-geoai-check-icon.png');
+    background-image: var(--check-icon);
     transition: transform 0.3s ease-in-out;
     z-index: 2;
 }
@@ -322,7 +388,7 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #sidebar ul li div.act-btn-confirm a.geoai-x-icon {
     display: inline-block;
     height: 100%;
-    background-image: url('../images/icons/dm-geoai-x-icon.png');
+    background-image: var(--x-icon);
     transition: transform 0.3s ease-in-out;
     z-index: 1;
 }
@@ -365,7 +431,20 @@ section#chat-main div#sidebar div.sidebar-sections{
     margin-top: 16px;
 }
 
-#chat-main #sidebar .sidebar-sections .profile-links li a {
+#chat-main #sidebar ul li div.bg-mode {
+    display: flex;
+}
+
+#chat-main #sidebar ul li div.bg-mode div {
+    flex: 1;
+}
+
+#chat-main #sidebar ul li div.bg-mode div.bg-mode-title {
+    display: flex;
+    align-items: center;
+}
+
+#chat-main #sidebar .sidebar-sections .profile-links li {
     font-family: 'Menu', sans-serif;
 }
 
@@ -405,11 +484,11 @@ section#chat-main div#sidebar div.sidebar-sections{
     margin: 16px 0px 16px 0;
     padding-right: 90px;
     /* Dark Mode */
-    background-color: var(--primary-color);
-    border: 1px solid var(--secondary-color);
+    background-color: var(--a-block);
+    /* border: 1px solid var(--secondary-color); */
     /* border: 1px solid var(--primary-color); */
     border-radius: 4px 0px 0px 4px;
-    outline: 0px solid var(--primary-color);
+    outline: 0px solid var(--secondary-color);
     transition: outline 0.1s ease-in-out;
 }
 
@@ -428,16 +507,17 @@ section#chat-main div#sidebar div.sidebar-sections{
     border-left: none;
     border-radius: 0px 4px 4px 0px;
     color: var(--text-color);
-    background-color: var(--secondary-color);
+    background-color: var(--q-block);
     transition: background-color 0.3s ease-in-out;
 
 }
 
 #chat-main #chat-content .chat-qa-form form button:hover {
     cursor: pointer;
-    background-color: #dddddd;
+    /* background-color: #dddddd; */
     /* Dark Mode */
-    color: var(--secondary-color);
+    background-color: var(--textarea-btn-hover);
+    /* color: var(--secondary-color); */
 }
 
 #chat-main #chat-content .chat-qa-form p.warning-msg {
@@ -465,11 +545,9 @@ section#chat-main div#sidebar div.sidebar-sections{
     margin: auto;
     padding: 16px 24px;
     border-radius: 4px 4px  0px 0px;
-    /* Dark Mode */
-    background-color: #7c7c7c;
-    /* background-color: var(--primary-color); */
 }
 
+/* Light mode */
 /* #chat-main #chat-content .chat-qa-content .qa-block .a-block {
     background-color: #f3f2f2;
 } */
@@ -477,16 +555,18 @@ section#chat-main div#sidebar div.sidebar-sections{
 /* Dark Mode */
 #chat-main #chat-content .chat-qa-content .qa-block .a-block {
     border-radius: 0px;
-    background-color: #545454;
+    background-color: var(--a-block)
+}
+
+/* Dark Mode */
+#chat-main #chat-content .chat-qa-content .qa-block .q-block {
+    background-color: var(--q-block);
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .highlight {
     margin: 24px 0px;
     padding: 16px 8px;
     overflow-x: auto;
-    /* Dark Mode */
-    /* background-color: #272822; */
-    /* background-color: #fffdfd; */
 }
 
 #chat-main #chat-content .chat-qa-content .qa-block .a-block p {
@@ -496,12 +576,12 @@ section#chat-main div#sidebar div.sidebar-sections{
 #chat-main #chat-content .chat-qa-content .qa-block .a-block .bckstk-wrapper {
     display: inline-block;
     /* Dark Mode */
-    background-color: #717171;
+    background-color: var(--bckstk-bg-color);
     /* background-color: #fcfcfc; */
     font-size: 0.9rem;
     font-style: italic;
     /* Dark Mode */
-    border: #8b8b8b 1px solid;
+    border: 1px solid var(--bckstk-border-color);
     /* border: 1px solid #dfdfdf; */
     padding: 0px 8px;
     margin: 0px 2px;
