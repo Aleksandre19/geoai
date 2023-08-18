@@ -1,9 +1,8 @@
- {% load static %}
  {% block extra_style %}
-    <link id='pygmentsStyle' rel="stylesheet" href="{% static user_setting.mode_style %}" />
+    <link id='pygmentsStyle' rel="stylesheet" href="{{user_setting.mode_style}}" />
  {% endblock %}
  <!-- For Testing -->
- <div class='qa-block'>
+ {% comment %} <div class='qa-block'>
     <div class='q-block'>
         <p class='b-block-content'>
             Question
@@ -12,7 +11,7 @@
     <div class='a-block'>
         {{test|safe}}
     </div>   
-</div>
+</div> {% endcomment %}
 <!-- Questions & Answers -->
 {% for question in questions %}
     <div class='qa-block'>

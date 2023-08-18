@@ -9,11 +9,13 @@ from chat.api.views import (
     UserDetail,
     TopicViewSet,
     QuestionViewSet,
+    UserSettingsViewSet,
 )
 
 router = DefaultRouter()
 router.register("topics", TopicViewSet)
 router.register("questions", QuestionViewSet)
+router.register("user_settings", UserSettingsViewSet)
 
 urlpatterns = [
     path('users/<int:id>', UserDetail.as_view(), name='api_user_detail'),

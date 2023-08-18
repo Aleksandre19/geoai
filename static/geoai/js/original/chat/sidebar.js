@@ -13,6 +13,6 @@ export class Sidebar {
     static get toggleMode() {
         const modeBtn = document.getElementById('darkmode-toggle');
         new DarkMode();
-        SetEvent.to([modeBtn], 'click', (e) => new DarkMode());
+        SetEvent.to([modeBtn], 'click', (e) => new DarkMode(e));
     }
 }
