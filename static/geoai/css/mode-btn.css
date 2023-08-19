@@ -1,3 +1,4 @@
+/* Style the label element. */
 label {
     min-width: 65px;
     height: 32px;
@@ -11,6 +12,7 @@ label {
     transition: 0.3s;
 }
 
+/* Add an :after pseudo-element to the label */
 label:after {
     content: "";
     width: 28px;
@@ -24,6 +26,7 @@ label:after {
     transition: 0.3s;
 }
 
+/* Style the checkbox element. */
 input {
     position: absolute;
     top: 0;
@@ -33,20 +36,30 @@ input {
     visibility: hidden;
 }
 
+/* 
+    On a checkbox `:chacked` state, select the label element
+    located straight after it.
+*/
 input:checked + label  {
     background-color: #242424;
 }
 
+/*
+    Add a pseudo-element to the label element 
+    when the checkbox is checked.
+*/
 input:checked + label:after{
     left: calc(100% - 3px);
     transform: translateX(-100%);
     background: linear-gradient(180deg, #777, #3a3a3a);
 }
 
+/* Style a label's :after pseudo-element when it is pressed. */
 label:active:after {
     width: 42px;
 }
 
+/* Style the svg element inside the label. */
 label svg {
     position: absolute;
     width: 22px;
@@ -54,23 +67,32 @@ label svg {
     z-index: 100;
 }
 
+/* Style a sun svg. */
 label svg.sun {
     left: 6px;
     fill: #fff;
     transition: 0.3s;
 }
 
-
+/* Style a moon svg. */
 label svg.moon {
     left: calc(100% - 28px);
     fill: #7e7e7e;
     transition: 0.3s;
 }
 
+/*
+    Change the color of the sun svg,
+    when the checkbox is checked.
+*/
 input:checked + label svg.sun {
     fill: #7e7e7e;
 } 
 
+/*
+    Change the color of the moon svg,
+    when the checkbox is checked.
+*/
 input:checked + label svg.moon {
     fill: #fff;
 }

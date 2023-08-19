@@ -99,7 +99,8 @@ class ChatView(LoginRequiredMixin, ListView):
                 question=form['content'],
                 slug=slug,
                 topic=topic,
-                openai_model='gpt-3.5-turbo'
+                # openai_model='gpt-3.5-turbo'
+                openai_model='gpt-4'
             )
 
         # Insert the content to the database.
