@@ -121,7 +121,7 @@ export class DarkMode{
                 'user': `${this.apiUrl}users/${userID}`, // User.
                 'light_mode': this.lightMode, // Light mode.
                 'mode_style': this.modeStyleLink // Style url.
-            }; 
+            };      
 
             // Call API udpate method.
             await this.api.update(endPoint, apiData);

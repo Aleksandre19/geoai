@@ -21,3 +21,9 @@ env.py
 
 # Webpack
 static/geoai/node_modules/
+
+# Video tutorial files.
+chat/templates/chat/tutorial.html
+static/geoai/css/darkmode-tutorial.css
+static/geoai/js/original/chat/darkmode_tutorial.js
+static/geoai/js/webpack/chat/darkmode_tutorial.bundle.js

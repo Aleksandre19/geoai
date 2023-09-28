@@ -20,8 +20,8 @@ class Cookie {
 // Deleting and updating topics.
 export class APIClient {
     constructor(baseUrl){
-        this.baseUrl = baseUrl
-        this.cookie = new Cookie('csrftoken')
+        this.baseUrl = baseUrl;
+        this.cookie = new Cookie('csrftoken');
         this.errorText = 'ვერ მოხერხდა მოთხოვნის შესრულება, გთხოვთ ცადოთ ახლიდან. ';
     }
 
