@@ -1,12 +1,9 @@
 import logging
 
-from datetime import datetime, timezone
-
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.text import slugify
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 
 from asgiref.sync import sync_to_async, async_to_sync 
 
@@ -16,12 +13,12 @@ from user_setting.models import UserTokens
 
 from geoai_translator.views import Translator
 from geoai_openai.views import OpenAI
+import tiktoken
 
 from .helpers import *
 
 logger = logging.getLogger(__name__)
 
-import pprint
 # Notes
 # 1. Complite caching the questions and answers.
     # subject caching is implemented.
@@ -159,6 +156,7 @@ class Apis:
         self.topic = topic # Topic object.
         self.openai_model = openai_model # OpenAI model version.
         self.geo_eng = None # Question translated from geo to eng.
+        self.enougth_tokens = True
         self.eng_geo = None # Response translated from eng to geo.
         self.openAI = None # OpenAI response.
         self.without_code = None # Response without code snippet.
@@ -173,6 +171,10 @@ class Apis:
     async def apis(self):
         # Translate question from geo to eng.
         self.geo_eng = await self.translator(self.question, 'ka', 'en-US')
+
+        if not await self.user_has_tokens():
+            self.enougth_tokens = False
+            return
         
         # Get response from OpenAI.
         self.openAI = await self.openai()
@@ -192,6 +194,34 @@ class Apis:
     # Google Translate API.
     async def translator(self, text, from_lan, to_lan):
         return await Translator.create(text, from_lan, to_lan)
+
+    # Tokenize the question and check if
+    # the user has enougth tokens.
+    async def user_has_tokens(self):
+        tokenized = self.tokenize_question()
+        user_tokens = await self.user_tokens()
+        remaining_tokens = user_tokens.value - user_tokens.used
+
+        if (remaining_tokens - 100) <= len(tokenized):
+            return None
+        return True         
+
+    # Tokenize the question.
+    def tokenize_question(self):
+        openai_tokenizer = tiktoken.get_encoding("cl100k_base")
+        openai_tokenizer = tiktoken.encoding_for_model(self.openai_model)
+        tokenized = openai_tokenizer.encode(self.geo_eng.result)
+        return tokenized
+    
+
+    # Grab user remaining tokens.
+    @sync_to_async(thread_sensitive=True)
+    def user_tokens(self):
+        try:
+            user_token = get_object_or_404(UserTokens, user=self.user)
+            return user_token
+        except Http404:
+            return None
 
     # OpenAI API.
     async def openai(self):
@@ -318,7 +348,16 @@ class ChatWebSocket:
         topic = await self.fetch_topic()
 
         # Call the APIs (Openai and Google Translate)
-        self.api =  await Apis.call(self.user, self.question, self.slug, topic, self.openai_model)
+        self.api =  await Apis.call(
+                self.user, 
+                self.question, 
+                self.slug, 
+                topic, 
+                self.openai_model
+            )
+
+        if not self.api.enougth_tokens:
+            return None
 
         # Insert the content to the database.
         await self.InsertIntoDB()

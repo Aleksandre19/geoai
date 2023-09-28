@@ -23,6 +23,7 @@ export class WebSocketClient {
         this.newTopic = (!slug) ? null : slug;;
         this.socketSlug = (slug) ? slug + '/' : ''; // add a `/` for django urls.
         this.questionSent = false;
+        this.enougthTokens = true;
         this.init();
     }
 
@@ -98,7 +99,12 @@ export class WebSocketClient {
         await this.sendQuestion(); // Step 11 (Send question to the server).
         this.onSocketClose; // Step 12 (Handle socket close).
         await this.receiveAnswer(); // Step 13 (Receive answer from the server).
-        this.addTitleToSidebar; // Step 14 (Add title to sidebar).
+        // Step 14 (Rise message it there is not enougth okens.
+        if (!this.enougthTokens) {
+            this.notEnougthTokensMessage; 
+            return;
+        }
+        this.addTitleToSidebar; // Step 15 (Add title to sidebar).
         this.addActionBtn; // Set up action button to newlly created title.
         this.updateTokens; // Update user remaining tokens.
     }
@@ -188,8 +194,14 @@ export class WebSocketClient {
     // Socket function.
     socketMessage(e) {
         const data = JSON.parse(e.data); // Parse data.
+        if (!data.message) {
+            this.enougthTokens = false;
+            return;
+        }; 
+
         document.querySelector('.answer_waiting_gif').style.display = 'none'; // Hide loading gif.
         document.querySelector('#' + this.createdElm['ap']).innerHTML = (data.message + '\n'); // Set answer content.
+        
         this.mixins.Remove.Loading(`#${this.createdElm['qaBlock']} > .a-block`, 'skeleton-loading'); // Remove loading gif.
         this.mixins.Button.enable('#chat-message-submit'); // Enable button.
         this.mixins.Scroll.toBottom('.chat-qa-content'); // Scroll to bottom.
@@ -197,6 +209,13 @@ export class WebSocketClient {
         this.topicID = data.topicID; // Set topic id from the response.
         this.tokens = data.tokens; // User remaining tokens.
         this.questionSent = false;
+    }
+
+
+    get notEnougthTokensMessage() {
+        const errorElm = document.querySelector('.error-message');
+        errorElm.classList.remove('hide-element');
+        return;
     }
 
     get addTitleToSidebar() {
@@ -271,6 +290,7 @@ export class WebSocketClient {
         document.getElementById('currentPage').textContent = this.slug;
     }
 
+    //  Update remaining tokens.
     get updateTokens() {
         const tokenElm = document.querySelector('.user-tokens-value');
         tokenElm.textContent = this.tokens;

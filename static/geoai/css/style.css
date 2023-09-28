@@ -120,6 +120,15 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
 }
 
+.error-message {
+    border: 1px solid #a36b75;
+    background-color: #725c60;
+    border-radius: 4px;
+    width: 90%;
+    margin: auto;
+    padding: 16px 24px;
+}
+
 /* Loading animation for answer's container */
 .skeleton-loading {
     opacity: 0.7;
