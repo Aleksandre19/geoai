@@ -20,9 +20,7 @@
             </div>
             <div class='sidebar-sections'>
                 <ul class='profile-links'>
-                    <li>
-                        <a href="{% url "account_logout" %}">გასვლა</a>
-                    </li>
+                    <!-- Dark/Light Mode -->
                     <li>
                         <div class='bg-mode'>
                             <div class='bg-mode-title'>გარემო</div>
@@ -35,6 +33,23 @@
                             </div>
                         </div>
                     </li>
+
+                    <!-- Tokens -->
+                    <li>
+                         <div class='bg-mode'>
+                            <div class='bg-mode-title'>ჟეტონები</div>
+                            <!-- Mode toggler button -->
+                            <div class='user-tokens-value'>
+                               {{tokens}}
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Log out -->
+                    <li>
+                        <a href="{% url "account_logout" %}">გასვლა</a>
+                    </li>
+
                     <li>
                         {{user_settting.light_mode}}
                     </li>

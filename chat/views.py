@@ -54,8 +54,14 @@ class ChatView(LoginRequiredMixin, ListView):
 
         # Get the topics of the current user.
         titles = Topic.objects.filter(user=self.request.user)
+
+        # User tokens.
+        tokens = get_object_or_404(UserTokens, user=self.request.user)
+        remaining_tokens = tokens.value - tokens.used
+
         # Get the slug from the URL.
         slug = self.kwargs.get('slug')
+
         # Define the questions.
         questions = None
 
@@ -76,6 +82,7 @@ class ChatView(LoginRequiredMixin, ListView):
                 'user_id': self.request.user.id,
                 'user_setting': self.request.user.setting,
                 'slug': slug,
+                'tokens': remaining_tokens
                 # 'test': inc,
         })
         return context

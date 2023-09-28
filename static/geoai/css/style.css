@@ -422,9 +422,17 @@ section#chat-main div#sidebar div.sidebar-sections{
     align-items: center;
 }
 
+#chat-main #sidebar ul li div.bg-mode div.user-tokens-value,
 #chat-main #sidebar ul li div.bg-mode div.bg-mode-switch {
     flex-grow: 1;
     position: relative;
+}
+
+#chat-main #sidebar ul li div.bg-mode div.user-tokens-value {
+    text-align: right;
+    font-size: 18px;
+    padding-right: 4px;
+    font-weight: bold;
 }
 
 #chat-main #sidebar .sidebar-sections .profile-links li {
