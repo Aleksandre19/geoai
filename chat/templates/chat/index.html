@@ -6,35 +6,40 @@
 {% endblock %}
 {% block content %}
 <section id="chat-main">
-    <div id="sidebar">
-        <div class='sidebar-sections'>
-            <a href="{% url 'chat_home' %}" class="chat-history-title">
-                ახალი დიალოგი
-            </a>
-            <div class="chat-history-links">
-                {% include "chat/topics.html" %}
+    <div id='sidebar-wrapper'>
+        <input type='checkbox' id='menu-checkbox' /> <!-- State controller -->
+        <div id='hamburger'><div></div></div> <!-- Hamburger button -->
+        <div id="sidebar">
+            <div class='sidebar-sections'>
+                <a href="{% url 'chat_home' %}" class="chat-history-title">
+                    ახალი დიალოგი
+                </a>
+                <div class="chat-history-links">
+                    {% include "chat/topics.html" %}
+                </div>
             </div>
-        </div>
-        <div class='sidebar-sections'>
-            <ul class='profile-links'>
-                <li>
-                    <a href="{% url "account_logout" %}">გასვლას</a>
-                </li>
-                <li>
-                    <div class='bg-mode'>
-                        <div class='bg-mode-title'>გარემო</div>
-                        <div class='bg-mode-switch'>
-                            <input type="checkbox" id="darkmode-toggle" />
-                            <label for="darkmode-toggle">
-                                {% include 'chat/bg-mode-svgs.html' %}
-                            </label>
+            <div class='sidebar-sections'>
+                <ul class='profile-links'>
+                    <li>
+                        <a href="{% url "account_logout" %}">გასვლა</a>
+                    </li>
+                    <li>
+                        <div class='bg-mode'>
+                            <div class='bg-mode-title'>გარემო</div>
+                            <!-- Mode toggler button -->
+                            <div class='bg-mode-switch'>
+                                <input type="checkbox" id="darkmode-toggle" />
+                                <label for="darkmode-toggle">
+                                    {% include 'chat/bg-mode-svgs.html' %} 
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <li>
-                    {{user_settting.light_mode}}
-                </li>
-            </ul>
+                    </li>
+                    <li>
+                        {{user_settting.light_mode}}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <div id="chat-content">
@@ -48,7 +53,6 @@
 
 </section>
 {% endblock %}
-
 {% block bottom_js %}
     {{ slug|json_script:'slug'}}
     {{ user_id|json_script:'userID' }}
