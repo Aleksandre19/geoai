@@ -13,3 +13,15 @@ class UserSetting(models.Model):
 
     def __str__(self):
         return f"{self.user.username} setting"
+    
+
+class UserTokens(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='tokens'
+    )
+    value = models.PositiveIntegerField(default=0, db_index=True)
+    used = models.PositiveIntegerField(default=0, db_index=True)
+
+

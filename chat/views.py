@@ -1,5 +1,7 @@
 import logging
 
+from datetime import datetime, timezone
+
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.text import slugify
 from django.views.generic import ListView
@@ -10,6 +12,7 @@ from asgiref.sync import sync_to_async, async_to_sync
 
 from chat.models import Topic, Answer, Question
 from chat.forms import QuestionForm
+from user_setting.models import UserTokens
 
 from geoai_translator.views import Translator
 from geoai_openai.views import OpenAI
@@ -18,6 +21,7 @@ from .helpers import *
 
 logger = logging.getLogger(__name__)
 
+import pprint
 # Notes
 # 1. Complite caching the questions and answers.
     # subject caching is implemented.
@@ -102,7 +106,7 @@ class ChatView(LoginRequiredMixin, ListView):
                 # openai_model='gpt-3.5-turbo'
                 openai_model='gpt-4'
             )
-
+        
         # Insert the content to the database.
         InsertIntoDB( 
             user=api.user, 
@@ -110,7 +114,8 @@ class ChatView(LoginRequiredMixin, ListView):
             geo_qst=api.question,
             eng_qst=api.geo_eng,
             geo_res=api.final_res,
-            eng_res=api.openAI.answer
+            eng_res=api.openAI.answer,
+            usage=api.openAI.usage
         )
 
         # Redirect based on whether slug exists or not.
@@ -201,7 +206,7 @@ class InsertIntoDB:
     Handles inserting the content into the database 
     for topic, question and answer models.
     """
-    def __init__(self, user, slug, geo_qst, eng_qst, geo_res, eng_res):
+    def __init__(self, user, slug, geo_qst, eng_qst, geo_res, eng_res, usage):
         self.user = user # Current user.
         self.slug = slug # Slug of the topic.
         self.topic = self.grab_topic() # Topic object.
@@ -210,6 +215,7 @@ class InsertIntoDB:
         self.eng_qst = eng_qst.result # Question in english.
         self.geo_res = geo_res # Response in georgian.
         self.eng_res = eng_res # Response in english.
+        self.tokens = usage # Token usage on particular request.
         self.inserted_qst = None # Inserted question.
         self.process_insertion() # Insert the content into the database.
 
@@ -218,6 +224,7 @@ class InsertIntoDB:
         self.insert_topic()
         self.insert_question()
         self.insert_response()
+        self.insert_tokens()
         self.add_to_cache() # Add to cache.
 
     # Create topic if it does not exist.
@@ -246,6 +253,15 @@ class InsertIntoDB:
                 eng_content=self.eng_res)
         insert_res.save()
 
+    # Update used tokens of the user.
+    def insert_tokens(self):
+        try:
+            user_tokens = UserTokens.objects.get(user=self.user)
+            user_tokens.used += self.tokens['total_tokens']
+            user_tokens.save()
+        except UserTokens.DoesNotExist:
+            print("Model doesn't exist")
+
     # Grab topic if slug exists.
     def grab_topic(self):
         try:
@@ -270,7 +286,8 @@ class ChatWebSocket:
         self.user = user
         self.question = question
         self.slug = slug
-        self.openai_model = 'gpt-3.5-turbo'
+        # self.openai_model = 'gpt-3.5-turbo'
+        self.openai_model = 'gpt-4'
         self.api = None
         self.db_result = None
         self.response = None
@@ -315,7 +332,8 @@ class ChatWebSocket:
             geo_qst=self.api.question,
             eng_qst=self.api.geo_eng,
             geo_res=self.api.final_res,
-            eng_res=self.api.openAI.answer
+            eng_res=self.api.openAI.answer,
+            usage=self.api.openAI.usage
         )
 
     # Prepare a response to be sent to the client.

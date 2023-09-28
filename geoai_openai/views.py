@@ -4,7 +4,7 @@ from asgiref.sync import sync_to_async
 from chat.models import Question, Topic
 
 import openai
-
+import pprint
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -19,6 +19,8 @@ class OpenAI:
         self.modele = modele
         self.temperature = 0.3   
         self.answer = None
+        self.usage = None
+        self.created = None
 
     # Class method to call the class asynchronously.
     @classmethod 
@@ -36,6 +38,7 @@ class OpenAI:
             temperature=self.temperature,
         )
         self.answer = response['choices'][0]['message']['content']
+        self.usage = response['usage']
     
     # Construct the messages for API endpoint.
     async def messages(self):
