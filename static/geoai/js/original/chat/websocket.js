@@ -100,6 +100,7 @@ export class WebSocketClient {
         await this.receiveAnswer(); // Step 13 (Receive answer from the server).
         this.addTitleToSidebar; // Step 14 (Add title to sidebar).
         this.addActionBtn; // Set up action button to newlly created title.
+        this.updateTokens; // Update user remaining tokens.
     }
 
     get createQaElements() {
@@ -193,7 +194,8 @@ export class WebSocketClient {
         this.mixins.Button.enable('#chat-message-submit'); // Enable button.
         this.mixins.Scroll.toBottom('.chat-qa-content'); // Scroll to bottom.
         this.slug = data.slug; // Set slug from the response.
-        this.topicID = data.topicID // Set topic id from the response.;
+        this.topicID = data.topicID; // Set topic id from the response.
+        this.tokens = data.tokens; // User remaining tokens.
         this.questionSent = false;
     }
 
@@ -267,5 +269,10 @@ export class WebSocketClient {
 
         // Update the current page in the chat/index.html.
         document.getElementById('currentPage').textContent = this.slug;
+    }
+
+    get updateTokens() {
+        const tokenElm = document.querySelector('.user-tokens-value');
+        tokenElm.textContent = this.tokens;
     }
 }

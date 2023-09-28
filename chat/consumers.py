@@ -28,6 +28,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         response = result.response
         slug = result.slug
         topic_id = result.topic_id
+        tokens = result.tokens
 
         # Send the response to the client.
-        await self.send(text_data=json.dumps({"message": response, 'slug':slug, 'topicID':topic_id}))
+        await self.send(text_data=json.dumps(
+            {
+                "message": response, 
+                'slug':slug, 
+                'topicID':topic_id,
+                'tokens': tokens
+            }
+        ))

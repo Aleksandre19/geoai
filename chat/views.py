@@ -224,6 +224,7 @@ class InsertIntoDB:
         self.eng_res = eng_res # Response in english.
         self.tokens = usage # Token usage on particular request.
         self.inserted_qst = None # Inserted question.
+        self.remaining_tokens = None # Remaining tokens.
         self.process_insertion() # Insert the content into the database.
 
     # Process insertion of models.
@@ -265,6 +266,7 @@ class InsertIntoDB:
         try:
             user_tokens = UserTokens.objects.get(user=self.user)
             user_tokens.used += self.tokens['total_tokens']
+            self.remaining_tokens = user_tokens.value - user_tokens.used
             user_tokens.save()
         except UserTokens.DoesNotExist:
             print("Model doesn't exist")
@@ -299,6 +301,7 @@ class ChatWebSocket:
         self.db_result = None
         self.response = None
         self.topic_id = None
+        self.tokens = None
 
     @classmethod    
     async def call(cls, user, question, slug):
@@ -347,3 +350,4 @@ class ChatWebSocket:
     async def responses_to_client(self):
         self.response = self.db_result.geo_res
         self.topic_id = self.db_result.topic_id
+        self.tokens = self.db_result.remaining_tokens
