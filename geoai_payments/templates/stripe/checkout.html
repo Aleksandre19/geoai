@@ -1,1 +1,16 @@
-<h1>{{welcome}}</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <h1>{{welcome}}</h1>
+    <div id="stripe-elements-div">
+        
+    </div>
+{% endblock %}
+
+{% block bottom_js %}
+    {{ block.super }}
+    {{ stripe_public_key|json_script:'id_stripe_publc_key'}}
+    {{ stripe_client_secret_key|json_script:'id_stripe_client_secret_key'}}
+    <script type='text/javascript' src="{% static 'geoai/js/webpack/chat/stripe.bundle.js'%}"></script>
+{% endblock %}

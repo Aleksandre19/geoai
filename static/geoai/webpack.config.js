@@ -4,6 +4,7 @@ module.exports = {
   mode: 'development',
   entry: {
     chat: './js/original/chat/main.js',
+    stripe: './js/original/stripe/stripe_elements.js',
   },
   output: {
     filename: '[name].bundle.js',

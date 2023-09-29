@@ -37,6 +37,10 @@ class Dev(Configuration):
     OPENAI_API_KEY = values.Value(environ_name='OPENAI_API_KEY', environ_prefix='')
     # OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
+    USER_DEFAULT_TOKENS = 1200
+    STRIPE_PUBLIC_KEY = 'pk_test_51NvSdtEjJBdnvl05Vd8eiczbKqMWlZxvjROjnimkAJnZBs4cnakIOFdEDNbt9yIe5xucoJdZFBKpgMF7GozZlqZE00IjJ0SiZi'
+    STRIPE_SECRET_KEY = values.Value(environ_name='STRIPE_SECRET_KEY', environ_prefix='')
+
     # Application definition
     INSTALLED_APPS = [
         'daphne',
@@ -237,7 +241,6 @@ class Dev(Configuration):
     ACCOUNT_EMAIL_REQUIRED = True
     ACCOUNT_USERNAME_REQUIRED = False
     ACCOUNT_AUTHENTICATION_METHOD = "email"
-    USER_DEFAULT_TOKENS = 1200
 
     LOGGING = {
         "version": 1,
