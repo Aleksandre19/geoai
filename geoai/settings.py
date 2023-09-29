@@ -236,6 +236,7 @@ class Dev(Configuration):
     ACCOUNT_EMAIL_REQUIRED = True
     ACCOUNT_USERNAME_REQUIRED = False
     ACCOUNT_AUTHENTICATION_METHOD = "email"
+    USER_DEFAULT_TOKENS = 1200
 
     LOGGING = {
         "version": 1,
