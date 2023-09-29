@@ -9,7 +9,8 @@ class UserSetting(models.Model):
             related_name='setting'
         )
     light_mode = models.BooleanField(default=True)
-    mode_style = models.CharField(max_length=255, default='/static/geoai/css/pygments_styles/monokai.css')
+    mode_style = models.CharField(
+        max_length=255, default='/static/geoai/css/pygments_styles/monokai.css')
 
     def __str__(self):
         return f"{self.user.username} setting"

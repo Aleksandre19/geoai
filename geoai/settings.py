@@ -64,6 +64,7 @@ class Dev(Configuration):
         'geoai_translator',
         'channels',
         'user_setting',
+        'geoai_payments',
     ]
 
     PASSWORD_HASHERS = [
