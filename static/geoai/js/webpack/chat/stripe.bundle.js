@@ -15,7 +15,7 @@
   \***********************************************/
 /***/ (() => {
 
-eval("var stripe_public_key = document.getElementById('id_stripe_publc_key').textContent.slice(1, -1);\nvar stripe_client_secret_key = document.getElementById('id_stripe_client_secret_key').textContent.slice(1, -1);\nvar stripe = Stripe(stripe_public_key);\nvar elements = stripe.elements();\nvar card = elements.create('card');\ncard.mount('#stripe-elements-div');\n\n//# sourceURL=webpack://geoai/./js/original/stripe/stripe_elements.js?");
+eval("var stripe_public_key = document.getElementById('id_stripe_publc_key').textContent.slice(1, -1);\nvar stripe_client_secret_key = document.getElementById('id_stripe_client_secret_key').textContent.slice(1, -1);\nvar stripe = Stripe(stripe_public_key);\nvar elements = stripe.elements();\nvar card = elements.create('card');\ncard.mount('#card-element');\n\n//# sourceURL=webpack://geoai/./js/original/stripe/stripe_elements.js?");
 
 /***/ })
 

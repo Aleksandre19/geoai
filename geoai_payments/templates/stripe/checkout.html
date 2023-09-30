@@ -3,9 +3,27 @@
 
 {% block content %}
     <h1>{{welcome}}</h1>
-    <div id="stripe-elements-div">
-        
-    </div>
+    <form action="{% url 'checkout' %}" method="post" id="payment-form">
+        {% csrf_token %}
+        <fieldset>
+            <legend> გთხოვთ აირჩიოთ თანხა </legend>
+            {{payment_form}}
+        </fieldset>
+
+        <fieldset>
+            <legend>გადახდა</legend>
+
+            <!-- A Stripe card element will go here -->
+            <div id="card-element"></div>
+
+            <!-- Used to display form errors -->
+            <div id="card-errors" role="alert"></div>
+        </fieldset>
+        <button type="submit">
+            ჟეტონების შეძენა
+        </button>
+    </form>
+
 {% endblock %}
 
 {% block bottom_js %}

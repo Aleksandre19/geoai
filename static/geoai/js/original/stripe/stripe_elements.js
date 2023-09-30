@@ -7,4 +7,4 @@ let stripe_client_secret_key = document.getElementById('id_stripe_client_secret_
 const stripe = Stripe(stripe_public_key);
 const elements = stripe.elements();
 const card = elements.create('card');
-card.mount('#stripe-elements-div');
+card.mount('#card-element');
