@@ -40,6 +40,8 @@ class Dev(Configuration):
     USER_DEFAULT_TOKENS = 1200
     STRIPE_PUBLIC_KEY = 'pk_test_51NvSdtEjJBdnvl05Vd8eiczbKqMWlZxvjROjnimkAJnZBs4cnakIOFdEDNbt9yIe5xucoJdZFBKpgMF7GozZlqZE00IjJ0SiZi'
     STRIPE_SECRET_KEY = values.Value(environ_name='STRIPE_SECRET_KEY', environ_prefix='')
+    STRIPE_CURRENCY = 'gel'
+
 
     # Application definition
     INSTALLED_APPS = [
