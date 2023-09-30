@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 from django.views.generic import ListView
 from django.contrib import messages
@@ -42,3 +42,7 @@ class GeoAIPayments(ListView):
         })
 
         return context
+    
+
+    def post(self, request, *args, **kwargs):
+        return redirect('checkout')
