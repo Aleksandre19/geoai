@@ -9,7 +9,7 @@ from geoai_payments.models import Payments
 import stripe
 
 # Create your views here.
-class GeoAIPayments(ListView):
+class Checkout(ListView):
     template_name = 'stripe/checkout.html'
     model = Payments 
 

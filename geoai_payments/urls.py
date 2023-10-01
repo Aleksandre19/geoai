@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import GeoAIPayments 
+from .views import Checkout 
 
 urlpatterns = [
-    path('', GeoAIPayments.as_view(), name='checkout'),
+    path('', Checkout.as_view(), name='checkout'),
 ]
