@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>გთხოვთ აირჩიოთ სასურველი თანხა.</h1>
+    <p id='payment-amount'>10</p>
+    <input type='range' min='10' max='100' value='10' step='10' id='payment_range' />
+    <p>
+        <a href="{% url 'checkout' 10 %}" id='payment-href'> გადახდა </a>
+    </p>
+{% endblock %}
+
+{% block bottom_js %}
+    <script type="text/javascript">
+        // Grab the range element.
+        const rangeElm = document.getElementById('payment_range');
+        // Grab a link element.
+        const linkElm =  document.getElementById('payment-href');
+        
+        // Add evnet to the range element.
+        rangeElm.addEventListener('input', (event) => {
+            // Grab current range value.
+            const value = event.target.value;
+            // Update p element.
+            document.getElementById('payment-amount').textContent = value;
+            // Update link element's argument value.
+            linkElm.href = `{% url 'checkout' 10 %}`.replace('10', value);
+        });
+    </script>
+{% endblock %}

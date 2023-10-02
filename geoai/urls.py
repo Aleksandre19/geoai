@@ -27,7 +27,7 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path("accounts/", include("allauth.urls")),
     path('api/', include('chat.api.urls')),
-    path('checkout/', include('geoai_payments.urls')),
+    path('payment/', include('geoai_payments.urls')),
 ]
 
 if settings.DEBUG:

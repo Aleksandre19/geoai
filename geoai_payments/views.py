@@ -1,12 +1,17 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 from django.contrib import messages
 
 from geoai_payments.forms import PaymentForm
 from geoai_payments.models import Payments
 
 import stripe
+
+
+class Amount(TemplateView):
+    template_name = 'stripe/choose_amount.html'
+
 
 # Create your views here.
 class Checkout(ListView):

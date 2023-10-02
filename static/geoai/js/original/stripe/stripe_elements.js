@@ -9,25 +9,17 @@ class GeoStripe {
     }
 
     get publicKey() {
-        const elm = document.getElementById('id_stripe_publc_key')
-        return elm.textContent.slice(1, -1);
+        console.log(this.getElm('#id_stripe_publc_key'));
+        return this.getElm('#id_stripe_publc_key').textContent.slice(1, -1);
     }
 
     get clientSecretKey() {
-        const elm = document.getElementById('id_stripe_client_secret_key')
-        return elm.textContent.slice(1, -1);
+        return this.getElm('#id_stripe_client_secret_key').textContent.slice(1, -1);
     }
 
-    get paymentForm() {
-        return document.getElementById('payment-form');
-    }
-
-    get paymentButton() {
-        return document.getElementById('payment-button');
-    }
-
-    get errorDiv() {
-        return document.getElementById('card-errors');
+    // Grab the HTML element.
+    getElm(attr) {
+        return document.querySelector(attr);
     }
 
     // Handle realtime validation errors on the card element.
@@ -40,25 +32,26 @@ class GeoStripe {
                     </span>
                     <span>${event.error.message}</span>
                 `;
-                this.errorDiv.innerHTML = html;
+                this.getElm('#card-errors').innerHTML = html;
             } else {
-                this.errorDiv.textContent = '';
+                this.getElm('#card-errors').textContent = '';
             }
         });
     }
 
     get submitCheckoutForm() {
-        this.paymentForm.addEventListener('submit', (event) => {
+        this.getElm('#payment-form').addEventListener('submit', (event) => {
             event.preventDefault(); // Prevent default behaviour.
             // Desable card and submit button to avoid multiple payment request.
             this.card.update({'disabled': true });
-            this.paymentButton.disabled = true;
-        
+            this.getElm('#payment-button').disabled = true; // Submit button.
+            
+            // Confirm Stripe card payment with client secret key.
             this.stripe.confirmCardPayment(this.clientSecretKey, {
                 payment_method: {
                     card: this.card,
                 }
-            }).then(function(result) {
+            }).then((result) => {
                 if (result.error) {
                     // Error message.
                     const html = `
@@ -67,23 +60,22 @@ class GeoStripe {
                         </span>
                         <span>${result.error.message}</span>`;
                     // Append error message to the error div.
-                    this.errorDiv.innerHTML = html;
+                    this.getElm('#card-errors').innerHTML = html;
 
                     // Enable card and submit button.
                     this.card.update({'disabled': false});
-                    this.paymentButton.disabled = false;
+                    this.getElm('#payment-form').disabled = false;
 
                 } else { // If there is no error, submit the form.
                     if (result.paymentIntent.status === 'succeeded') {
-                        this.paymentForm.submit();
+                        // Submit the payment form.
+                        this.getElm('#payment-form').submit();
                     }
                 }
             });  
 
         });
     }
-    
-
 }
 
 new GeoStripe();

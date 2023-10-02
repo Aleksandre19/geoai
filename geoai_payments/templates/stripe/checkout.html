@@ -5,10 +5,10 @@
     <h1>{{welcome}}</h1>
     <form action="{% url 'checkout' %}" method="post" id="payment-form">
         {% csrf_token %}
-        <fieldset>
+        {% comment %} <fieldset>
             <legend> გთხოვთ აირჩიოთ თანხა </legend>
             {{payment_form}}
-        </fieldset>
+        </fieldset> {% endcomment %}
 
         <fieldset>
             <legend>გადახდა</legend>
