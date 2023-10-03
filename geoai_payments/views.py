@@ -27,7 +27,7 @@ class Checkout(ListView):
         context = super().get_context_data(**kwargs)
 
         # Payment form.
-        payment_form = PaymentForm()
+        # payment_form = PaymentForm()
 
         # Get amount from get request.
         amount = self.kwargs.get('amount')
@@ -35,7 +35,7 @@ class Checkout(ListView):
         stripe_amount = int(amount) * 100
 
         if not settings.STRIPE_PUBLIC_KEY:
-            messages.warning(self.request, 'ვერ მოიძებნა Stripe - ის საჯარო გასარები.')
+            messages.warning(self.request, 'ვერ მოიძებნა Stripe - ის საჯარო გასაღები.')
 
         # Stripe 
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -48,13 +48,32 @@ class Checkout(ListView):
             'welcome': 'GeoAI - ის ჟეტონების შეძენის გვერდი.',
             'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
             'stripe_client_secret_key': intent.client_secret,
-            'payment_form': payment_form,
-            'amount': amount
+            'amount': amount,
+            # 'payment_form': payment_form
         })
 
         return context
     
 
     def post(self, request, *args, **kwargs):
+        # Grab the amount from the get request.
         amount = self.kwargs.get('amount')
+        # Prepare data for payment form.
+        form_data = {
+            'amount': amount
+        }
+        # Initialize the payment form.
+        payment_form = PaymentForm(form_data)
+
+        if payment_form.is_valid():
+            # Not save the payment YET.
+            payment = payment_form.save(commit=False)
+            # Set the user instance.
+            payment.user = self.request.user
+            payment.save()
+
+        else:
+            messages.error('შეცდომა დაფიქსირდა თქვენს მიერ მითითებულ მონაცემებში. \
+                           გთხოვთ შეამოწმოთ შევსებული ინფორმაცია.')
+
         return redirect('checkout', amount=amount)

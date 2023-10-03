@@ -5,11 +5,6 @@
     <h1>{{welcome}}</h1>
     <form action="{% url 'checkout' amount %}" method="post" id="payment-form">
         {% csrf_token %}
-        {% comment %} <fieldset>
-            <legend> გთხოვთ აირჩიოთ თანხა </legend>
-            {{payment_form}}
-        </fieldset> {% endcomment %}
-
         <fieldset>
             <legend>გადახდა</legend>
 
