@@ -3,7 +3,7 @@
 
 {% block content %}
     <h1>{{welcome}}</h1>
-    <form action="{% url 'checkout' %}" method="post" id="payment-form">
+    <form action="{% url 'checkout' amount %}" method="post" id="payment-form">
         {% csrf_token %}
         {% comment %} <fieldset>
             <legend> გთხოვთ აირჩიოთ თანხა </legend>
