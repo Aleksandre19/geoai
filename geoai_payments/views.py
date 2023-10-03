@@ -1,20 +1,23 @@
+from django.db.models import F
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.views.generic import ListView, TemplateView
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from geoai_payments.forms import PaymentForm
 from geoai_payments.models import Payments
+from user_setting.models import UserTokens
 
 import stripe
 
 
-class Amount(TemplateView):
+class Amount(LoginRequiredMixin, TemplateView):
     template_name = 'stripe/choose_amount.html'
 
 
 # Create your views here.
-class Checkout(ListView):
+class Checkout(LoginRequiredMixin, ListView):
     template_name = 'stripe/checkout.html'
     model = Payments 
 
@@ -66,14 +69,30 @@ class Checkout(ListView):
         payment_form = PaymentForm(form_data)
 
         if payment_form.is_valid():
-            # Not save the payment YET.
+            """ Save payment into database."""
+            # Don't save the payment YET.
             payment = payment_form.save(commit=False)
             # Set the user instance.
             payment.user = self.request.user
             payment.save()
 
+            """ Update tokens."""
+            token_price = 0.0004 # Price per token.
+            current_tokens = amount / token_price 
+
+            # Grab the user tokens.
+            user_tokens = UserTokens.objects.get(user=self.request.user)
+
+            # Clean old tokena and leave only unused tokens.
+            clean_token_value = user_tokens.value - user_tokens.used
+            # Unused tokens plus the purchased tokens.
+            new_token_value = clean_token_value + current_tokens
+            
+            user_tokens.value = new_token_value # Set tokens.
+            user_tokens.used = 0 # Reset the used tokens.
+            user_tokens.save()
         else:
             messages.error('შეცდომა დაფიქსირდა თქვენს მიერ მითითებულ მონაცემებში. \
                            გთხოვთ შეამოწმოთ შევსებული ინფორმაცია.')
 
-        return redirect('checkout', amount=amount)
+        return redirect('chat_home')
