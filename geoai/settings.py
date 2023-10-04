@@ -40,6 +40,8 @@ class Dev(Configuration):
     USER_DEFAULT_TOKENS = 1200
     STRIPE_PUBLIC_KEY = 'pk_test_51NvSdtEjJBdnvl05Vd8eiczbKqMWlZxvjROjnimkAJnZBs4cnakIOFdEDNbt9yIe5xucoJdZFBKpgMF7GozZlqZE00IjJ0SiZi'
     STRIPE_SECRET_KEY = values.Value(environ_name='STRIPE_SECRET_KEY', environ_prefix='')
+    # STRIPE_WH_SECRET = values.Value(environ_name='STRIPE_WH_SECRET', environ_prefix='')
+    STRIPE_WH_SECRET = 'whsec_ba611445a0fd9e822ae8b50b810a0f725f7de0e77f44c7c820351f95dc7e4a64'
     STRIPE_CURRENCY = 'gel'
 
 

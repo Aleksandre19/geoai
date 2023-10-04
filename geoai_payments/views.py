@@ -83,7 +83,7 @@ class Checkout(LoginRequiredMixin, ListView):
             # Grab the user tokens.
             user_tokens = UserTokens.objects.get(user=self.request.user)
 
-            # Clean old tokena and leave only unused tokens.
+            # Clean old token and leave only unused tokens.
             clean_token_value = user_tokens.value - user_tokens.used
             # Unused tokens plus the purchased tokens.
             new_token_value = clean_token_value + current_tokens
