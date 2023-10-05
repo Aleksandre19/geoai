@@ -41,8 +41,29 @@ class Webhook(View):
         except Exception as e:
             return HttpResponse(content=e, status=400)
         
-        print('======== CLASS WEBHOOK SUCCESS =============')
-        return HttpResponse(status=200)
+        # Manage Stripe event.
+        return self.process_event(request, *args, **kwargs)
+      
+    def process_event(self, request, *args, **kwargs):
+        # Set up webhook handler.
+        handler = StripeWebhook(self.request)
+
+        # Map the webhook events to relavant handler functions.
+        event_map = {
+            'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
+            'payment_inten.payment_failed': handler.handle_payment_intent_payment_failed
+        }
+
+        # Get the webhook type from the stripe.
+        event_type = self.event['type']
+
+        # If there's a handler for it, get it from the event map.
+        # Use generic one by default.
+        event_handler = event_map.get(event_type, handler.handle_event)
+
+        # Call the event handler with the event.
+        response = event_handler(self.event)
+        return response
 
 
 # @require_POST
