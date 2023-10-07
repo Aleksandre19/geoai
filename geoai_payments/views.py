@@ -1,9 +1,13 @@
 from django.db.models import F
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.conf import settings
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, View
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from geoai_payments.forms import PaymentForm
 from geoai_payments.models import Payments
@@ -13,7 +17,43 @@ import stripe
 
 
 class Amount(LoginRequiredMixin, TemplateView):
+    """
+    This view simply renders the template in which the user 
+    chooses the payment amount and proceeds to the checkout page
+    """
     template_name = 'stripe/choose_amount.html'
+
+
+# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(require_POST, name='dispatch')
+class CacheCheckoutData(LoginRequiredMixin, View):
+    """
+    This view modifies the payment intent before confirming the Stripe Card 
+    when the payment form's submit button is clicked. It sets the metadata, 
+    which includes the payment amount and user, to the intent. 
+    This will be utilized in the Stripe `payment_intent.succeeded` webhook.
+    """
+    def post(self, request, *args, **kwargs):
+        try:
+            # Get Client Secret Key from post request.
+            pid = self.request.POST.get('client_secret').split('_secret')[0]
+
+            # Stripe secret key.
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+
+            # Modify the Stripe payment intent.
+            stripe.PaymentIntent.modify(pid, metadata={
+                'amount': self.request.POST.get('amount'),
+                'username': self.request.user
+            })
+
+            # Return response to the JavaScript `fetch` api.         
+            return HttpResponse(status=200) 
+
+        # Handle the error.     
+        except Exception as e:  
+            messages.error(request, 'უკაცრავად, თქვენი გადახდა ვერ იქნა განხორციელებული. გთხოვთ ცადოთ მოგვიანებით')
+            return HttpResponse(content=e, status=400)
 
 
 # Create your views here.

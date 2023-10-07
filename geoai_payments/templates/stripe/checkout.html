@@ -24,5 +24,6 @@
     {{ block.super }}
     {{ stripe_public_key|json_script:'id_stripe_publc_key'}}
     {{ stripe_client_secret_key|json_script:'id_stripe_client_secret_key'}}
+    {{ amount|json_script:'payment-amount'}}
     <script type='text/javascript' src="{% static 'geoai/js/webpack/chat/stripe.bundle.js'%}"></script>
 {% endblock %}

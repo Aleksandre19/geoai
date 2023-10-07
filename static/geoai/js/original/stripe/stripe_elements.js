@@ -4,17 +4,24 @@ class GeoStripe {
         this.stripeElement = this.stripe.elements(); // Create Stripe elements.
         this.card = this.stripeElement.create('card');  // Create card element.
         this.card.mount('#card-element'); // Mount card to div#card-element.
+
+        this.csrfToken = this.getElm('input[name="csrfmiddlewaretoken"]').value;
         this.cardValdation; // Card element realtime error valitator.
-        this.submitCheckoutForm; // Submit checkout form.
+        
+        this.submitCheckoutForm;
+       
     }
 
     get publicKey() {
-        console.log(this.getElm('#id_stripe_publc_key'));
         return this.getElm('#id_stripe_publc_key').textContent.slice(1, -1);
     }
 
     get clientSecretKey() {
         return this.getElm('#id_stripe_client_secret_key').textContent.slice(1, -1);
+    }
+
+    get paymentAmount() {
+        return this.getElm('#payment-amount').textContent;
     }
 
     // Grab the HTML element.
@@ -40,40 +47,86 @@ class GeoStripe {
     }
 
     get submitCheckoutForm() {
+        // Add the `submit` event to the payment form.
         this.getElm('#payment-form').addEventListener('submit', (event) => {
-            event.preventDefault(); // Prevent default behaviour.
-            // Desable card and submit button to avoid multiple payment request.
-            this.card.update({'disabled': true });
-            this.getElm('#payment-button').disabled = true; // Submit button.
+            // Prevent default behaviour.
+            event.preventDefault();
             
-            // Confirm Stripe card payment with client secret key.
-            this.stripe.confirmCardPayment(this.clientSecretKey, {
-                payment_method: {
-                    card: this.card,
+            // Desable card and submit button to avoid multiple payment request.
+            this.card.update({ 'disabled': true });
+            this.getElm('#payment-button').disabled = true; // Submit button.
+
+            // Url for the payment data cache view.
+            const url = '/payment/cache-checkout-data/';
+
+            // Data for the payment data view.
+            const postData = {
+                'csrfmiddlewaretoken': this.csrfToken,
+                'client_secret': this.clientSecretKey,
+                'amount': this.paymentAmount,
+            };
+
+            // Call the cache view.
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(postData).toString()
+
+            // Check if there is a error.
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('There was a problem to conect to the Stripe server. \
+                    Please try later');
                 }
-            }).then((result) => {
-                if (result.error) {
-                    // Error message.
-                    const html = `
-                        <span class="icon" role="alert">
-                        <i class="fas fa-times"></i>
-                        </span>
-                        <span>${result.error.message}</span>`;
-                    // Append error message to the error div.
-                    this.getElm('#card-errors').innerHTML = html;
 
-                    // Enable card and submit button.
-                    this.card.update({'disabled': false});
-                    this.getElm('#payment-form').disabled = false;
-
-                } else { // If there is no error, submit the form.
-                    if (result.paymentIntent.status === 'succeeded') {
-                        // Submit the payment form.
-                        this.getElm('#payment-form').submit();
+            // Afetr the caching the payment data confirm the card.
+            }).then(async () => {
+                
+                // Call the Stripe confirme card payment method.
+                return await this.stripe.confirmCardPayment(this.clientSecretKey, {
+                    payment_method: {
+                        card: this.card,
                     }
-                }
-            });  
+                
+                // Result of the confirmation.
+                }).then(result => {
+                    
+                    // Check errors of the confirmation.
+                    if (result.error) {
+                        
+                        // Error message.
+                        const html = `
+                            <span class="icon" role="alert">
+                            <i class="fas fa-times"></i>
+                            </span>
+                            <span>${result.error.message}</span>`;
 
+                        // Append error message to the error div.
+                        this.getElm('#card-errors').innerHTML = html;
+
+                        // Enable card and submit button.
+                        this.card.update({ 'disabled': false });
+                        this.getElm('#payment-form').disabled = false;
+                    
+                    // If there is no error, submit the payment form.
+                    } else {
+
+                        // Check if the payment intent was succeeded.
+                        if (result.paymentIntent.status === 'succeeded') {
+                            
+                            // Submit the payment form.
+                            this.getElm('#payment-form').submit();
+                        }
+                    }
+                });
+            
+            // In case of some error just relooad the page.
+            // Error message will be in Django messages.    
+            }).catch(() => {
+                location.reload();
+            });
         });
     }
 }

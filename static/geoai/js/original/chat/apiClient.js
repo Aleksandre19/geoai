@@ -53,9 +53,7 @@ export class APIClient {
             } else {
                 return response.json();
             }
-        }
-        
-        
+        }      
     }
 
     async update(endpoint, data) {  

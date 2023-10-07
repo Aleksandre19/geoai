@@ -17,7 +17,7 @@ class Webhook(View):
     def setup(self, request, *args, **kwargs):
         # Call parent setup method.
         super().setup(request, *args, **kwargs)
-
+        
         # Setup the Stripe Webhook.
         self.wh_secret = settings.STRIPE_WH_SECRET
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -28,6 +28,7 @@ class Webhook(View):
         self.event = None
 
     def post(self, request, *args, **kwargs):
+
         try:
             self.event = stripe.Webhook.construct_event(
                 self.payload, self.sig_header, self.wh_secret
@@ -47,8 +48,8 @@ class Webhook(View):
     def process_event(self, request, *args, **kwargs):
         # Set up webhook handler.
         handler = StripeWebhook(self.request)
-
-        # Map the webhook events to relavant handler functions.
+        
+        # Map the webhook events to relevant handler functions.
         event_map = {
             'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
             'payment_inten.payment_failed': handler.handle_payment_intent_payment_failed
