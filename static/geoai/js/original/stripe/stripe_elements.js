@@ -108,7 +108,7 @@ class GeoStripe {
 
                         // Enable card and submit button.
                         this.card.update({ 'disabled': false });
-                        this.getElm('#payment-form').disabled = false;
+                        this.getElm('#payment-button').disabled = false;
                     
                     // If there is no error, submit the payment form.
                     } else {
