@@ -23,8 +23,8 @@ class Webhook(View):
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
         # Get the webhook data and verify its signature
-        self.payload = request.body
-        self.sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+        self.payload = self.request.body
+        self.sig_header = self.request.META['HTTP_STRIPE_SIGNATURE']
         self.event = None
 
     def post(self, request, *args, **kwargs):
@@ -41,18 +41,18 @@ class Webhook(View):
             return HttpResponse(status=400)
         except Exception as e:
             return HttpResponse(content=e, status=400)
-        
+
         # Manage Stripe event.
-        return self.process_event(request, *args, **kwargs)
+        return self.process_event(*args, **kwargs)
       
-    def process_event(self, request, *args, **kwargs):
+    def process_event(self, *args, **kwargs):
         # Set up webhook handler.
         handler = StripeWebhook(self.request)
         
         # Map the webhook events to relevant handler functions.
         event_map = {
             'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
-            'payment_inten.payment_failed': handler.handle_payment_intent_payment_failed
+            'payment_intent.payment_failed': handler.handle_payment_intent_payment_failed
         }
 
         # Get the webhook type from the stripe.
@@ -93,5 +93,22 @@ class Webhook(View):
 #     except Exception as e:
 #         return HttpResponse(content=e, status=400)
     
-#     print('======== WEBHOOK SUCCESS =============')
-#     return HttpResponse(status=200)
+#     # Set up webhook handler.
+#     handler = StripeWebhook(request)
+    
+#     # Map the webhook events to relevant handler functions.
+#     event_map = {
+#         'payment_intent.succeeded': handler.handle_payment_intent_succeeded,
+#         'payment_intent.payment_failed': handler.handle_payment_intent_payment_failed
+#     }
+
+#     # Get the webhook type from the stripe.
+#     event_type = event['type']
+
+#     # If there's a handler for it, get it from the event map.
+#     # Use generic one by default.
+#     event_handler = event_map.get(event_type, handler.handle_event)
+
+#     # Call the event handler with the event.
+#     response = event_handler(event)
+#     return response

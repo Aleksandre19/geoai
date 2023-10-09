@@ -24,6 +24,14 @@ class GeoStripe {
         return this.getElm('#payment-amount').textContent;
     }
 
+    get paymentID() {
+        return this.getElm('#paymentID').textContent.slice(1, -1);
+    }
+
+    get userID() {
+        return this.getElm('#userID').textContent;
+    }
+
     // Grab the HTML element.
     getElm(attr) {
         return document.querySelector(attr);
@@ -63,6 +71,8 @@ class GeoStripe {
             const postData = {
                 'csrfmiddlewaretoken': this.csrfToken,
                 'client_secret': this.clientSecretKey,
+                'payment_id': this.paymentID,
+                'user_id': this.userID,
                 'amount': this.paymentAmount,
             };
 

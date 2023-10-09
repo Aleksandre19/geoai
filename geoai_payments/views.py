@@ -43,8 +43,9 @@ class CacheCheckoutData(LoginRequiredMixin, View):
 
             # Modify the Stripe payment intent.
             stripe.PaymentIntent.modify(pid, metadata={
-                'amount': self.request.POST.get('amount'),
-                'username': self.request.user
+                'payment_id': self.request.POST.get('payment_id'),
+                'user_id': self.request.POST.get('user_id'),
+                'amount': self.request.POST.get('amount')
             })
 
             # Return response to the JavaScript `fetch` api.         
@@ -59,7 +60,7 @@ class CacheCheckoutData(LoginRequiredMixin, View):
 # Create your views here.
 class Checkout(LoginRequiredMixin, ListView):
     template_name = 'stripe/checkout.html'
-    model = Payments 
+    model = Payments
 
     def get_context_data(self, **kwargs):
         """
@@ -91,7 +92,9 @@ class Checkout(LoginRequiredMixin, ListView):
             'welcome': 'GeoAI - ის ჟეტონების შეძენის გვერდი.',
             'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
             'stripe_client_secret_key': intent.client_secret,
+            'payment_id': intent.id,
             'amount': amount,
+            'user_id': self.request.user.id,
             # 'payment_form': payment_form
         })
 
@@ -99,8 +102,13 @@ class Checkout(LoginRequiredMixin, ListView):
     
 
     def post(self, request, *args, **kwargs):
+        
         # Grab the amount from the get request.
         amount = self.kwargs.get('amount')
+
+        # Payment ID.
+        payment_id = self.request.POST.get('payment_id')
+        
         # Prepare data for payment form.
         form_data = {
             'amount': amount
@@ -114,6 +122,7 @@ class Checkout(LoginRequiredMixin, ListView):
             payment = payment_form.save(commit=False)
             # Set the user instance.
             payment.user = self.request.user
+            payment.payment_id = payment_id
             payment.save()
 
             """ Update tokens."""
