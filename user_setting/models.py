@@ -24,5 +24,6 @@ class UserTokens(models.Model):
     )
     value = models.PositiveIntegerField(default=0, db_index=True)
     used = models.PositiveIntegerField(default=0, db_index=True)
+    token_id = models.CharField(max_length=225, default='')
 
 

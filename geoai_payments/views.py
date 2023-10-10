@@ -108,7 +108,7 @@ class Checkout(LoginRequiredMixin, ListView):
 
         # Payment ID.
         payment_id = self.request.POST.get('payment_id')
-        
+
         # Prepare data for payment form.
         form_data = {
             'amount': amount
@@ -126,7 +126,7 @@ class Checkout(LoginRequiredMixin, ListView):
             payment.save()
 
             """ Update tokens."""
-            token_price = 0.0004 # Price per token.
+            token_price = settings.TOKEN_PRICE # Price per token.
             current_tokens = amount / token_price 
 
             # Grab the user tokens.
@@ -139,6 +139,7 @@ class Checkout(LoginRequiredMixin, ListView):
             
             user_tokens.value = new_token_value # Set tokens.
             user_tokens.used = 0 # Reset the used tokens.
+            user_tokens.token_id = payment_id
             user_tokens.save()
         else:
             messages.error('შეცდომა დაფიქსირდა თქვენს მიერ მითითებულ მონაცემებში. \

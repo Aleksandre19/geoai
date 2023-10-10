@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.contrib import messages
+from django.conf import settings
 
 from geoai_payments.models import Payments
+from user_setting.models import UserTokens
 from geoai_auth.models import User
 
 import time
@@ -92,42 +94,72 @@ class StripeWebhook:
                 attempt += 1
                 time.sleep(1)
 
-            # Return success response to Stripe when payment exsists.
-            if self.payment_exists:
-                # Retutn success response  to the Stripe.
-                return HttpResponse(
-                    content=f'Webhook recieved: {event["type"]}',
-                    status=200
+        # Return success response to Stripe when payment exsists.
+        if self.payment_exists:
+            # Retutn success response  to the Stripe.
+            return HttpResponse(
+                content=f'Webhook recieved: {event["type"]}',
+                status=200
+            )
+        else:  # Create the payment when doesn't exsist in database.
+            payment = None
+            try:
+                """ 
+                Try create the payment and if there is some problem,
+                delete the current payment and return HTTP resposnse to Stripe
+                With Status 500 which will mean that Stripe will try again the Webhook later.
+                """
+                # Create the payment.
+                payment = Payments.objects.create(
+                    user = user,
+                    payment_id = intent.metadata.payment_id,
+                    amount = intent.metadata.amount,
                 )
-            else:  # Create the payment when doesn't exsist in database.
-                payment = None
-                try:
-                    """ 
-                    Try create the payment and if there is some problem,
-                    delete the current payment and return HTTP resposnse to Stripe
-                    With Status 500 which will mean that Stripe will try again the Webhook later.
-                    """
-                    # Create the payment.
-                    payment = Payments.objects.create(
-                        user = user,
-                        payment_id = intent.metadata.payment_id,
-                        amount = intent.metadata.amount,
-                    )
-                    payment.save()
 
-                except Exception as e:
-                    # Delete the payment.
-                    if payment:
-                        payment.delete()
+                payment.save()
 
-                    # Return response to Stripe.
-                    return HttpResponse(
-                            content=f'Webhook recieved: {event["type"]} | ERROR {e}',
-                            status=500
-                        )  
+                 # Update tokens.
+                self.update_tokens(user, payment.amount, payment.payment_id)
+
+            except Exception as e:
+                # Delete the payment.
+                if payment:
+                    payment.delete()
+
+                # Return response to Stripe.
+                return HttpResponse(
+                        content=f'Webhook recieved: {event["type"]} | ERROR {e}',
+                        status=500
+                    )  
+    
         return HttpResponse(
                 content=f'Webhook recieved: {event["type"]} | SUCCESS: Payment in Webhook.',
                 status=200
             )
+    
+
+    def update_tokens(self, user, amount, payment_id):
+        try:
+            UserTokens.objects.get(
+                    user=user,
+                    value=amount,
+                    token_id=payment_id
+                )
+        except UserTokens.DoesNotExist:
+            token_price = settings.TOKEN_PRICE # Price per token.
+            current_tokens = int(amount) / token_price 
+
+            # Grab the user tokens.
+            user_tokens = UserTokens.objects.get(user=user)
+
+            # Clean old token and leave only unused tokens.
+            clean_token_value = user_tokens.value - user_tokens.used
+            # Unused tokens plus the purchased tokens.
+            new_token_value = clean_token_value + current_tokens
+            
+            user_tokens.value = new_token_value # Set tokens.
+            user_tokens.used = 0 # Reset the used tokens.
+            user_tokens.token_id = payment_id
+            user_tokens.save()
 
     

@@ -7,7 +7,7 @@ class SettingAdmin(admin.ModelAdmin):
     list_display = ("user", "light_mode", 'mode_style')
 
 class UserTokensAdmin(admin.ModelAdmin):
-    list_display = ("user", "value", "used")
+    list_display = ("user", "value", "used", "token_id")
 
 admin.site.register(UserSetting, SettingAdmin)
 admin.site.register(UserTokens, UserTokensAdmin)
