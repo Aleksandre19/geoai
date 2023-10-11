@@ -120,6 +120,7 @@ class StripeWebhook:
 
                  # Update tokens.
                 self.update_tokens(user, payment.amount, payment.payment_id)
+                print('====== PAYMENT AND TOKENS WERE CREATED IN WH ==')
 
             except Exception as e:
                 # Delete the payment.
@@ -133,7 +134,7 @@ class StripeWebhook:
                     )  
     
         return HttpResponse(
-                content=f'Webhook recieved: {event["type"]} | SUCCESS: Payment in Webhook.',
+                content=f'Webhook recieved: {event["type"]} | SUCCESS: Verified payment already in database.',
                 status=200
             )
     

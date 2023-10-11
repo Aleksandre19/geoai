@@ -103,6 +103,10 @@ class ExtractCode:
 
         # Grab a programming language name.
         prog_lang_name = code_snippet.splitlines()[0] 
+        
+        # If there is not programming language, set python as a default.
+        if not prog_lang_name:
+            prog_lang_name = 'python'
 
         # Save programming language name.
         Store.cur_prog_lang['name'] = prog_lang_name
