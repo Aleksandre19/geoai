@@ -27,7 +27,11 @@
 
     /* Question input colors */
     --textarea-btn: #d3d3d3;
-    --textarea-btn-hover: #bfbfbf;           
+    --textarea-btn-hover: #bfbfbf;    
+    
+    /* Sing in/up  colors */
+    --login-main: #4CAF50;
+    --login-hover: #218225;
 }
 
 [data-theme="dark"] {
@@ -202,32 +206,10 @@ div.allauth-wrapper div.col-right {
 div.allauth-wrapper div.col-left {
     width: 45%;
     padding: 24px 16px;
-    background: #4CAF50;
+    background: var(--login-main);
     border-radius: 8px 0px 0px 8px;
     -webkit-clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
     clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
-}
-
-/* Sing in/up button */
-div.allauth-wrapper div.col-right form.login button.primaryAction {
-    display: inline-block;
-    padding: 7px 20px;
-    font-size: 16px;
-    letter-spacing: 1px;
-    text-decoration: none;
-    border-radius: 5px;
-    outline: none;
-    border: 1px solid #4CAF50;
-    transition: .3s;
-    -webkit-transition: .3s;
-    color: #ffffff;
-    background: #4CAF50;
-    cursor: pointer;
-}
-
-div.allauth-wrapper div.col-right form.login button.primaryAction:hover {
-    color: #4CAF50;
-    background: #ffffff;
 }
 
 /* Sing in/up responsive on lower devices. */
@@ -256,6 +238,32 @@ div.allauth-wrapper > p {
     margin: 16px 0px;
 }
 
+div.allauth-wrapper  a {
+    position: relative;
+    color: var(--login-main);
+    text-decoration: none;
+}
+
+div.allauth-wrapper a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--login-hover);
+    transition: width 0.3s ease-in-out;
+}
+
+div.allauth-wrapper a:hover::after {
+    width: 100%;
+}
+
+div.allauth-wrapper a:hover {
+    color: var(--login-hover);
+}
+
+
 div.allauth-wrapper form.login > p:first-of-type{
     margin: 16px 0px;
     margin-top: 24px;
@@ -274,13 +282,56 @@ div.allauth-wrapper form.login > p input[type="password"] {
         /* border-radius: 4px; */
         padding-left: 10px;
         border-bottom: 2px solid var(--secondary-color);
+        transition: border 0.3s ease-out;
 }
 
-div.allauth-wrapper form.login>p input[type="email"] {
+div.allauth-wrapper form.login > p input[type="email"] {
     margin-top: 8px;
 }
 
+
+div.allauth-wrapper form.login > p input[type="email"]:focus,
+div.allauth-wrapper form.login > p input[type="password"]:focus {
+    border-bottom:  2px solid var(--login-main);
+    outline: none;
+}
+
+/* Login email and password placeholders. */
+div.allauth-wrapper form.login  p.login-form-input input::placeholder,
+div.allauth-wrapper form.login p.login-form-input input::-webkit-placeholder{ 
+    color: var(--primary-color);
+} 
+
+
+/* Login reset password and remember me checkbox block. */
+div.allauth-wrapper form.login div.reset-and-remember {
+    display: flex;
+    padding: 16px 0px;
+}
+
+div.allauth-wrapper form.login div.reset-and-remember div {
+    width: 50%;
+}
+
+/* Login remember me checkbox */
+div.allauth-wrapper form.login div.reset-and-remember div.allauth-remember {
+    text-align: right;
+}
+
+div.allauth-wrapper form.login div.allauth-remember input#id_remember {
+    transition: transform 0.3s ease-out;
+}
+
+input#id_remember:hover {
+    transform: scale(1.2);
+}
+
+/* Sing in/up button. */
 div.allauth-wrapper form.login > button[type="submit"] {
+    display: inline-block;
+    font-family: 'Menu', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
     border: 1px solid var(--primary-color);
     border-radius: 4px;
     display: block;
@@ -288,6 +339,17 @@ div.allauth-wrapper form.login > button[type="submit"] {
     padding: 8px;
     margin: auto;
     margin-top: 48px;
+    transition: .3s;
+    -webkit-transition: .3s;
+    color: #ffffff;
+    background: var(--login-main);
+    cursor: pointer;
+}
+
+div.allauth-wrapper div.col-right form.login button[type="submit"]:hover {
+    color: var(--login-hover);
+    border: 1px solid var(--login-hover);
+    background: #ffffff;
 }
 
 div.allauth-wrapper form.login > p:last-of-type label {

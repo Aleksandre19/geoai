@@ -24,16 +24,24 @@
 
       <form class="login" method="POST" action="{% url 'account_login' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <p class='login-form-input'>{{ form.login }}</p>
+        <p class='login-form-input'>{{ form.password }}</p>
         
         {% if redirect_field_value %}
           <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
 
-        <a class="button secondaryAction" href="{% url 'account_reset_password' %}">
-          {% trans "Forgot Password?" %}
-        </a>
-
+        <div class='reset-and-remember'>
+          <div>
+            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">
+              {% trans "დაგავიწყდათ პაროლი?" %}
+            </a>
+          </div>
+          <div class='allauth-remember'>
+            <label for='id_remember'>დამიმახსოვრე: {{ form.remember }}</label>
+          </div>
+        </div>
         <button class="primaryAction" type="submit">{% trans "შესვლა" %}</button>
       </form>
 
