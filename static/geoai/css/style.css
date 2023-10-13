@@ -248,15 +248,16 @@ div.allauth-wrapper a::after {
     content: '';
     position: absolute;
     bottom: -3px;
-    left: 0;
+    left: 50%;
     width: 0;
-    height: 2px;
+    height: 1px;
     background-color: var(--login-hover);
-    transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out;
 }
 
 div.allauth-wrapper a:hover::after {
     width: 100%;
+    left: 0;
 }
 
 div.allauth-wrapper a:hover {
@@ -298,7 +299,10 @@ div.allauth-wrapper form.login > p input[type="password"]:focus {
 
 /* Login email and password placeholders. */
 div.allauth-wrapper form.login  p.login-form-input input::placeholder,
-div.allauth-wrapper form.login p.login-form-input input::-webkit-placeholder{ 
+div.allauth-wrapper form.login p.login-form-input input::-webkit-placeholder,
+div.allauth-wrapper form.login p.login-form-input input:-ms-input-placeholder,
+div.allauth-wrapper form.login p.login-form-input input::-ms-input-placeholder,
+div.allauth-wrapper form.login p.login-form-input input::-moz-placeholder { 
     color: var(--primary-color);
 } 
 
@@ -318,13 +322,74 @@ div.allauth-wrapper form.login div.reset-and-remember div.allauth-remember {
     text-align: right;
 }
 
-div.allauth-wrapper form.login div.allauth-remember input#id_remember {
-    transition: transform 0.3s ease-out;
+
+/* input#id_remember:hover {
+    transform: scale(1.2);
+} */
+
+/* Style the cutsom checkbox. */
+div.allauth-wrapper form.login div.allauth-remember label.custom-checkbox {
+    position: relative;
+    padding-left: 30px;
+    margin-left: 4px;
+    cursor: pointer;
+    display: inline;
 }
 
-input#id_remember:hover {
-    transform: scale(1.2);
+/* Hide a original checkbox. */
+div.allauth-wrapper form.login div.allauth-remember input#id_remember {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    width: 0;
+    height: 0;
 }
+
+/* Create the custom checkbox. */
+div.allauth-wrapper form.login div.allauth-remember span.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 4px; 
+    transition: background 0.3s ease-in-out;
+}
+
+/* Create checkmark indicator. (Hidden when not checked) */
+div.allauth-wrapper form.login div.allauth-remember span.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Style the checkmark. */
+div.allauth-wrapper form.login div.allauth-remember span.checkmark:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0px 3px 3px 0px;
+    transform: rotate(45deg);
+}
+
+/* Display the checkmark when the checkbox is checked. */
+div.allauth-wrapper form.login input#id_remember:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Change the background colot of the checkbox when hovered. */
+div.allauth-wrapper form.login div.allauth-remember .checkmark:hover {
+    background-color: #555;
+}
+
+/* Change the background color of the checkbox when checked. */
+div.allauth-wrapper form.login input#id_remember:checked ~ .checkmark {
+    background-color: var(--login-main);
+}
+
 
 /* Sing in/up button. */
 div.allauth-wrapper form.login > button[type="submit"] {

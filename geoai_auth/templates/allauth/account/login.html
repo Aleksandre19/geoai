@@ -39,7 +39,11 @@
             </a>
           </div>
           <div class='allauth-remember'>
-            <label for='id_remember'>დამიმახსოვრე: {{ form.remember }}</label>
+            დამიმახსოვრე: 
+            <label for='id_remember' class='custom-checkbox'>
+              {{ form.remember }}
+              <span class='checkmark'></span>
+            </label>
           </div>
         </div>
         <button class="primaryAction" type="submit">{% trans "შესვლა" %}</button>
