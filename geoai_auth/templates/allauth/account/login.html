@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 
 {% load i18n %}
 {% load account socialaccount %}
@@ -38,6 +38,8 @@
               {% trans "დაგავიწყდათ პაროლი?" %}
             </a>
           </div>
+
+          <!-- Remember me checkbox. -->
           <div class='allauth-remember'>
             დამიმახსოვრე: 
             <label for='id_remember' class='custom-checkbox'>
@@ -45,20 +47,32 @@
               <span class='checkmark'></span>
             </label>
           </div>
+
         </div>
-        <button class="primaryAction" type="submit">{% trans "შესვლა" %}</button>
+
+        <!-- Login button. -->
+        <button class="primaryAction" type="submit">
+          {% trans "შესვლა" %}
+        </button>
       </form>
 
       {% get_providers as socialaccount_providers %}
 
       {% if socialaccount_providers %}
         <div class='social-wrapper'>
+          
           <div class="login-or">{% trans 'ან' %}</div>
-          <div class="socialaccount_ballot">
+
+          <a href="{% url 'google_login' %}" id="customBtn">
+            <img src="{% static "geoai/images/icons/google-icon.png" %}" alt="Google Logo" id="googleIcon">
+            Sign in with Google
+          </a>
+
+          {% comment %} <div class="socialaccount_ballot">
               <ul class="socialaccount_providers">
                 {% include "socialaccount/snippets/provider_list.html" with process="login" %}
               </ul>
-          </div>
+          </div> {% endcomment %}
           {% include "socialaccount/snippets/login_extra.html" %}
         </div>
         <!-- 
