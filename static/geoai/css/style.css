@@ -2,7 +2,10 @@
     /* Main colors */
     --primary-color: #9B999B;
     --secondary-color: #e6e6e6;
-    --text-color: #4F4D4F;
+    /* --text-color: #4F4D4F; */
+    --text-color-90: #1D1A1D;
+    --text-color-80: #363336;
+    --text-color: #686668; /* Main body text color. */
     --body-bg-color: #fcfcfc;
 
     /* Color of the question/answer block */
@@ -30,8 +33,8 @@
     --textarea-btn-hover: #bfbfbf;    
     
     /* Sing in/up  colors */
-    --login-main: #4CAF50;
-    --login-hover: #218225;
+    --login-main: #24CCFF;
+    --login-hover: #26a5cc;
 }
 
 [data-theme="dark"] {
@@ -167,9 +170,26 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+#main-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    background-color: #218225;
+    background: linear-gradient(to top right, #cedef5, #fafcfe, #cedef5);
+    /* border: 2px solid red; */
+}
+
+
+/* Sing in/up */
 div#auth-main {
     /* width: 100%;
     height: 100vh; */
+    position: relative;
+    z-index: 2;
     margin: 0 auto;
     width: 90%;
     max-width: 1140px;
@@ -190,8 +210,9 @@ div.allauth-wrapper {
     max-width: 992px;
     height: auto;
     display: flex;
+    color: var(--text-color-80);
     border: 1px solid var(--secondary-color);
-    box-shadow: 0 0 15px rgba(0, 0, 0, .1);
+    /* box-shadow: 0 0 15px rgba(0, 0, 0, .1); */
     border-radius: 8px;
     /* padding: 16px; */
 }
@@ -200,6 +221,7 @@ div.allauth-wrapper div.col-left,
 div.allauth-wrapper div.col-right {
     width: 55%;
     padding: 24px 40px;
+    background-color: rgba(255, 255, 255, 0.4);
     /* display: flex; */
 }
 
@@ -238,13 +260,18 @@ div.allauth-wrapper > p {
     margin: 16px 0px;
 }
 
-div.allauth-wrapper  a {
+div.allauth-wrapper a {
     position: relative;
-    color: var(--login-main);
+    color: var(--text-color-80);
     text-decoration: none;
+    transition: color 0.3s ease-in-out;
 }
 
-div.allauth-wrapper a::after {
+div.allauth-wrapper a:hover{
+    color: var(--text-color-90);
+}
+
+/* div.allauth-wrapper a::after {
     content: '';
     position: absolute;
     bottom: -3px;
@@ -262,8 +289,97 @@ div.allauth-wrapper a:hover::after {
 
 div.allauth-wrapper a:hover {
     color: var(--login-hover);
+} */
+
+
+/* Registration link.  */
+div.allauth-wrapper a.forgot-pass,
+div.allauth-wrapper a.login-reg {
+    position: relative;
+    margin-left: 32px;
 }
 
+div.allauth-wrapper a.forgot-pass::after,
+div.allauth-wrapper a.login-reg::after,
+div.allauth-wrapper form.login > button[type="submit"]::after,
+div.allauth-wrapper div.social-wrapper #google-btn::after {
+    content: '';
+    width: 70px;
+    height: 30px;
+    position: absolute;
+    top: -5px;
+    left: -32px;
+    background-color: transparent;
+    border: 1px solid var(--login-main);
+    border-radius: 4px;
+    transition: width 0.3s ease-in-out, right 0.3s ease-in-out;
+}
+
+div.allauth-wrapper div.social-wrapper #google-btn::after {
+    right: 0;
+}
+
+/* Login and google buttons. */
+div.allauth-wrapper form.login > button[type="submit"]::after,
+div.allauth-wrapper div.social-wrapper #google-btn::after {
+    width: 80px;
+    height: 50px;
+}
+
+div.allauth-wrapper a.forgot-pass:hover::after,
+div.allauth-wrapper a.login-reg:hover::after {
+    width: 75px;
+    right: -40px;
+}
+
+/* Login button */
+div.allauth-wrapper form.login>button[type="submit"]:hover::after,
+div.allauth-wrapper div.social-wrapper #google-btn:hover::after {
+    width: 90px;
+    right: -30px;
+}
+
+/* Arrow icon. */
+div.allauth-wrapper a.forgot-pass i.arrow-icon,
+div.allauth-wrapper a.login-reg i.arrow-icon,
+div.allauth-wrapper form.login > button[type="submit"] i.arrow-icon,
+div.allauth-wrapper div.social-wrapper #google-btn i.arrow-icon {
+    width: 20px;
+    height: 10px;
+    background-image: url('../images/icons/arrow-icon.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    top: 8px;
+    left: -24px;
+    transition: left 0.3s ease-out;
+}
+
+/* Google icon */
+div.allauth-wrapper div.social-wrapper #google-btn i.arrow-icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease-in-out, left 0.3s ease-in-out;
+    background-image: url('../images/icons/google-icon.png');
+}
+
+div.allauth-wrapper a.forgot-pass:hover > i.arrow-icon,
+div.allauth-wrapper a.login-reg:hover > i.arrow-icon,
+div.allauth-wrapper form.login > button[type="submit"]:hover > i.arrow-icon,
+div.allauth-wrapper div.social-wrapper #google-btn:hover > i.arrow-icon {
+    left: 16px;
+}
+
+div.allauth-wrapper div.social-wrapper #google-btn:hover i.arrow-icon {
+    transform: rotate(360deg);
+}
+
+/* Login button */
+div.allauth-wrapper form.login > button[type="submit"] i.arrow-icon {
+    width: 24px;
+    height: 12px;
+    top: 16px;
+}
 
 div.allauth-wrapper form.login > p:first-of-type{
     margin: 16px 0px;
@@ -278,16 +394,18 @@ div.allauth-wrapper form.login  > p input[type="email"],
 div.allauth-wrapper form.login > p input[type="password"] {
         width: 100%;
         margin: auto;
-        height: 40px;
-        border: none;
+        height: 48px;
+        border: 1px solid #D4DCE1;
+        background-color: #fcfcfc;
+        border-radius: 4px;
         /* border-radius: 4px; */
         padding-left: 10px;
-        border-bottom: 2px solid var(--secondary-color);
+        /* border-bottom: 2px solid var(--secondary-color); */
         transition: border 0.3s ease-out;
 }
 
 div.allauth-wrapper form.login > p input[type="email"] {
-    margin-top: 8px;
+    margin-top: 24px;
 }
 
 
@@ -348,9 +466,10 @@ div.allauth-wrapper form.login div.allauth-remember span.checkmark {
     left: 0;
     width: 20px;
     height: 20px;
-    background-color: #ccc;
+    border: 1px solid var(--text-color-80);
+    background-color: transparent;
     border-radius: 4px; 
-    transition: background 0.3s ease-in-out;
+    transition: border 0.3s ease-in-out;
 }
 
 /* Create checkmark indicator. (Hidden when not checked) */
@@ -362,8 +481,8 @@ div.allauth-wrapper form.login div.allauth-remember span.checkmark:after {
 
 /* Style the checkmark. */
 div.allauth-wrapper form.login div.allauth-remember span.checkmark:after {
-    left: 7px;
-    top: 3px;
+    left: 5px;
+    top: 1px;
     width: 5px;
     height: 10px;
     border: solid white;
@@ -378,38 +497,39 @@ div.allauth-wrapper form.login input#id_remember:checked ~ .checkmark:after {
 
 /* Change the background colot of the checkbox when hovered. */
 div.allauth-wrapper form.login div.allauth-remember .checkmark:hover {
-    background-color: #555;
+    border: 1px solid var(--login-main);
 }
 
 /* Change the background color of the checkbox when checked. */
 div.allauth-wrapper form.login input#id_remember:checked ~ .checkmark {
     background-color: var(--login-main);
+    border: 1px solid var(--login-hover);
 }
 
 /* Sing in/up button. */
 div.allauth-wrapper form.login > button[type="submit"] {
+    position: relative;
     display: inline-block;
     font-family: 'Menu', sans-serif;
-    font-size: 18px;
+    font-size: 24px;
     font-weight: bold;
-    border: 1px solid var(--primary-color);
-    border-radius: 4px;
+    border: none;
     display: block;
-    width: 100%;
+    /* width: 100%; */
     padding: 8px;
     margin: auto;
     margin-top: 48px;
     transition: .3s;
     -webkit-transition: .3s;
-    color: #ffffff;
-    background: var(--login-main);
+    color: var(--text-color-80);
+    background-color: transparent;
+    /* background: var(--login-main); */
     cursor: pointer;
 }
 
-div.allauth-wrapper div.col-right form.login button[type="submit"]:hover {
-    color: var(--login-hover);
-    border: 1px solid var(--login-hover);
-    background: #ffffff;
+div.allauth-wrapper div.col-right form.login button[type="submit"]:hover,
+div.allauth-wrapper div.social-wrapper #google-btn:hover {
+    color: var(--text-color-90);
 }
 
 div.allauth-wrapper form.login > p:last-of-type label {
@@ -419,40 +539,47 @@ div.allauth-wrapper form.login > p:last-of-type label {
 
 div.allauth-wrapper div.social-wrapper {
     text-align: center;
-    margin: 24px 0px;
+    /* margin: 24px 0px; */
+}
+
+div.allauth-wrapper div.social-wrapper div.login-or {
+    margin: 8px 0;
 }
 
 /* Google connect button. */
-div.allauth-wrapper div.social-wrapper #customBtn {
-    margin: 16px auto;
-    background-color: #4285f4;
-    color: white;
+div.allauth-wrapper div.social-wrapper #google-btn {
+    /* margin: 16px auto; */
+    /* background-color: #4285f4; */
+    display: inline-block;
+    position: relative;
+    color: var(--text-color-80);
+    margin-bottom: 24px;
     padding: 8px;
-    border-radius: 2px;
+    /* border-radius: 2px; */
     border: none;
     font-size: 16px;
     font-weight: bold;
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
     cursor: pointer;
 }
 
 /* Remove ::after for google button. */
-div.allauth-wrapper div.social-wrapper #customBtn::after {
+/* div.allauth-wrapper div.social-wrapper #google-btn::after {
     content: "";
     display: none;
-}
+} */
 
-div.allauth-wrapper div.social-wrapper #customBtn:hover {
+/* div.allauth-wrapper div.social-wrapper #google-btn:hover {
     background-color: #357ae8;
-}
+} */
 
-div.allauth-wrapper div.social-wrapper img#googleIcon {
+/* div.allauth-wrapper div.social-wrapper img#google-icon {
     width: 20px;
     height: 20px;
     margin-right: 10px;
-}
+} */
 
 /* Sidebar overlay on lower devices. */
 .sidebar-overlay {

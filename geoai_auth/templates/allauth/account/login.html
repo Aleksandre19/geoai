@@ -18,7 +18,10 @@
       <p class='login-text'>
         {% blocktrans with site.name as site_name %}
             გთხოვთ გაიაროთ ავტორიზაცია ან დარეგისტრირდეთ შემდეგ ბმულზე:
-            <a href="{{ signup_url }}">რეგისტრაცია</a>
+            <a href="{{ signup_url }}" class='login-reg'>
+              რეგისტრაცია
+              <i class='arrow-icon'></i>
+            </a>
         {% endblocktrans %}
       </p>
 
@@ -34,7 +37,8 @@
 
         <div class='reset-and-remember'>
           <div>
-            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">
+            <a class="forgot-pass button secondaryAction" href="{% url 'account_reset_password' %}">
+              <i class='arrow-icon'></i>
               {% trans "დაგავიწყდათ პაროლი?" %}
             </a>
           </div>
@@ -52,7 +56,8 @@
 
         <!-- Login button. -->
         <button class="primaryAction" type="submit">
-          {% trans "შესვლა" %}
+           <i class='arrow-icon'></i>
+          {% trans "გავიარო ავტორიზაცია" %}
         </button>
       </form>
 
@@ -60,12 +65,13 @@
 
       {% if socialaccount_providers %}
         <div class='social-wrapper'>
-          
+
           <div class="login-or">{% trans 'ან' %}</div>
 
-          <a href="{% url 'google_login' %}" id="customBtn">
-            <img src="{% static "geoai/images/icons/google-icon.png" %}" alt="Google Logo" id="googleIcon">
-            Sign in with Google
+          <a href="{% url 'google_login' %}" id="google-btn">
+            <i class='arrow-icon'></i>
+            {% comment %} <img src="{% static "geoai/images/icons/google-icon.png" %}" alt="Google Logo" id="google-icon"> {% endcomment %}
+            დაუკავშირდe google თი
           </a>
 
           {% comment %} <div class="socialaccount_ballot">
@@ -120,6 +126,7 @@
     </div>
   </div>
 </div>
+<canvas id='main-bg' width="100%" height="100vh">dd</canvas>
 {% endblock %}
   
 
