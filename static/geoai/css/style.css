@@ -8,6 +8,8 @@
     --text-color: #686668; /* Main body text color. */
     --body-bg-color: #fcfcfc;
 
+    --gray-10: rgba(230, 230, 230, 0.3);
+
     /* Color of the question/answer block */
     --a-block: #f3f2f2;
     --q-block: #d3d3d3;
@@ -216,14 +218,52 @@ div.allauth-wrapper div.col-right {
     background-color: rgba(255, 255, 255, 0.4);
 }
 
+/* Login left side. */
 div.allauth-wrapper div.col-left {
     width: 45%;
     padding: 24px 16px;
-    background: var(--login-main);
+    background: rgba(36, 204, 255, 0.1);
     border-radius: 8px 0px 0px 8px;
     -webkit-clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
     clip-path: polygon(98% 17%, 100% 34%, 98% 51%, 100% 68%, 98% 84%, 100% 100%, 0 100%, 0 0, 100% 0);
 }
+
+
+div.allauth-wrapper div.col-left ul.login-msg-ul {
+    margin: 0 16px;
+}
+
+div.allauth-wrapper div.col-left li.desc-text {
+    width: 100%;
+    border-left: 2px solid var(--login-hover);
+    border-right: 1px solid var(--login-hover);
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    background-color: rgba(255, 255, 255, 0.4);
+    /* box-shadow: #363336; */
+}
+
+div.allauth-wrapper div.col-left li.desc-text:first-child {
+    margin-top: 16px;
+}
+
+div.allauth-wrapper div.col-left li.desc-text:last-child {
+    margin-bottom: 16px;
+}
+
+div.allauth-wrapper div.col-left li.desc-text hr.devided-line {
+    margin: 8px auto;
+    border-color: var(--gray-10);
+}
+
+
+/* Login right side. */
+div.allauth-wrapper div.col-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 
 /* Sing in/up responsive on lower devices. */
 @media(max-width: 575.98px) {
