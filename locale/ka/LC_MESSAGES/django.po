@@ -79,8 +79,8 @@ msgid "Authentication"
 msgstr "გავიარო ავტორიზაცია"
 
 #: geoai_auth/templates/allauth/account/login.html:123
-msgid "ან"
-msgstr "ორ"
+msgid "or"
+msgstr "ან"
 
 #: geoai_auth/templates/allauth/account/login.html:127
 msgid "Connect with Google"
