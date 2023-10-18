@@ -140,6 +140,7 @@ class Dev(Configuration):
         'debug_toolbar.middleware.DebugToolbarMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -147,6 +148,7 @@ class Dev(Configuration):
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         # 'chat.middlewares.JwtMiddleware',
     ]
+
 
     ROOT_URLCONF = 'geoai.urls'
 
@@ -215,11 +217,29 @@ class Dev(Configuration):
     # Internationalization
     # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
+
+    # Internationalize settings.
     LANGUAGE_CODE = 'en-us'
-    
-    TIME_ZONE = values.Value('UTC')
+    # LANGUAGE_CODE = 'ka'
 
     USE_I18N = True
+
+    USE_L10N = True
+    
+    LANGUAGES = [
+        ('en-us', 'English'),
+        ('ka', 'Georgian'),
+        # ('ru', 'Russian'),
+        # ('es', 'Spanish'),
+    ]
+
+    LOCALE_PATHS = [
+        os.path.join(BASE_DIR, 'locale'),
+    ]
+
+    # "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+    
+    TIME_ZONE = values.Value('UTC')
 
     USE_TZ = True
 

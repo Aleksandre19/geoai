@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-18 22:45+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: geoai_auth/templates/allauth/account/login.html:26
+msgid "About Project"
+msgstr "პროექტის შესახებ"
+
+#: geoai_auth/templates/allauth/account/login.html:30
+msgid ""
+"The project is based on the  ChatGTP API and represents it's Georgian version"
+msgstr "მოცემული პროექტი წარმოადგენ ChatGTP API ზე დაფუძნებულ მის ქრთულ ვერსიას."
+
+#: geoai_auth/templates/allauth/account/login.html:39
+msgid "Project Goal"
+msgstr "პროექტის მიზანი"
+
+#: geoai_auth/templates/allauth/account/login.html:43
+msgid "The goal of the project is to introduce the capabilities of the AI to non-English speakers."
+msgstr "პროექტის მიზანს წარმოადგენა არა ინგლისურ ენოვანი მომხმარებლებისთვსის ხელოვნური ინტელექტი გაცნომა და მისი შესაძლებლობებზე ხელწვდომა."
+
+#: geoai_auth/templates/allauth/account/login.html:50
+msgid "Capabilities"
+msgstr "შესაძლებლობები"
+
+#: geoai_auth/templates/allauth/account/login.html:54
+msgid "You can adjust the API parameters and even set your own API KEY."
+msgstr "თქვენ შეგიძლიათ დარეგულიროთ პარამტრები და ამით გაზარდოთ პროდქტიულობა. ასევე შეგიძლიათ გამოიყენოთ თქვენი აი-პი-აი გასაღები `API KEY`."
+
+#: geoai_auth/templates/allauth/account/login.html:62
+msgid "Log In"
+msgstr "შესვლა"
+
+#: geoai_auth/templates/allauth/account/login.html:72
+#, python-format
+msgid ""
+"\n"
+"            Please authenticate yourself or register at the following link:\n"
+"            <a href=\"%(signup_url)s\" class='login-reg'>\n"
+"              Registration\n"
+"              <i class='arrow-icon'></i>\n"
+"            </a>\n"
+"        "
+msgstr ""
+"\n"
+"            გთხოვთ გაიაროთ ავტორიზაცია ან დარეგისტრირდეთ შემდეგ ბმულზე:\n"
+"            <a href=\"%(signup_url)s\" class='login-reg'>\n"
+"              რეგისტრაცია\n"
+"              <i class='arrow-icon'></i>\n"
+"            </a>\n"
+"        "
+
+#: geoai_auth/templates/allauth/account/login.html:95
+msgid "Forgot password?"
+msgstr "დაგავიწყდათ პაროლი?"
+
+#: geoai_auth/templates/allauth/account/login.html:101
+msgid "Remember:"
+msgstr "დამიმახსოვრე:"
+
+#: geoai_auth/templates/allauth/account/login.html:114
+msgid "Authentication"
+msgstr "გავიარო ავტორიზაცია"
+
+#: geoai_auth/templates/allauth/account/login.html:123
+msgid "ან"
+msgstr "ორ"
+
+#: geoai_auth/templates/allauth/account/login.html:127
+msgid "Connect with Google"
+msgstr "დაუკავშირდე Google - თი"
