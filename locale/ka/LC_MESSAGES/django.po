@@ -47,24 +47,14 @@ msgstr "თქვენ შეგიძლიათ დარეგულირ�
 msgid "Log In"
 msgstr "შესვლა"
 
+#: geoai_auth/templates/allauth/account/login.html:70
+msgid "Please authenticate yourself or register at the following link:"
+msgstr "გთხოვთ გაიაროთ ავტორიზაცია ან დარეგისტრირდეთ შემდეგ ბმულზე:"
+ 
+
 #: geoai_auth/templates/allauth/account/login.html:72
-#, python-format
-msgid ""
-"\n"
-"            Please authenticate yourself or register at the following link:\n"
-"            <a href=\"%(signup_url)s\" class='login-reg'>\n"
-"              Registration\n"
-"              <i class='arrow-icon'></i>\n"
-"            </a>\n"
-"        "
-msgstr ""
-"\n"
-"            გთხოვთ გაიაროთ ავტორიზაცია ან დარეგისტრირდეთ შემდეგ ბმულზე:\n"
-"            <a href=\"%(signup_url)s\" class='login-reg'>\n"
-"              რეგისტრაცია\n"
-"              <i class='arrow-icon'></i>\n"
-"            </a>\n"
-"        "
+msgid "Registration"
+msgstr "რეგისტრაცია"
 
 #: geoai_auth/templates/allauth/account/login.html:95
 msgid "Forgot password?"

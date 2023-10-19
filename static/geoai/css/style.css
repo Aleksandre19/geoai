@@ -185,7 +185,6 @@ h1, h2, h3, h4, h5, h6 {
     /* border: 2px solid red; */
 }
 
-
 /* Sing in/up */
 div#auth-main {
     position: relative;
@@ -198,6 +197,57 @@ div#auth-main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+/* Custom select element */
+.custom-select {
+    position: relative;
+    width: 200px;
+    border: 1px solid #24CCFF;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    cursor: pointer;
+    margin-bottom: 16px;
+}
+
+.selected-option {
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.select-arrow {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--login-hover);
+    transition: transform 0.3s ease-in-out;
+    /* Adjust color as needed */
+}
+
+.options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    border: 1px solid #24CCFF;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    display: none;
+}
+
+.option {
+    padding: 8px 12px;
+    border-top: 1px solid lightgray;
+    transition: background-color 0.3s ease-out;
+}
+
+.option:hover {
+    background-color: #eaeaea;
 }
 
 div.allauth-wrapper {
