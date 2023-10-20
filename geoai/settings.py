@@ -45,7 +45,6 @@ class Dev(Configuration):
     STRIPE_CURRENCY = 'gel'
     TOKEN_PRICE = 0.0004
 
-
     # Application definition
     INSTALLED_APPS = [
         'daphne',
@@ -146,6 +145,7 @@ class Dev(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'user_setting.signals.RequestMiddleware',
         # 'chat.middlewares.JwtMiddleware',
     ]
 
@@ -232,6 +232,8 @@ class Dev(Configuration):
         # ('ru', 'Russian'),
         # ('es', 'Spanish'),
     ]
+
+    DEFAULT_INTERFACE_LANG = 'en'
 
     LOCALE_PATHS = [
         os.path.join(BASE_DIR, 'locale'),
