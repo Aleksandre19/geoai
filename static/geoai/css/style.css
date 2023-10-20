@@ -233,7 +233,7 @@ div#auth-main {
     left: 0;
     right: 0;
     z-index: 100;
-    border: 1px solid #24CCFF;
+    border: 1px solid var(--login-main);
     background-color: rgba(255, 255, 255, 0.9);
     border-top: none;
     border-radius: 0 0 4px 4px;
@@ -677,7 +677,7 @@ section#chat-main div#sidebar-wrapper div#hamburger {
 section#chat-main div#sidebar {
     height: 100%;
     display: grid;
-    grid-template-rows: 3fr 1fr;
+    grid-template-rows: 2fr 1fr;
     visibility: visible;
     opacity: 1;
     width: 100%;

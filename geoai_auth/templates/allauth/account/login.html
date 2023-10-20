@@ -29,7 +29,7 @@
     <!-- Form to set a language in user session. -->
     <form action="{% url 'set_language' %}" method='post' id='set-lang-form'>
       {% csrf_token %}
-      <input type='hidden' name='language' value='ka' id='current-lang' />
+      <input type='hidden' name='language' value='en' id='current-lang' />
     </form>
 
     <!-- Sing In/Ip block. -->

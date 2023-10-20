@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 {% load chat_filters %}
 {% block extra_style %}
     <link rel="stylesheet" href="{% static 'geoai/css/mode-btn.css' %}" />
@@ -12,7 +13,7 @@
         <div id="sidebar">
             <div class='sidebar-sections'>
                 <a href="{% url 'chat_home' %}" class="chat-history-title">
-                    ახალი დიალოგი
+                    {% trans "New Chat" %}
                 </a>
                 <div class="chat-history-links">
                     {% include "chat/topics.html" %}
@@ -23,7 +24,7 @@
                     <!-- Dark/Light Mode -->
                     <li>
                         <div class='bg-mode'>
-                            <div class='bg-mode-title'>გარემო</div>
+                            <div class='bg-mode-title'>{% trans "Mode" %}</div>
                             <!-- Mode toggler button -->
                             <div class='bg-mode-switch'>
                                 <input type="checkbox" id="darkmode-toggle" />
@@ -37,7 +38,7 @@
                     <!-- Tokens -->
                     <li>
                          <div class='bg-mode'>
-                            <div class='bg-mode-title'>ჟეტონები</div>
+                            <div class='bg-mode-title'>{% trans "Tokens" %}</div>
                             <!-- Mode toggler button -->
                             <div class='user-tokens-value'>
                                {{tokens}}
@@ -45,9 +46,32 @@
                         </div>
                     </li>
 
+
+                    <!-- Chat Language -->
+                    <li>
+                         <div class='bg-mode'>
+                            <div class='bg-mode-title'>{% trans "Chat Language" %}</div>
+                            <!-- Mode toggler button -->
+                            <div class='user-tokens-value'>
+                               {{user_setting.chat_lang}}
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- Interface Language -->
+                    <li>
+                         <div class='bg-mode'>
+                            <div class='bg-mode-title'>{% trans "Interface Language" %}</div>
+                            <!-- Mode toggler button -->
+                            <div class='user-tokens-value'>
+                               {{user_setting.interface_lang}}
+                            </div>
+                        </div>
+                    </li>
+
                     <!-- Log out -->
                     <li>
-                        <a href="{% url "account_logout" %}">გასვლა</a>
+                        <a href="{% url "account_logout" %}">{% trans "Log Out" %}</a>
                     </li>
 
                     <li>
@@ -62,8 +86,7 @@
             {% include "chat/topic.html" %}
         </div>
         <p class='hide-element error-message'>
-            თქვენ არ გერიცხებათ საკმარისი რაოდენობის ჟეტონები,
-            რომ განახორციელოთ შემდეგი მოთხოვნა. გთხოვთ შეიძინოთ ჟეტონები.
+            {% trans "You don't have enought tokens to procceed the following action. Pleas purchase the tokens." %}
         </p>
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}

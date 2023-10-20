@@ -75,3 +75,31 @@ msgstr "ან"
 #: geoai_auth/templates/allauth/account/login.html:127
 msgid "Connect with Google"
 msgstr "დაუკავშირდე Google - თი"
+
+#: chat/templates/chat/indx.html:66
+msgid "You don't have enought tokens to procceed the following action. Pleas purchase the tokens"
+msgstr "თქვენ არ გერიცხებათ საკმარისი რაოდენობის ჟეტონები, რომ განახორციელოთ შემდეგი მოთხოვნა. გთხოვთ შეიძინოთ ჟეტონები."
+
+#: chat/templates/chat/indx.html:16
+msgid "New Chat"
+msgstr "ახალი დიალოგი"
+
+#: chat/templates/chat/indx.html:27
+msgid "Mode"
+msgstr "გარემო"
+
+#: chat/templates/chat/indx.html:41
+msgid "Tokens"
+msgstr "ჟეტონები"
+
+#: chat/templates/chat/indx.html:53
+msgid "Chat Language"
+msgstr "დიალოგის ენა"
+
+#: chat/templates/chat/indx.html:64
+msgid "Interface Language"
+msgstr "ინტერფეისის ენა"
+
+#: chat/templates/chat/indx.html:51
+msgid "Log Out"
+msgstr "გასვლა"

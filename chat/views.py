@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, redirect
+from django.utils import translation
 from django.utils.text import slugify
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,6 +35,12 @@ class ChatView(LoginRequiredMixin, ListView):
         """
         Returns the QuerySet that will be used to retrieve the objects.
         """
+
+        # Set user interface language.
+        user_lang = self.request.user.setting.interface_lang
+        translation.activate(user_lang)
+        self.request.session['django_language'] = user_lang
+
         slug = self.kwargs.get('slug')
         if slug:
             # Filter the QuerySet based on user and slug if slug exists.
