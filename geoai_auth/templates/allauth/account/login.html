@@ -143,85 +143,19 @@
 {% endblock %}
 
 {% block bottom_js %}
+  <script type='text/javascript' src="{% static  'geoai/js/webpack/customSelect/customSelect.bundle.js' %}"></script>
   <script type='text/javascript'>
     // Custom select element.
-    class SelectElement {
-
-        constructor() {
-            this.selectedOption = this.elm('.selected-option');
-            this.optionsBlock; // Display/Hide the options block.
-            this.selectOption; // Handle a particular option selection.
-            this.arrowRotated = false // Arrow toggle trucker.
-        }
-
-        elm(attr) {
-            return document.querySelector(attr);
-        }
-
-        get optionsBlock() {
-          this.selectedOption.addEventListener('click', () => {
-              // Grab options block.
-              const options = this.elm('.options');
-              
-              // Toggle a  display of the options block.
-              options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
-
-              // Rotate the arrow.
-              this.rotateArrow;
-
-          });
-        }
-
-        get rotateArrow() {
-            const arrow = this.elm('.select-arrow');
-            if(this.arrowRotated){
-                arrow.style.transform = `rotate(0deg)`;
-            } else {
-                arrow.style.transform = `rotate(180deg)`;
-            }
-            this.arrowRotated = !this.arrowRotated;
-        }
-
-        get selectOption() {
-            // Grab all option elements.
-            document.querySelectorAll('.option').forEach(element => {
-                this.optionFunc(element);
-            });
-        }
-
-        optionFunc(element) {
-          // Call function on each element.
-          element.addEventListener('click', () => {
-              // Grab current element data-value and content.
-              const value = element.getAttribute('data-value');
-              const text = element.textContent;
-
-              // Grab selected elemen span.
-              const selectedOption = this.elm('.selected-option span');
-
-              // Set content and attribute to selected element.
-              selectedOption.textContent = text;
-              selectedOption.parentNode.setAttribute('data-value', value);
-
-              // Hide options block.
-              this.elm('.options').style.display = 'none';
-
-              // Submit the form element.
-              this.submitForm(value);
-          });
-        }
-
-        // This function submits the form element which calles
-        // The django set_language view to set a language in the user session.
-        submitForm(value) {
-          const setLangForm = this.elm('#set-lang-form');
-          const currentLang  =this.elm('#current-lang');      
-          currentLang.value = value;
-          setLangForm.submit();
-        }
+    const  data = {
+      'selected': '.selected-option',
+      'options': '.options',
+      'option': '.option',
+      'arrow': '.select-arrow',
+      'form': '#set-lang-form',
+      'formValue': '#current-lang',
+      'submit': true,
     }
-
-    new SelectElement();
+    new SelectElement(data);
   </script>
 {% endblock %}
   

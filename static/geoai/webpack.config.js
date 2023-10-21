@@ -1,28 +1,52 @@
 const path = require('path');
 
-module.exports = {
-  mode: 'development',
-  entry: {
-    chat: './js/original/chat/main.js',
-    stripe: './js/original/stripe/stripe_elements.js',
-  },
-  output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'js/webpack/chat'),
-    clean: true,
-  },
-  module: {
-    rules: [
-      {
-        test: /\.js$/,       // Apply this rule to files ending in .js
-        exclude: /node_modules/,  // Do not apply to files in the node_modules directory
-        use: {
-          loader: 'babel-loader'
-        }
+module.exports = [
+  {// Custom select element.
+      mode: 'development',
+      entry: {
+        customSelect: './js/original/customSelect/customSelect.js',
+      },
+      output: {
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'js/webpack/customSelect'),
+        clean: true,
+      },
+      module: {
+        rules: [
+          {
+            test: /\.js$/,       // Apply this rule to files ending in .js
+            exclude: /node_modules/,  // Do not apply to files in the node_modules directory
+            use: {
+              loader: 'babel-loader'
+            }
+          }
+        ]
       }
-    ]
-  }
-};
+  },
+  {// Chat page.
+      mode: 'development',
+      entry: {
+        chat: './js/original/chat/main.js',
+        stripe: './js/original/stripe/stripe_elements.js',
+      },
+      output: {
+        filename: '[name].bundle.js',
+        path: path.resolve(__dirname, 'js/webpack/chat'),
+        clean: true,
+      },
+      module: {
+        rules: [
+          {
+            test: /\.js$/,       // Apply this rule to files ending in .js
+            exclude: /node_modules/,  // Do not apply to files in the node_modules directory
+            use: {
+              loader: 'babel-loader'
+            }
+          }
+        ]
+      }
+  },
+]
 
 
 // const path = require('path');
