@@ -210,11 +210,25 @@ div#auth-main {
     margin-bottom: 16px;
 }
 
+/* For chat inteface */
+.chat-custom-select,
+.inter-custom-select {
+    float: right;
+    width: 64px;
+    margin-bottom: 0;
+}
+
 .selected-option {
     padding: 8px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* For chat interface.  */
+.chat-lang-option,
+.chat-lang-option {
+    padding: 8px 16px;
 }
 
 .select-arrow {
@@ -225,6 +239,12 @@ div#auth-main {
     border-top: 6px solid var(--login-hover);
     transition: transform 0.3s ease-in-out;
     /* Adjust color as needed */
+}
+
+/* Select element arrow for chat interface. */
+.chat-lang-arrow,
+.chat-lang-arrow  {
+    margin-left: 4px;
 }
 
 .options {
@@ -240,6 +260,14 @@ div#auth-main {
     display: none;
 }
 
+/* For chat interface. */
+.chat-lang-options,
+.inter-lang-options {
+    text-align: left;
+    background-color: var(--body-bg-color);
+    color: var(--text-color);
+}
+
 .option {
     padding: 8px 12px;
     border-top: 1px solid lightgray;
@@ -247,7 +275,7 @@ div#auth-main {
 }
 
 .option:hover {
-    background-color: #eaeaea;
+    background-color: var(--secondary-color);
 }
 
 div.allauth-wrapper {

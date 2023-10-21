@@ -1,5 +1,5 @@
 // Custom select element.
-export class SelectElement {
+class SelectElement {
 
     constructor(data) {
         this.data = data;

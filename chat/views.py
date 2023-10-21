@@ -3,8 +3,12 @@ import logging
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import translation
 from django.utils.text import slugify
+from django.utils.decorators  import method_decorator
 from django.views.generic import ListView
+from django.views import View
+from django.views.i18n import  set_language
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 from asgiref.sync import sync_to_async, async_to_sync 
 
@@ -397,3 +401,35 @@ class ChatWebSocket:
         self.response = self.db_result.geo_res
         self.topic_id = self.db_result.topic_id
         self.tokens = self.db_result.remaining_tokens
+
+
+@method_decorator(login_required, name='dispatch')
+class CustomSetLang(View):
+    """
+    This class overrides the set_language function and updates 
+    the languages for chat (communicating to AI API) and interface, respectively.
+    """
+    def post(self, request, *args, **kwargs):
+        
+        # Call set_language function.
+        response  = set_language(request)
+
+        # Grab language and model field name.
+        lang = request.POST.get('language')
+        field = request.POST.get('field')
+
+        if not lang and not field:
+            return response
+        
+        user = request.user
+        # Update language for communicating to AI API.
+        if field == 'chat':
+            user.setting.chat_lang = lang
+        
+        # Update interface language.
+        if field == 'interface':
+            user.setting.interface_lang = lang
+
+        user.setting.save()
+
+        return response
