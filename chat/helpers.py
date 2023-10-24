@@ -45,33 +45,35 @@ class ExcludeCode:
     """
     This class takes a text, extracts a code snippet from it,
     tokenizes it, extracts comments from the tokinezed code snippet
-    and replaice them the with the place holders, 
+    and replaice them with the place holders, 
     wrapps hilighted text with the <span> element,
     wrapps the text with the paragraphs with the <p> element 
     and attache a comment to the text for translattion.
     
     """
-    def __init__(self, text):
+    def __init__(self, text, chat_lang):
         self.text = text
+        self.chat_lang = chat_lang
         self.code = None
     
     @classmethod
-    def to(cls, text):
-        isinstance = cls(text)
+    def to(cls, text, chat_lang):
+        isinstance = cls(text, chat_lang)
         return isinstance.process()
 
     def process(self):
         # Exclude a code snippet from the text if it exists and grab a plain text.
-        plain_text = ExtractCode.to(self.text)
+        plain_text = ExtractCode.to(self.text, self.chat_lang)
 
         # Wrappe the snippets in the text with the <span> element and hilight them.
         highlighted = Highlight.to(plain_text)
 
         # Wrappe the text with the paragraphs with the <p> element.
-        wrapped = WrapWithP.to(highlighted)
+        ready_for_translation = WrapWithP.to(highlighted)
 
         # Attache a comment to the text for translattion.
-        ready_for_translation = AttacheComment.to(wrapped)
+        if self.chat_lang != 'en':
+            ready_for_translation = AttacheComment.to(ready_for_translation)
 
         return ready_for_translation
     
@@ -82,12 +84,13 @@ class ExtractCode:
     tokenizes it, extracts comments from the tokinezed code snippet 
     and replaice them the with the place holders.
     """
-    def __init__(self, text):
+    def __init__(self, text, chat_lang):
         self.text = text
+        self.chat_lang = chat_lang
 
     @classmethod
-    def to(cls, text):
-        isinstance = cls(text)
+    def to(cls, text, chat_lang):
+        isinstance = cls(text, chat_lang)
         return isinstance.extract()
 
     # Extract a code snippet from the text.
@@ -117,15 +120,16 @@ class ExtractCode:
 
         # Tokenize the code snippet.
         tokenized = TokenizeText.to(code_snippet)
+        
+        if self.chat_lang != 'en':
+            # Replace the comments with the place holders.
+            tokenized = self.replace_comment_with_plcholder(tokenized)
 
-        # Replace the comments with the place holders.
-        extracted = self.replace_comment_with_plcholder(tokenized)
-
-        # Generate a place holder for the comments in the code snippet.
+        # Generate a place holder for the the code snippet.
         placeholder = Store.generate_place_holder()
 
         # Save the code snippet with the place holder of the comments.
-        Store.tokenized_snippet[placeholder] = extracted
+        Store.tokenized_snippet[placeholder] = tokenized
    
         return placeholder
 
@@ -287,31 +291,35 @@ class IncludeCode:
     evaluates it as a dictionary, extracts the plain text from the translated text,
     and embeds the translated comments into the plain text and returns it.
     """
-    def __init__(self, text):
+    def __init__(self, text, chat_lang):
         self.text = text
+        self.chat_lang = chat_lang
 
     @classmethod
-    def to(cls, text):
-        isinstance = cls(text)
+    def to(cls, text, chat_lang):
+        isinstance = cls(text, chat_lang)
         return isinstance.process()
     
     def process(self):
+        evaluated = None
         # Extract the comment from the trasnlated text.
-        comment = ExtractComment.to(self.text)
+        if self.chat_lang != 'en':
+            comment = ExtractComment.to(self.text)
 
-        """
-        !!! Eveluating the dictionary here is not robust,
-        brcause sometimes the Google Translator API changes the format
-        and the ast.literal_eval(cleaned_dict) can not evaluate it. !!!
-        """
-        # Evaluate the comment as a dictionary.
-        evaluated = EvaluateDict.to(comment)
+            """
+            !!! Eveluating the dictionary here is not robust,
+            because sometimes the Google Translator API changes the format
+            and the ast.literal_eval(cleaned_dict) can not evaluate it. !!!
+            """
+            # Evaluate the comment as a dictionary.
+            # if self.chat_lang != 'en':
+            evaluated = EvaluateDict.to(comment)
 
-        # Extract the plain text from the translated text.
-        plain_text = PlainText.to(self.text)
+            # Extract the plain text from the translated text.
+            self.text = PlainText.to(self.text)
 
         # Embed the comment into the plain text.
-        result = EmbedComment.to(plain_text, evaluated)
+        result = EmbedComment.to(self.text, evaluated, self.chat_lang)
 
         return result
 
@@ -384,21 +392,30 @@ class EmbedComment:
     the saved code snippet and finally in the plain text replaces
     the place holders with the this updated code snippet.
     """
-    def __init__(self, text, comment):
+    def __init__(self, text, comment, chat_lang):
         self.text = text
         self.comment = comment
+        self.chat_lang = chat_lang
 
     @classmethod
-    def to(cls, text, comment):
-        isinstance = cls(text, comment)
+    def to(cls, text, comment, chat_lang):
+        isinstance = cls(text, comment, chat_lang)
         return isinstance.embed()
     
     # Grab saved code snippet, replace palce holder with
     # the translated comments and format the code snippet.
     def embed(self):
         for key, snippet in Store.tokenized_snippet.items():
-            swapped = self.swapp_values(self.comment, snippet)
-            pigmentized = self.formate_snippet(swapped)
+
+            # If the chat language is not english, 
+            # embed translated coments into code snippet.
+            if self.chat_lang != 'en':
+                snippet = self.swapp_values(self.comment, snippet)
+
+            # Style the code snippet.
+            pigmentized = self.formate_snippet(snippet)
+
+            # Embed back the code snippet into final text.
             self.text = self.text.replace(key, pigmentized)
         
         self.clean_dict()

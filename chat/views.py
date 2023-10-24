@@ -124,13 +124,13 @@ class ChatView(LoginRequiredMixin, ListView):
         
         # Insert the content to the database.
         InsertIntoDB( 
-            user=api.user, 
-            slug=api.slug, 
-            geo_qst=api.question,
-            eng_qst=api.geo_eng,
-            geo_res=api.final_res,
-            eng_res=api.openAI.answer,
-            usage=api.openAI.usage
+            user=self.api.user, 
+            slug=self.api.slug, 
+            original_question=self.api.question, # Question on user chatting language (chat_lang).
+            translated_question=self.api.geo_eng.result, # Translated question to Eng.
+            original_response=self.api.openAI.answer, # Original API response.
+            formatted_response=self.api.final_res, # Formatted API response.
+            usage=self.api.openAI.usage, 
         )
 
         # Redirect based on whether slug exists or not.
@@ -160,9 +160,9 @@ class Apis:
     translates the response back to georgian, includes back the excluded code
     and returns the final response.
     """
-    def __init__(self, user, question, slug, topic, openai_model):
+    def __init__(self, user, original_question, slug, topic, openai_model):
         self.user = user # Current user.
-        self.question = question # Original question.
+        self.original_question = original_question # Original question.
         self.slug = slug # Slug of the topic.
         self.topic = topic # Topic object.
         self.openai_model = openai_model # OpenAI model version.
@@ -174,14 +174,20 @@ class Apis:
         self.final_res = None # Final response (translated and with code snippet)
 
     @classmethod
-    async def call(cls, user, question, slug, topic, openai_model):
-        inst = cls(user, question, slug, topic, openai_model)
+    async def call(cls, user, original_question, slug, topic, openai_model):
+        inst = cls(user, original_question, slug, topic, openai_model)
         await inst.apis()
         return inst
 
     async def apis(self):
-        # Translate question from geo to eng.
-        self.geo_eng = await self.translator(self.question, 'ka', 'en-US')
+        # Grab user chatting language.
+        self.chat_lang = await self.get_chat_lang()
+        print('========== CHAT LANG ========', self.chat_lang)
+        default_lang = ['en']
+
+        if self.chat_lang not in default_lang:
+            # Translate question from geo to eng.
+            self.geo_eng = await self.translator(self.original_question, f'{self.chat_lang}', 'en-US')
 
         if not await self.user_has_tokens():
             self.enougth_tokens = False
@@ -191,16 +197,24 @@ class Apis:
         self.openAI = await self.openai()
 
         # Exclude code (if it is in) from the response.
-        self.without_code = ExcludeCode.to(self.openAI.answer)
+        self.without_code = ExcludeCode.to(self.openAI.answer, self.chat_lang)
 
-        # Translate response from eng to geo.
-        self.eng_geo = await self.translator(self.without_code, 'en-US', 'ka')
+        if self.chat_lang not in default_lang:
+            # Translate response from eng to geo.
+            self.eng_geo = await self.translator(self.without_code, 'en-US', f'{self.chat_lang}')
+            self.without_code = self.eng_geo.result
 
         # Include code (if it is in) in the response.
-        self.final_res = IncludeCode.to(self.eng_geo.result)
+        self.final_res = IncludeCode.to(self.without_code, self.chat_lang)
 
         # Generate slug.
         self.gen_slug()
+
+    # Grab user chat language (communication to API).
+    @sync_to_async(thread_sensitive=True)
+    def get_chat_lang(self):
+        chat_lang = self.user.setting.chat_lang
+        return chat_lang
 
     # Google Translate API.
     async def translator(self, text, from_lan, to_lan):
@@ -221,7 +235,7 @@ class Apis:
     def tokenize_question(self):
         openai_tokenizer = tiktoken.get_encoding("cl100k_base")
         openai_tokenizer = tiktoken.encoding_for_model(self.openai_model)
-        tokenized = openai_tokenizer.encode(self.geo_eng.result)
+        tokenized = openai_tokenizer.encode(self.original_question)
         return tokenized
     
 
@@ -237,10 +251,11 @@ class Apis:
     # OpenAI API.
     async def openai(self):
         return await OpenAI.call(
-            self.geo_eng.result, 
+            self.original_question, 
             self.slug,
             self.topic,
-            self.openai_model
+            self.openai_model,
+            self.chat_lang
         )
 
     # Generate slug.
@@ -254,15 +269,30 @@ class InsertIntoDB:
     Handles inserting the content into the database 
     for topic, question and answer models.
     """
-    def __init__(self, user, slug, geo_qst, eng_qst, geo_res, eng_res, usage):
+    def __init__(
+            self, user, slug, 
+            original_question,
+            translated_question, 
+            original_response,
+            formatted_response,
+            usage
+        ):
+        
+        # user=api.user, 
+        # slug=api.slug, 
+        # geo_qst=api.question, # Eng or Geo question.
+        # geo_res=api.final_res, # Styled Geo or Eng API response.
+        # eng_res=api.openAI.answer, # Original API answer.
+        # usage=api.openAI.usage,
+        # eng_qst=api.geo_eng, # Translated question from Geo to Eng. 
         self.user = user # Current user.
         self.slug = slug # Slug of the topic.
         self.topic = self.grab_topic() # Topic object.
         self.topic_id = None # Inserted topic id.
-        self.geo_qst = geo_qst # Question in georgian.
-        self.eng_qst = eng_qst.result # Question in english.
-        self.geo_res = geo_res # Response in georgian.
-        self.eng_res = eng_res # Response in english.
+        self.original_question = original_question # Eng or Geo question.
+        self.translated_question = translated_question # Question in english.
+        self.formatted_response = formatted_response # Styled Geo or Eng API response.
+        self.original_response = original_response # Original API answer.
         self.tokens = usage # Token usage on particular request.
         self.inserted_qst = None # Inserted question.
         self.remaining_tokens = None # Remaining tokens.
@@ -279,7 +309,7 @@ class InsertIntoDB:
     # Create topic if it does not exist.
     def insert_topic(self):
         if not self.topic:
-            topic_title = self.geo_qst[:15]
+            topic_title = self.original_question[:15]
             self.topic = Topic(user=self.user,
                     title=topic_title,slug=self.slug)     
             self.topic.save()
@@ -290,16 +320,16 @@ class InsertIntoDB:
     def insert_question(self):
         self.inserted_qst = Question(
                 user=self.user, topic=self.topic, 
-                content=self.geo_qst, translated=self.eng_qst)
+                content=self.original_question, translated=self.translated_question)
         self.inserted_qst.save()
 
     # Insert response.
     def insert_response(self):
         insert_res = Answer(
                 user=self.user, question=self.inserted_qst, 
-                geo_formated_content=self.geo_res, # Formated response in georgian.
-                geo_unformated_content=self.geo_res, # This at this moment is just a placeholder.
-                eng_content=self.eng_res)
+                geo_formated_content=self.formatted_response, # Formated response in georgian.
+                geo_unformated_content=self.formatted_response, # This at this moment is just a placeholder.
+                eng_content=self.original_response)
         insert_res.save()
 
     # Update used tokens of the user.
@@ -332,9 +362,9 @@ class ChatWebSocket:
         the I/O operations. It calls the APIs (Openai and Google Translate),
         inserts the content to the database and returns the response to the client.
     """
-    def __init__(self, user, question, slug):
+    def __init__(self, user, original_question, slug):
         self.user = user
-        self.question = question
+        self.original_question = original_question
         self.slug = slug
         # self.openai_model = 'gpt-3.5-turbo'
         self.openai_model = 'gpt-4'
@@ -345,8 +375,8 @@ class ChatWebSocket:
         self.tokens = None
 
     @classmethod    
-    async def call(cls, user, question, slug):
-        inst = cls(user, question, slug)
+    async def call(cls, user, original_question, slug):
+        inst = cls(user, original_question, slug)
         await inst.websocket()
         return inst
     
@@ -361,7 +391,7 @@ class ChatWebSocket:
         # Call the APIs (Openai and Google Translate)
         self.api =  await Apis.call(
                 self.user, 
-                self.question, 
+                self.original_question, 
                 self.slug, 
                 topic, 
                 self.openai_model
@@ -389,16 +419,24 @@ class ChatWebSocket:
         self.db_result = await sync_to_async(InsertIntoDB)( 
             user=self.api.user, 
             slug=self.api.slug, 
-            geo_qst=self.api.question,
-            eng_qst=self.api.geo_eng,
-            geo_res=self.api.final_res,
-            eng_res=self.api.openAI.answer,
-            usage=self.api.openAI.usage
+            original_question=self.api.original_question, # Question on user chatting language (chat_lang).
+            translated_question=self.api.geo_eng.result, # Translated question to Eng.
+            original_response=self.api.openAI.answer, # Original API response.
+            formatted_response=self.api.final_res, # Formatted API response.
+            usage=self.api.openAI.usage,      
         )
+
+        # user=api.user, 
+        # slug=api.slug, 
+        # geo_qst=api.question, # Eng or Geo question.
+        # geo_res=api.final_res, # Styled Geo or Eng API response.
+        # eng_res=api.openAI.answer, # Original API answer.
+        # usage=api.openAI.usage,
+        # eng_qst=api.geo_eng, # Translated question from Geo to Eng. 
 
     # Prepare a response to be sent to the client.
     async def responses_to_client(self):
-        self.response = self.db_result.geo_res
+        self.response = self.db_result.formatted_response
         self.topic_id = self.db_result.topic_id
         self.tokens = self.db_result.remaining_tokens
 

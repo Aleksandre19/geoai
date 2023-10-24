@@ -12,11 +12,12 @@ class OpenAI:
     """
     This class is used to call the OpenAI API.
     """
-    def __init__(self, question, slug, topic, modele):
+    def __init__(self, question, slug, topic, modele, chat_lang):
         self.question = question
         self.slug = slug
         self.topic = topic
         self.modele = modele
+        self.chat_lang = chat_lang
         self.temperature = 0.3   
         self.answer = None
         self.usage = None
@@ -24,8 +25,8 @@ class OpenAI:
 
     # Class method to call the class asynchronously.
     @classmethod 
-    async def call(cls, question, slug, topic,modele):
-        instance = cls(question, slug, topic, modele)
+    async def call(cls, question, slug, topic,modele, chat_lang):
+        instance = cls(question, slug, topic, modele, chat_lang)
         await instance.api_request()
         return instance   
 
