@@ -1,6 +1,7 @@
 import logging
 
 from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponse
 from django.utils import translation
 from django.utils.text import slugify
 from django.utils.decorators  import method_decorator
@@ -18,6 +19,8 @@ from user_setting.models import UserTokens
 
 from geoai_translator.views import Translator
 from geoai_openai.views import OpenAI
+
+from langdetect import detect
 import tiktoken
 
 from .helpers import *
@@ -25,6 +28,9 @@ from .helpers import *
 logger = logging.getLogger(__name__)
 
 # Notes
+# !!! When a chatting language is english, typeing question in 
+# other languages than English must be denied. !!!
+
 # 1. Complite caching the questions and answers.
     # subject caching is implemented.
 # 2. Use DjDT debug to optimaze performance of the webpage
@@ -182,12 +188,27 @@ class Apis:
     async def apis(self):
         # Grab user chatting language.
         self.chat_lang = await self.get_chat_lang()
-        print('========== CHAT LANG ========', self.chat_lang)
-        default_lang = ['en']
+        self.question_lang = detect(self.original_question)
 
-        if self.chat_lang not in default_lang:
-            # Translate question from geo to eng.
-            self.geo_eng = await self.translator(self.original_question, f'{self.chat_lang}', 'en-US')
+
+        # პრობლემა არის იმაში რომ კითხვის გადათარგმნა სულ არის საჭირო ინგლისურად.
+        # ამისთვის ვამოწმებ დაწერილი კითხვა არის თუ არა ინგლისურად და თუ არა მაშინ
+        # ვთარგმნი გუგლე თრანსლეითით. მაგრამ!, კითხვის ენის გამოცობა ზუსტად არ შემიძლია
+        # და ამიტომ იძულებული ვარ რომ ჩატის ენიდან გადავთარგმნო ინგლისურად. და პრობლემა
+        # მდგომარეობს იმასში რომ თუ ჩატის ენა არის ინგლისური და ვერ ვახერხებ კითხვის ენის 
+        # გამოცნობას, მიწევს ინგლისურიდან ინგლისურში გადათარგმანა რაც არის შეცდომა 
+        # თრანსლეითისთვის და არ თარგმნის.
+        # 
+        # ანუ მჭირდება კითხვის ენის გამოცნობა 100% ან კიდე მარტო იმ ენის დაშვება კითხვის
+        # დასაწერად რომელი ენაც არის მითითებული როგორც ჩატის ენა. 
+        
+        # Translate question if it is not in English.
+        if self.chat_lang != 'en':
+            self.geo_eng = await self.translator(
+                self.original_question, 
+                f'{self.chat_lang}', 
+                'en-US'
+            )
 
         if not await self.user_has_tokens():
             self.enougth_tokens = False
@@ -199,7 +220,7 @@ class Apis:
         # Exclude code (if it is in) from the response.
         self.without_code = ExcludeCode.to(self.openAI.answer, self.chat_lang)
 
-        if self.chat_lang not in default_lang:
+        if self.chat_lang != 'en':
             # Translate response from eng to geo.
             self.eng_geo = await self.translator(self.without_code, 'en-US', f'{self.chat_lang}')
             self.without_code = self.eng_geo.result
@@ -250,8 +271,14 @@ class Apis:
 
     # OpenAI API.
     async def openai(self):
+        api_question = self.original_question
+
+        # Send the translated question if it is not in English.
+        if self.chat_lang != 'en':
+            api_question = self.geo_eng.result
+
         return await OpenAI.call(
-            self.original_question, 
+            api_question, 
             self.slug,
             self.topic,
             self.openai_model,
@@ -278,13 +305,6 @@ class InsertIntoDB:
             usage
         ):
         
-        # user=api.user, 
-        # slug=api.slug, 
-        # geo_qst=api.question, # Eng or Geo question.
-        # geo_res=api.final_res, # Styled Geo or Eng API response.
-        # eng_res=api.openAI.answer, # Original API answer.
-        # usage=api.openAI.usage,
-        # eng_qst=api.geo_eng, # Translated question from Geo to Eng. 
         self.user = user # Current user.
         self.slug = slug # Slug of the topic.
         self.topic = self.grab_topic() # Topic object.
@@ -401,7 +421,7 @@ class ChatWebSocket:
             return None
 
         # Insert the content to the database.
-        await self.InsertIntoDB()
+        await self.insertIntoDB()
 
         # Prepare a response to be sent to the client.
         await self.responses_to_client()
@@ -415,15 +435,21 @@ class ChatWebSocket:
             return None
     
     # Insert the content into the database.
-    async def InsertIntoDB(self):
+    async def insertIntoDB(self):
+
+        if self.api.chat_lang != 'en':
+            translated_question = self.api.geo_eng.result
+        else:
+            translated_question = self.original_question
+
         self.db_result = await sync_to_async(InsertIntoDB)( 
-            user=self.api.user, 
-            slug=self.api.slug, 
-            original_question=self.api.original_question, # Question on user chatting language (chat_lang).
-            translated_question=self.api.geo_eng.result, # Translated question to Eng.
+            user=self.api.user, # Current user.
+            slug=self.api.slug,  # Slug.
+            original_question=self.original_question, # Question on user chatting language (chat_lang).
+            translated_question=translated_question, # Translated question to Eng.
             original_response=self.api.openAI.answer, # Original API response.
             formatted_response=self.api.final_res, # Formatted API response.
-            usage=self.api.openAI.usage,      
+            usage=self.api.openAI.usage, # Current used tokens.     
         )
 
         # user=api.user, 
