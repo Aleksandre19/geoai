@@ -1,4 +1,4 @@
-from google.cloud import translate
+from google.cloud import translate, translate_v2
 
 class Translator:
     """
@@ -34,3 +34,19 @@ class Translator:
         )
 
         self.result = result.translations[0].translated_text
+
+    @classmethod
+    async def detect_lang(cls, question):
+        """
+        This class method takes a question, takes it's chunk and
+        detect language based on a google translator language detection method.
+        """
+        # Chunk queston.
+        question_chunk = question[:100]
+
+        # Google translatot client.
+        client = translate_v2.Client()
+
+        # Detect language and return  result.
+        result = client.detect_language(question_chunk)
+        return result['language']
