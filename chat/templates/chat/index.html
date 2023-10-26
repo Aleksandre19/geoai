@@ -46,39 +46,6 @@
                         </div>
                     </li>
 
-
-                    <!-- Chat Language (communicating to AI API).  -->
-                    <li>
-                         <div class='bg-mode'>
-                            <div class='bg-mode-title'>{% trans "Chat Language" %}</div>
-                            <!-- Mode toggler button -->
-                            <div class='user-tokens-value'>
-                                <!-- Language preferences -->
-                                <div class="chat-custom-select custom-select">
-                                    <div class="chat-lang-selected selected-option" data-value="">
-                                        <span>{{ user_setting.chat_lang }}</span>
-                                        <div class="chat-lang-arrow select-arrow"></div>
-                                    </div>
-                                    <div class="chat-lang-options options">
-                                        <div class="chat-lang-option option" data-value="en">
-                                            en
-                                        </div>
-                                        <div class="chat-lang-option option" data-value="ka">
-                                            ka
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Form to set a language in user session. -->
-                                <form action="{% url 'custom_set_lang' %}" method='post' id='chat-lang-form'>
-                                    {% csrf_token %}
-                                    <input type='hidden' name='language' value='en' id='current-chat-lang' />
-                                    <input type='hidden' name='field' value='chat' />
-                                </form>
-                            </div>
-                        </div>
-                    </li>
-
                     <!-- Interface Language. -->
                     <li>
                          <div class='bg-mode'>
@@ -145,18 +112,6 @@
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/customSelect/customSelect.bundle.js'%}"></script>
     <script type="text/javascript">
-
-        // For chat language. 
-        const chachLangData = {
-            'selected': '.chat-lang-selected',
-            'options': '.chat-lang-options',
-            'option': '.chat-lang-option',
-            'arrow': '.chat-lang-arrow',
-            'form': '#chat-lang-form',
-            'formValue': '#current-chat-lang',
-            'submit': true,
-        }
-
         // For chat interface.
         const interLangData = {
             'selected': '.inter-lang-selected',
@@ -168,7 +123,6 @@
             'submit': true,
         }
 
-        new SelectElement(chachLangData); // Chat language.
         new SelectElement(interLangData); // Chat interface.
     </script>
 {% endblock %}
