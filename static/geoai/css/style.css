@@ -136,6 +136,7 @@ h1, h2, h3, h4, h5, h6 {
     width: 90%;
     margin: auto;
     padding: 16px 24px;
+    text-align: center;
 }
 
 /* Loading animation for answer's container */

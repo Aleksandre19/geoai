@@ -99,7 +99,7 @@ export class WebSocketClient {
         await this.sendQuestion(); // Step 11 (Send question to the server).
         this.onSocketClose; // Step 12 (Handle socket close).
         await this.receiveAnswer(); // Step 13 (Receive answer from the server).
-        // Step 14 (Rise message it there is not enougth okens.
+        // Step 14 (Rise message if there is not enougth okens.
         if (!this.enougthTokens) {
             this.notEnougthTokensMessage; 
             return;
@@ -194,6 +194,15 @@ export class WebSocketClient {
     // Socket function.
     socketMessage(e) {
         const data = JSON.parse(e.data); // Parse data.
+
+        // Check if there is a error.
+        if (data.errorMsg) {
+            const errorElm = document.querySelector('.error-message');
+            errorElm.classList.remove('hide-element');
+            errorElm.innerHTML = data.errorMsg;
+            return
+        }
+
         if (!data.message) {
             this.enougthTokens = false;
             return;
@@ -214,7 +223,9 @@ export class WebSocketClient {
 
     get notEnougthTokensMessage() {
         const errorElm = document.querySelector('.error-message');
+        const errorMsg = "You don't have enought tokens to procceed the following action. Pleas purchase the tokens."
         errorElm.classList.remove('hide-element');
+        errorElm.innerHTML = errorMsg;
         return;
     }
 

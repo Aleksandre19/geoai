@@ -91,12 +91,15 @@
         </div>
     </div>
     <div id="chat-content">
+        <!-- Chat -->
         <div class='chat-qa-content'>
             {% include "chat/topic.html" %}
         </div>
-        <p class='hide-element error-message'>
-            {% trans "You don't have enought tokens to procceed the following action. Pleas purchase the tokens." %}
-        </p>
+
+        <!-- Error message from the server. -->
+        <p class='hide-element error-message'></p>
+
+        <!-- Question input. -->
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}
         </div>
@@ -104,6 +107,9 @@
 
 </section>
 {% endblock %}
+<!-- Set up Django translator functionality. -->
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
 {% block bottom_js %}
     {{ slug|json_script:'slug'}}
     {{ user_id|json_script:'userID' }}
@@ -111,6 +117,8 @@
     <script id='currentPage' type='application/json'>{{ request.get_full_path|current_page }}</script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/chat/chat.bundle.js'%}"></script>
     <script type="text/javascript" src="{% static 'geoai/js/webpack/customSelect/customSelect.bundle.js'%}"></script>
+    <!-- Django translator javascript functionality -->
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
     <script type="text/javascript">
         // For chat interface.
         const interLangData = {

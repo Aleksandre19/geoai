@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.i18n import JavaScriptCatalog
 
 from django.urls import re_path
 from django.views.i18n import set_language
@@ -32,6 +33,7 @@ urlpatterns = [
     path('api/', include('chat.api.urls')),
     path('payment/', include('geoai_payments.urls')),
     re_path(r'^set-language/$', set_language, name='set_language'),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
 
 if settings.DEBUG:

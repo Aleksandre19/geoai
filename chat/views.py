@@ -178,6 +178,7 @@ class Apis:
         self.openAI = None # OpenAI response.
         self.without_code = None # Response without code snippet.
         self.final_res = None # Final response (translated and with code snippet)
+        self.errorMsg = ''
 
     @classmethod
     async def call(cls, user, original_question, slug, topic, openai_model):
@@ -188,6 +189,11 @@ class Apis:
     async def apis(self):
         # Detect question language.
         self.chat_lang = await Translator.detect_lang(self.original_question)
+
+        # Check if types language by user is supported.
+        if self.chat_lang not in self.supported_lang():
+            self.errorMsg = 'That language is not supported. Please refresh the page and try with othe Language.'
+            return
         
         # Translate question if it is not in English.
         if self.chat_lang != 'en':
@@ -217,6 +223,23 @@ class Apis:
 
         # Generate slug.
         self.gen_slug()
+
+    # Google translator API supported languages.
+    def supported_lang(self):
+        supported_languages = [
+            "af", "sq", "am", "ar", "hy", "as", "ay", "az", "bm", "eu", "be", "bn",
+            "bho", "bs", "bg", "ca" "ceb", "zh-CN", "zh-TW", "co", "hr", "cs", "da",
+            "dv", "doi", "nl", "en", "eo", "et", "ee", "fil", "fi", "fr", "fy", "gl",
+            "ka", "de", "el", "gu", "ht", "ha", "iw", "hi", "hmn", "hu", "is", "ig",
+            "id", "ga", "it", "ja", "jv", "kn", "kk", "km", "ko", "ku", "ky", "lo", "lv",
+            "lt", "lg", "lb", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mn", "my", "ne",
+            "no", "ny", "or", "ps", "fa", "pl", "pt", "pa", "qu", "ro", "ru", "sm", "gd",
+            "sr", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tl",
+            "tg", "ta", "te", "th", "tr", "tk", "uk", "ur", "ug", "uz", "vi",  "cy", "xh","yi",
+            "yo","zu", 
+        ]
+    
+        return supported_languages
 
     # Grab user chat language (communication to API).
     @sync_to_async(thread_sensitive=True)
@@ -380,6 +403,7 @@ class ChatWebSocket:
         self.response = None
         self.topic_id = None
         self.tokens = None
+        self.errorMsg = ''
 
     @classmethod    
     async def call(cls, user, original_question, slug):
@@ -403,6 +427,11 @@ class ChatWebSocket:
                 topic, 
                 self.openai_model
             )
+        
+        # Handle the API error.
+        if self.api.errorMsg:
+            self.errorMsg = self.api.errorMsg
+            return None
 
         if not self.api.enougth_tokens:
             return None
