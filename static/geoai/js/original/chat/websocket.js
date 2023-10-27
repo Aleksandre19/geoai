@@ -199,7 +199,7 @@ export class WebSocketClient {
         if (data.errorMsg) {
             const errorElm = document.querySelector('.error-message');
             errorElm.classList.remove('hide-element');
-            errorElm.innerHTML = data.errorMsg;
+            errorElm.innerHTML = gettext(data.errorMsg);
             return
         }
 

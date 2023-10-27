@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ka\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: chat/templates/chat/indx.html:100
+msgid "That language is not supported. Please refresh the page and try with othe Language."
+msgstr "მითითებული ენა არ გამოიყენება. გთხოვთ გადათვირთოთ გვერდი და ცადოთ სხვა ენით."

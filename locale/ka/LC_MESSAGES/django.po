@@ -103,7 +103,3 @@ msgstr "ინტერფეისის ენა"
 #: chat/templates/chat/indx.html:51
 msgid "Log Out"
 msgstr "გასვლა"
-
-#: chat/templates/chat/indx.html:133
-msgid "That language is not supported."
-msgstr "მითითებული ენა არ გამოიყენება."
