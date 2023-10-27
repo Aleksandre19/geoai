@@ -25,7 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         result = await ChatWebSocket.call(self.scope['user'], message, slug)
 
         # Get the response.
-        errorMsg = result.errorMsg
+        error = result.error
         response = result.response
         slug = result.slug
         topic_id = result.topic_id
@@ -34,7 +34,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send the response to the client.
         await self.send(text_data=json.dumps(
             {
-                'errorMsg': errorMsg,
+                'error': error,
                 'message': response, 
                 'slug':slug, 
                 'topicID':topic_id,

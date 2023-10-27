@@ -205,6 +205,7 @@ class Apis:
 
         if not await self.user_has_tokens():
             self.enougth_tokens = False
+            self.errorMsg = "You don't have enought tokens to procceed the following action. Pleas purchase the tokens."
             return
         
         # Get response from OpenAI.
@@ -403,7 +404,7 @@ class ChatWebSocket:
         self.response = None
         self.topic_id = None
         self.tokens = None
-        self.errorMsg = ''
+        self.error = ''
 
     @classmethod    
     async def call(cls, user, original_question, slug):
@@ -428,12 +429,20 @@ class ChatWebSocket:
                 self.openai_model
             )
         
-        # Handle the API error.
+        # Not supported language.
         if self.api.errorMsg:
-            self.errorMsg = self.api.errorMsg
+            self.error = {
+                'type': 'lang',
+                'message': self.api.errorMsg
+            }
             return None
 
+        # Tokens limit error.
         if not self.api.enougth_tokens:
+            self.error = {
+                'type': 'token',
+                'message': self.api.errorMsg
+            }
             return None
 
         # Insert the content to the database.

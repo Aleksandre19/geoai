@@ -99,12 +99,7 @@ export class WebSocketClient {
         await this.sendQuestion(); // Step 11 (Send question to the server).
         this.onSocketClose; // Step 12 (Handle socket close).
         await this.receiveAnswer(); // Step 13 (Receive answer from the server).
-        // Step 14 (Rise message if there is not enougth okens.
-        if (!this.enougthTokens) {
-            this.notEnougthTokensMessage; 
-            return;
-        }
-        this.addTitleToSidebar; // Step 15 (Add title to sidebar).
+        this.addTitleToSidebar; // Step 14 (Add title to sidebar).
         this.addActionBtn; // Set up action button to newlly created title.
         this.updateTokens; // Update user remaining tokens.
     }
@@ -196,17 +191,26 @@ export class WebSocketClient {
         const data = JSON.parse(e.data); // Parse data.
 
         // Check if there is a error.
-        if (data.errorMsg) {
+        if (data.error) {
             const errorElm = document.querySelector('.error-message');
             errorElm.classList.remove('hide-element');
-            errorElm.innerHTML = gettext(data.errorMsg);
-            return
-        }
 
-        if (!data.message) {
-            this.enougthTokens = false;
-            return;
-        }; 
+            // Error cases.
+            switch (data.error.type) {
+                // Not supported language error.
+                case 'lang': 
+                    errorElm.innerHTML = gettext(data.error.message);
+                    return
+                // Not enougth tokens error.
+                case 'token':
+                    errorElm.innerHTML = gettext(data.error.message);
+                    return
+                // Unknown error.
+                default:
+                    errorElm.innerHTML = gettext("There is a unknown error. Please try later.");
+                    return
+            }
+        }
 
         document.querySelector('.answer_waiting_gif').style.display = 'none'; // Hide loading gif.
         document.querySelector('#' + this.createdElm['ap']).innerHTML = (data.message + '\n'); // Set answer content.
@@ -218,15 +222,6 @@ export class WebSocketClient {
         this.topicID = data.topicID; // Set topic id from the response.
         this.tokens = data.tokens; // User remaining tokens.
         this.questionSent = false;
-    }
-
-
-    get notEnougthTokensMessage() {
-        const errorElm = document.querySelector('.error-message');
-        const errorMsg = "You don't have enought tokens to procceed the following action. Pleas purchase the tokens."
-        errorElm.classList.remove('hide-element');
-        errorElm.innerHTML = errorMsg;
-        return;
     }
 
     get addTitleToSidebar() {

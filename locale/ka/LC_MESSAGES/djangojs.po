@@ -15,3 +15,11 @@ msgstr ""
 #: chat/templates/chat/indx.html:100
 msgid "That language is not supported. Please refresh the page and try with othe Language."
 msgstr "მითითებული ენა არ გამოიყენება. გთხოვთ გადათვირთოთ გვერდი და ცადოთ სხვა ენით."
+
+#: chat/templates/chat/indx.html:100
+msgid "You don't have enought tokens to procceed the following action. Pleas purchase the tokens."
+msgstr "თქვენ არ გერიცხებათ საკმარისი ჟეტონები მიმდინარე მოთხოვნის განსახორციელებლად. გთხოვთ შეიძინოთ ჟეტონები."
+
+#: chat/templates/chat/indx.html:100
+msgid "There is a unknown error. Please try later."
+msgstr "შეცდომაა. გთხოვთ ცადოთ მოგვიანებით."
