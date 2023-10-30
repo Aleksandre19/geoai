@@ -103,7 +103,23 @@
         <div class='chat-qa-form'>
             {% include 'chat/question_form.html' %}
         </div>
+
+        <!-- Chat Parameters -->
+        <div class='param-wrapper'>
+            <input type='checkbox' id='param-checkbox' />
+            <a href="{{ signup_url }}" class='chat-parameters'>
+                {% trans "Parameters" %}
+                <i class='arrow-icon'></i>
+            </a>
+            <div class='chat-param-wrapper'>
+                Chat parameters
+            </div>
+        </div>
+        
     </div>
+    {% comment %} <div class='chat-parameters'>
+        parameters
+    </div> {% endcomment %}
 
 </section>
 {% endblock %}
