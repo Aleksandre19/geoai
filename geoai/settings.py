@@ -61,7 +61,7 @@ class Dev(Configuration):
         'allauth.socialaccount.providers.google',
         'geoai_auth',
         'chat',
-        'debug_toolbar',
+        # 'debug_toolbar',
         'home',
         'rest_framework',
         'rest_framework.authtoken',
@@ -136,7 +136,7 @@ class Dev(Configuration):
     INTERNAL_IPS = '127.0.0.1'
 
     MIDDLEWARE = [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
+        # 'debug_toolbar.middleware.DebugToolbarMiddleware',
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.locale.LocaleMiddleware',
@@ -269,27 +269,27 @@ class Dev(Configuration):
     ACCOUNT_USERNAME_REQUIRED = False
     ACCOUNT_AUTHENTICATION_METHOD = "email"
 
-    LOGGING = {
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "verbose": {
-                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-                "style": "{",
-            },
-        },
-        "handlers": {
-            "console": {
-                "class": "logging.StreamHandler",
-                "stream": "ext://sys.stdout",
-                "formatter": "verbose",
-            }
-        },
-        "root": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-        },
-    }
+    # LOGGING = {
+    #     "version": 1,
+    #     "disable_existing_loggers": False,
+    #     "formatters": {
+    #         "verbose": {
+    #             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+    #             "style": "{",
+    #         },
+    #     },
+    #     "handlers": {
+    #         "console": {
+    #             "class": "logging.StreamHandler",
+    #             "stream": "ext://sys.stdout",
+    #             "formatter": "verbose",
+    #         }
+    #     },
+    #     "root": {
+    #         "handlers": ["console"],
+    #         "level": "DEBUG",
+    #     },
+    # }
 
 class Prod(Dev):
     DEBUG = False
