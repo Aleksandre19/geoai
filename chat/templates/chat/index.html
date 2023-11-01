@@ -113,6 +113,10 @@
             </a>
             <div class='chat-param-wrapper'>
                 Chat parameters
+                <form action='' method='POST'>
+                    {% csrf_token %}
+                    {{param_form}}
+                </form>
             </div>
         </div>
         

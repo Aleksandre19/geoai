@@ -19,6 +19,8 @@ from user_setting.models import UserTokens
 
 from geoai_translator.views import Translator
 from geoai_openai.views import OpenAI
+from geoai_openai.forms import ParameterForm
+from geoai_openai.models import Parameters
 
 from langdetect import detect
 import tiktoken
@@ -84,6 +86,13 @@ class ChatView(LoginRequiredMixin, ListView):
             topic = get_object_or_404(Topic, slug=slug)
             questions = Question.objects.prefetch_related('answer').filter(topic=topic)
 
+        
+        # Openai API parameters.
+        param = Parameters.objects.get(user=self.request.user)
+
+        # Pre-field parameters form for current user.
+        param_form = ParameterForm(instance=param)
+
         ##### FOR TESTING #####
         # test =  Question.objects.last()
         # ex = ExcludeCode.to(test.answer.eng_content)
@@ -96,7 +105,8 @@ class ChatView(LoginRequiredMixin, ListView):
                 'user_id': self.request.user.id,
                 'user_setting': self.request.user.setting,
                 'slug': slug,
-                'tokens': remaining_tokens
+                'tokens': remaining_tokens,
+                'param_form': ParameterForm(instance=param),
                 # 'test': inc,
         })
         return context
