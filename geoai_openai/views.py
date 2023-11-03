@@ -2,9 +2,9 @@ from django.conf import settings
 from asgiref.sync import sync_to_async
 
 from chat.models import Question, Topic
+from geoai_openai.models import Parameters
 
 import openai
-import pprint
 
 openai.api_key = settings.OPENAI_API_KEY
 
@@ -12,16 +12,17 @@ class OpenAI:
     """
     This class is used to call the OpenAI API.
     """
-    def __init__(self, question, slug, topic, modele, chat_lang):
+    def __init__(self, question, slug, topic, user, chat_lang):
         self.question = question
         self.slug = slug
         self.topic = topic
-        self.modele = modele
-        self.chat_lang = chat_lang
-        self.temperature = 0.3   
+        self.user = user
+        self.chat_lang = chat_lang 
+    
         self.answer = None
         self.usage = None
         self.created = None
+        self.api_param = None
 
     # Class method to call the class asynchronously.
     @classmethod 
@@ -32,14 +33,28 @@ class OpenAI:
 
     # OpenAI API request.
     async def api_request(self):
+        # Parameters for the API.
+        self.api_param = await self.api_parameters()
+
+        # List of th previous Q/A.      
         messages = await self.messages()
+
+        # Call API Completion.
         response = openai.ChatCompletion.create(
-            model=self.modele,
+            model=f'{self.api_param.model}',
             messages=messages,
-            temperature=self.temperature,
+            temperature=self.api_param.temperature,
+            top_p=self.api_param.top_p,
         )
+
+        # Grab answer and tokens.
         self.answer = response['choices'][0]['message']['content']
         self.usage = response['usage']
+
+    # Get Openai API completion parameters.
+    @sync_to_async(thread_sensitive=True)
+    def api_parameters(self):
+        return Parameters.objects.select_related('model', 'model__model').get(user=self.user)
     
     # Construct the messages for API endpoint.
     async def messages(self):
@@ -58,7 +73,7 @@ class OpenAI:
 
     # Define system prompt.
     def system_prompt(self):
-        return [{'role': 'system', 'content': 'You are a helpful assistant.'}]
+        return [{'role': 'system', 'content': f'{self.api_param.instruction}'}]
     
     # Contruct the previous messages for API.
     async def append_prev_messages(self, msg):
@@ -80,4 +95,4 @@ class OpenAI:
 
     # Define current question.
     def current_question(self):
-        return {'role': 'user', 'content': self.question} 
+        return {'role': 'user', 'content': self.question}

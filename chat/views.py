@@ -176,12 +176,11 @@ class Apis:
     translates the response back to georgian, includes back the excluded code
     and returns the final response.
     """
-    def __init__(self, user, original_question, slug, topic, openai_model):
+    def __init__(self, user, original_question, slug, topic):
         self.user = user # Current user.
         self.original_question = original_question # Original question.
         self.slug = slug # Slug of the topic.
         self.topic = topic # Topic object.
-        self.openai_model = openai_model # OpenAI model version.
         self.geo_eng = None # Question translated from geo to eng.
         self.enougth_tokens = True
         self.eng_geo = None # Response translated from eng to geo.
@@ -191,8 +190,8 @@ class Apis:
         self.errorMsg = ''
 
     @classmethod
-    async def call(cls, user, original_question, slug, topic, openai_model):
-        inst = cls(user, original_question, slug, topic, openai_model)
+    async def call(cls, user, original_question, slug, topic):
+        inst = cls(user, original_question, slug, topic)
         await inst.apis()
         return inst
 
@@ -265,7 +264,7 @@ class Apis:
     # Tokenize the question and check if
     # the user has enougth tokens.
     async def user_has_tokens(self):
-        tokenized = self.tokenize_question()
+        tokenized = await self.tokenize_question()
         user_tokens = await self.user_tokens()
         remaining_tokens = user_tokens.value - user_tokens.used
 
@@ -274,11 +273,17 @@ class Apis:
         return True         
 
     # Tokenize the question.
-    def tokenize_question(self):
+    async def tokenize_question(self):
+        api_params = await self.api_parameters()
         openai_tokenizer = tiktoken.get_encoding("cl100k_base")
-        openai_tokenizer = tiktoken.encoding_for_model(self.openai_model)
+        openai_tokenizer = tiktoken.encoding_for_model(f'{api_params.model}')
         tokenized = openai_tokenizer.encode(self.original_question)
         return tokenized
+    
+    # Get Openai API completion parameters.
+    @sync_to_async(thread_sensitive=True)
+    def api_parameters(self):
+        return Parameters.objects.select_related('model', 'model__model').get(user=self.user)
     
 
     # Grab user remaining tokens.
@@ -302,7 +307,7 @@ class Apis:
             api_question, 
             self.slug,
             self.topic,
-            self.openai_model,
+            self.user,
             self.chat_lang
         )
 
@@ -407,8 +412,6 @@ class ChatWebSocket:
         self.user = user
         self.original_question = original_question
         self.slug = slug
-        # self.openai_model = 'gpt-3.5-turbo'
-        self.openai_model = 'gpt-4'
         self.api = None
         self.db_result = None
         self.response = None
@@ -435,8 +438,7 @@ class ChatWebSocket:
                 self.user, 
                 self.original_question, 
                 self.slug, 
-                topic, 
-                self.openai_model
+                topic
             )
         
         # Not supported language.
